@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src='style.css'></script>
+        <title>VL Anywhere Bookmarklet Design</title>
+	</head>
+	<body>
+        <div class='bkml-container'>
+             <div class='bkml-header'>
+                <!-- Sprite here -->
+                 VigLink Anywhere
+             </div>
+             <div class='bkml-inner-container'>
+                 <div class='bkml-inner-header'>Share this Page</div>
+                 <div class='bkml-link-container'>
+                     <div class='bkml-link-header'></div>
+                     <div class='bkml-link-body'></div>
+                     <div class='bkml-link-copy'></div>
+                 </div>
+                 <div class='bkml-inner-share'></div>
+             </div>
+        </div>
+    </body>
+</html>
+
+
+<style>
+.bkml-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    
+    /* Fixed width for now */
+    width: 300px;
+    height: 800px;
+    
+    background-color: rgb(242, 244, 246);
+    
+    font-size: 20px;
+}
+
+.bkml-header {
+    height: 40px;
+    line-height: 40px;
+    font-size: 0.7em;
+    background: -webkit-linear-gradient(#DCDCDC, #F0F0F0); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#DCDCDC, #F0F0F0); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#DCDCDC, #F0F0F0); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#DCDCDC, #F0F0F0); /* Standard syntax */
+}
+
+.bkml-inner-container {
+    width: 80%;
+    background-color: orange;
+    position: absolute;
+}
+
+
+</style>
