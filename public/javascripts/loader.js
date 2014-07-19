@@ -26,14 +26,14 @@ $(function() {
   function ensureJQuery() {
     if (window.jQuery) {
       var scriptElem = document.createElement("script");
-      scriptElem.src = "/src/app_no_jquery.js";
+      scriptElem.src = "http://anywhere-bookmarklet.herokuapp.com//src/app_no_jquery.js";
       scriptElem.onload = function() {
         loadBookmarklet();
       }
       document.getElementsByTagName("head")[0].appendChild(scriptElem);      
     } else {
       var scriptElem = document.createElement("script");
-      scriptElem.src = "/src/app_jquery.js";
+      scriptElem.src = "http://anywhere-bookmarklet.herokuapp.com//src/app_jquery.js";
       scriptElem.onload = function() {
         // Additional step required: ensure no namespace conflicts (mootools, etc.)
         // init function wrapped in IIFE so we can still use $ conflict-free
@@ -54,7 +54,7 @@ $(function() {
     var HTMLSnippet = {
       grab: function() {
         var HTMLPromise = $.Deferred();
-        $.ajax('/bookmarklet', {
+        $.ajax('http://anywhere-bookmarklet.herokuapp.com/bookmarklet', {
           dataType: "html",
           success: function(snippet) {
             HTMLPromise.resolve(snippet);
