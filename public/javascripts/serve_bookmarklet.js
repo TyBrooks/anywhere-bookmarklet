@@ -10,7 +10,7 @@ $(function() {
   $('.get-bookmarklet').on('submit', function(event) {
     event.preventDefault();
     var userAPI = $('#user-api').val();
-    $('.bookmarklet-link').attr('href', "javascript:(function(){window.vglnkbkmklt_key = '" + userAPI + "'; if(window.myBookmarklet!==undefined){myBookmarklet();}else{document.body.appendChild(document.createElement('script')).src= '" + code_src + "'; }})();");
+    $('.bookmarklet-link').attr('href', "javascript:(function(){window.viglink_bkml = window.viglink_bkml || { key : '" + userAPI + "', initialized: false }; if(!window.viglink_bkml.initialized){document.body.appendChild(document.createElement('script')).src= '" + code_src + "'; }})();");
     $('.get-bookmarklet').toggle();
     $('.bookmarklet-holder').slideDown();
   });

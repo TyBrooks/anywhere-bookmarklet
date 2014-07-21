@@ -8,35 +8,27 @@ Code Flow:
 
 (function() {
   
+  // Dev only
+  dev = true; 
+  var devResources = [];
+  devResources.push(['http://localhost:3000/javascripts/vendor/ZeroClipboard.js', "js"]);
+  devResources.push(['http://localhost:3000/javascripts/bookmarklet_events.js', "js"]);
+  devResources.push(['http://localhost:3000/stylesheets/bookmarklet.css', "css"]);
+  
+  // Resource list format: [url, type]
+  window.viglink_bkml.resources = []
+  window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/vendor/ZeroClipboard.js', "js"]);
+  window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/bookmarklet_events.js', "js"]);
+  window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/stylesheets/bookmarklet.css', "css"]);
+
+  if (dev) {
+    window.viglink_bkml.resources = devResources;
+  }
+  
+  window.viglink_bkml.loaded = window.viglink_bkml.loaded || false;
   
   // Step 1, check if bookmarklet has already been loaded
-  if (window.viglink_bkml === undefined) {
-    // May need to wrap our bkml event handlers in an init function in this object
-    // ... Don't want to load them until the bkml html is loaded.
-    window.viglink_bkml = {
-      loaded: false
-    }
-    
-    
-    // Resource list format: [url, type]
-    window.viglink_bkml.resources = []
-    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/vendor/ZeroClipboard.js', "js"]);
-    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/bookmarklet_events.js', "js"]);
-    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/stylesheets/bookmarklet.css', "css"]);
-  
-    // Dev only
-    dev = true; 
-    var devResources = [];
-    devResources.push(['http://localhost:3000/javascripts/vendor/ZeroClipboard.js', "js"]);
-    devResources.push(['http://localhost:3000/javascripts/bookmarklet_events.js', "js"]);
-    devResources.push(['http://localhost:3000/stylesheets/bookmarklet.css', "css"]);
-  
-    if (dev) {
-      window.viglink_bkml.resources = devResources;
-    }
-    
-    
-    
+  if (!window.viglink_bkml.loaded) {
     
     // Step 2, check whether jQuery is already loaded
     ensureJQuery();
@@ -54,7 +46,7 @@ Code Flow:
     $('bkml-container').remove();
   }
   
-  function loadResourcesArr(resourceArr) {
+  function loadResourcesArr() {
     //TODO: figure out why this isn't working with a locally scoped promises variable
     promises = [];
 
@@ -133,7 +125,7 @@ Code Flow:
     var promise = HTMLSnippet.grab();
     promise.done(function(snippet) {
       var $bookmarklet = $(snippet);
-      var anywhereizedURL = "https://redirect.viglink.com?key=" + window.viglink_bkml_key + "&u=" + encodeURIComponent(window.location.href);
+      var anywhereizedURL = "https://redirect.viglink.com?key=" + window.viglink_bkml.key + "&u=" + encodeURIComponent(window.location.href);
       $bookmarklet.find('.bkml-link-text').val(anywhereizedURL);
       $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       $('body').append($bookmarklet);
