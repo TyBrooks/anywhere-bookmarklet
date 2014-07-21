@@ -26,14 +26,14 @@ $(function() {
   function ensureJQuery() {
     if (window.jQuery) {
       var scriptElem = document.createElement("script");
-      scriptElem.src = "http://anywhere-bookmarklet.herokuapp.com//src/app_no_jquery.js";
+      scriptElem.src = "https://anywhere-bookmarklet.herokuapp.com//src/app_no_jquery.js";
       scriptElem.onload = function() {
         loadBookmarklet();
       }
       document.getElementsByTagName("head")[0].appendChild(scriptElem);      
     } else {
       var scriptElem = document.createElement("script");
-      scriptElem.src = "http://anywhere-bookmarklet.herokuapp.com//src/app_jquery.js";
+      scriptElem.src = "https://anywhere-bookmarklet.herokuapp.com//src/app_jquery.js";
       scriptElem.onload = function() {
         // Additional step required: ensure no namespace conflicts (mootools, etc.)
         // init function wrapped in IIFE so we can still use $ conflict-free
@@ -54,7 +54,7 @@ $(function() {
     var HTMLSnippet = {
       grab: function() {
         var HTMLPromise = $.Deferred();
-        $.ajax('http://anywhere-bookmarklet.herokuapp.com/bookmarklet', {
+        $.ajax('https://anywhere-bookmarklet.herokuapp.com/bookmarklet', {
           dataType: "html",
           success: function(snippet) {
             HTMLPromise.resolve(snippet);
@@ -68,7 +68,7 @@ $(function() {
     var promise = HTMLSnippet.grab();
     promise.done(function(snippet) {
       var $bookmarklet = $(snippet);
-      var anywhereizedURL = "http://redirect.viglink.com?key=" + window.viglink_bkml_key + "&u=" + encodeURIComponent(window.location.href);
+      var anywhereizedURL = "https://redirect.viglink.com?key=" + window.viglink_bkml_key + "&u=" + encodeURIComponent(window.location.href);
       $bookmarklet.find('.bkml-link-text').val(anywhereizedURL);
       $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       $('body').append($bookmarklet);
