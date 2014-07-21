@@ -7,11 +7,7 @@ Code Flow:
 */
 
 (function() {
-  // Resource list format: [url, type]
-  var resources = []
-  resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/vendor/ZeroClipboard.js', "js"]);
-  resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/bookmarklet_events.js', "js"]);
-  resources.push(['https://anywhere-booklet.herokuapp.com/stylesheets/bookmarklet.css', "css"]);
+  
   
   // Step 1, check if bookmarklet has already been loaded
   if (window.viglink_bkml === undefined) {
@@ -20,6 +16,27 @@ Code Flow:
     window.viglink_bkml = {
       loaded: false
     }
+    
+    
+    // Resource list format: [url, type]
+    window.viglink_bkml.resources = []
+    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/vendor/ZeroClipboard.js', "js"]);
+    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/bookmarklet_events.js', "js"]);
+    window.viglink_bkml.resources.push(['https://anywhere-booklet.herokuapp.com/stylesheets/bookmarklet.css', "css"]);
+  
+    // Dev only
+    dev = true; 
+    var devResources = [];
+    devResources.push(['http://localhost:3000/javascripts/vendor/ZeroClipboard.js', "js"]);
+    devResources.push(['http://localhost:3000/javascripts/bookmarklet_events.js', "js"]);
+    devResources.push(['http://localhost:3000/stylesheets/bookmarklet.css', "css"]);
+  
+    if (dev) {
+      window.viglink_bkml.resources = devResources;
+    }
+    
+    
+    
     
     // Step 2, check whether jQuery is already loaded
     ensureJQuery();
@@ -37,11 +54,12 @@ Code Flow:
     $('bkml-container').remove();
   }
   
-  function loadResourceArr(resourceArr) {
+  function loadResourcesArr(resourceArr) {
+    //TODO: figure out why this isn't working with a locally scoped promises variable
     promises = [];
 
     // resource is an array of [url, type]
-    resourceArr.forEach(function(resource) {
+    window.viglink_bkml.resources.forEach(function(resource) {
       loadResourceURL(resource[0], resource[1]);
     })
     
@@ -62,13 +80,13 @@ Code Flow:
       scriptElem.onload = function() {
         promise.resolve();
       }
-      document.head.appendChild(scriptElem);
+      document.getElementsByTagName("head")[0].appendChild(scriptElem);
     } else if (resourceType == "css") {
       var styleElem = document.createElement("link");
       styleElem.setAttribute('rel', 'stylesheet');
       styleElem.type = 'text/css';
-      styleElem.href = resourceUrl;
-      document.head.appendChild(styleElem);
+      styleElem.href = resourceURL;
+      document.getElementsByTagName("head")[0].appendChild(styleElem);
     }    
   }
   
@@ -82,13 +100,13 @@ Code Flow:
         // init function wrapped in IIFE so we can still use $ conflict-free
         jQuery.noConflict();
         (function($) {
-          loadResourceArr(resources);
+          loadResourcesArr();
         })(jQuery);
       }
       document.getElementsByTagName("head")[0].appendChild(scriptElem);
     } else {
       (function($) {
-        loadResourceArr(resources);
+        loadResourcesArr();
       })(window.jQuery);
     }
   };
