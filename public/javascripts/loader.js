@@ -1,4 +1,4 @@
-$(function() {
+(function() {
   // Step 1, check if bookmarklet has already been loaded
   if (window.viglink_bkml === undefined) {
     // May need to wrap our bkml event handlers in an init function in this object
@@ -82,4 +82,4 @@ $(function() {
     });    
   }
     
-});
+})();
