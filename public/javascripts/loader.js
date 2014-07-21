@@ -38,11 +38,11 @@ Code Flow:
   }
   
   function loadResourceArr(resourceArr) {
-    var promises = [];
-    
+    promises = [];
+
     // resource is an array of [url, type]
-    resources.forEach(function(resource) {
-      loadResourceUrl(resource[0], resource[1]);
+    resourceArr.forEach(function(resource) {
+      loadResourceURL(resource[0], resource[1]);
     })
     
     $.when.apply($, promises).then(function() {
@@ -52,7 +52,7 @@ Code Flow:
     loadBookmarklet();
   }
   
-  function loadResourceUrl(resourceURL, resourceType) {
+  function loadResourceURL(resourceURL, resourceType) {
     var promise = $.Deferred();
     promises.push(promise);
     
@@ -88,7 +88,7 @@ Code Flow:
       document.getElementsByTagName("head")[0].appendChild(scriptElem);
     } else {
       (function($) {
-        loadResourceArr();
+        loadResourceArr(resources);
       })(window.jQuery);
     }
   };
