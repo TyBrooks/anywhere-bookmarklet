@@ -111,7 +111,7 @@ Code Flow:
     var HTMLSnippet = {
       grab: function() {
         var HTMLPromise = $.Deferred();
-        $.ajax('https://anywhere-bookmarklet.herokuapp.com/bookmarklet', {
+        $.ajax('//anywhere-bookmarklet.herokuapp.com/bookmarklet', {
           dataType: "html",
           success: function(snippet) {
             HTMLPromise.resolve(snippet);
@@ -125,11 +125,12 @@ Code Flow:
     var promise = HTMLSnippet.grab();
     promise.done(function(snippet) {
       var $bookmarklet = $(snippet);
-      var anywhereizedURL = "https://redirect.viglink.com?key=" + window.viglink_bkml.key + "&u=" + encodeURIComponent(window.location.href);
+      var anywhereizedURL = "//redirect.viglink.com?key=" + window.viglink_bkml.key + "&u=" + encodeURIComponent(window.location.href);
       $bookmarklet.find('.bkml-link-text').val(anywhereizedURL);
       $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       $('body').append($bookmarklet);
       
+      window.viglink_bkml.anywhereizedURL = anywhereizedURL;
       window.viglink_bkml.loaded = true;
       
       // Include a custom JS file in the compiled file, attach events to the window.viglink_bkml initialize events function

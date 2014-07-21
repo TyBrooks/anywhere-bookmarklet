@@ -1,14 +1,23 @@
 (function() {
   function initializeClipboard() {
-    ZeroClipboard.config( { swfPath: "/swf/ZeroClipboard.swf" } );
+    ZeroClipboard.config({ 
+      swfPath: "//localhost:3000/swf/ZeroClipboard.swf",
+      trustedDomains: [window.location.protocol + "//" + window.location.host]
+    });
   
-    var clipboard = new ZeroClipboard(document.getElementById('clipboard-target'));
+    var clipboard = new ZeroClipboard($('#clipboard-target'));
   
     clipboard.on('ready', function(readyEvent) {
+      
+      clipboard.on( "copy", function (event) {
+        var clipboard = event.clipboardData;
+        clipboard.setData( "text/plain", "http:" + window.viglink_bkml.anywhereizedURL );
+      });
     
       clipboard.on('aftercopy', function(event) {
-        //TODO: implement something here
-        alert(event.data['text/plain']);
+        //TODO: Decide whether to aler them?
+        alert("Formatted URL has been copied!");
+        console.log(event.data['text/plain']);
       });
     
     });
