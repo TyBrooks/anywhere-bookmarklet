@@ -1,4 +1,18 @@
+/*
+Code Flow:
+1. Check whether bkml is already loaded. If so, reload without redownloading resources
+2. Load jQuery if it's not already present
+3. Load the resource list specified at the beginning of the code
+4. Load the actual bookmarklet html and initialize code
+*/
+
 (function() {
+  // Resource list format: [url, type]
+  var resources = []
+  resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/vendor/ZeroClipboard.js', "js"]);
+  resources.push(['https://anywhere-booklet.herokuapp.com/javascripts/bookmarklet_events.js', "js"]);
+  resources.push(['https://anywhere-booklet.herokuapp.com/stylesheets/bookmarklet.css', "css"]);
+  
   // Step 1, check if bookmarklet has already been loaded
   if (window.viglink_bkml === undefined) {
     // May need to wrap our bkml event handlers in an init function in this object
@@ -9,6 +23,7 @@
     
     // Step 2, check whether jQuery is already loaded
     ensureJQuery();
+    
   } else {
     // Make sure user double-clicking the bookmarklet isn't a problem
     if (viglink_bkml.loaded) {
@@ -22,27 +37,59 @@
     $('bkml-container').remove();
   }
   
+  function loadResourceArr(resourceArr) {
+    var promises = [];
+    
+    // resource is an array of [url, type]
+    resources.forEach(function(resource) {
+      loadResourceUrl(resource[0], resource[1]);
+    })
+    
+    $.when.apply($, promises).then(function() {
+      loadBookmarklet();
+    })
+    
+    loadBookmarklet();
+  }
+  
+  function loadResourceUrl(resourceURL, resourceType) {
+    var promise = $.Deferred();
+    promises.push(promise);
+    
+    if (resourceType == "js") {
+      var scriptElem = document.createElement("script");
+      scriptElem.src = resourceURL;
+      scriptElem.onload = function() {
+        promise.resolve();
+      }
+      document.head.appendChild(scriptElem);
+    } else if (resourceType == "css") {
+      var styleElem = document.createElement("link");
+      styleElem.setAttribute('rel', 'stylesheet');
+      styleElem.type = 'text/css';
+      styleElem.href = resourceUrl;
+      document.head.appendChild(styleElem);
+    }    
+  }
+  
   // There are two compiled JS files depending on whether or not the page already has jQuery loaded
   function ensureJQuery() {
-    if (window.jQuery) {
+    if (!window.jQuery) {
       var scriptElem = document.createElement("script");
-      scriptElem.src = "https://anywhere-bookmarklet.herokuapp.com//src/app_no_jquery.js";
-      scriptElem.onload = function() {
-        loadBookmarklet();
-      }
-      document.getElementsByTagName("head")[0].appendChild(scriptElem);      
-    } else {
-      var scriptElem = document.createElement("script");
-      scriptElem.src = "https://anywhere-bookmarklet.herokuapp.com//src/app_jquery.js";
+      scriptElem.src = "//anywhere-bookmarklet.herokuapp.com/javascripts/vendor/jquery-1.11.1.js";
       scriptElem.onload = function() {
         // Additional step required: ensure no namespace conflicts (mootools, etc.)
         // init function wrapped in IIFE so we can still use $ conflict-free
         jQuery.noConflict();
         (function($) {
-          loadBookmarklet();
+          loadResourceArr(resources);
         })(jQuery);
       }
       document.getElementsByTagName("head")[0].appendChild(scriptElem);
+    } else {
+      (function($) {
+        loadResourceArr();
+      })(window.jQuery);
     }
   };
   
