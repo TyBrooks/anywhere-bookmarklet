@@ -15,12 +15,16 @@
       });
     
       clipboard.on('aftercopy', function(event) {
-        //TODO: Decide whether to aler them?
+        //TODO: Decide whether to alert the user
         alert("Formatted URL has been copied!");
         console.log(event.data['text/plain']);
       });
     
     });
+  }
+  
+  function formatTwitterLink($el, url) {
+    $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }
   
   $(function() {
@@ -29,6 +33,8 @@
       $bkml = $('.bkml-container');
     
       initializeClipboard();
+      
+      formatTwitterLink($('.bkml-social-tweet'), window.viglink_bkml.anywhereizedURL);
     
       $bkml.find('.bkml-link-copy').on('click', function(event) {
         event.preventDefault();
@@ -38,11 +44,6 @@
         //TODO: implement fb redirect
         alert("FB Click");
       })
-    
-      $bkml.find('.bkml-social-tweet').on('click', function() {
-        //TODO: implement tweet redirect
-        alert("Tweet Click");
-      });
     }
   });
 })();
