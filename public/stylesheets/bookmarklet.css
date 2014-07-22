@@ -51,11 +51,21 @@ a:link, a:visited {
   border: 1px solid rgba(150,150,150,1);
 }
 
-.bkml-share-title {
+.bkml-share-header {
   background-color: rgba(250, 130, 50, 1);
   height: 50px;
   line-height: 50px;
   vertical-align: middle;
+}
+
+.bkml-campaign-container {
+  height: 40px;
+  margin: 20px auto;
+  
+  color: rgba(250, 130, 50, 1);
+}
+.bkml-campaign-container label {
+  padding-bottom: 10px;
 }
 
 .bkml-link-container {
