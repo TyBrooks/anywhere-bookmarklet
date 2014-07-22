@@ -1,5 +1,5 @@
 .bkml-container {
-  width: 250px;
+  width: 275px;
   background-color: #F8F8F8;
   color: white;
   text-align: center;
@@ -7,14 +7,18 @@
   position: absolute;
   top: 0;
   right: 0;
+  
+  font-family: "Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+
+  box-shadow: -5px -5px 5px #999, -5px 5px 5px #999;
 }
 
-.bkml-container > * {
+/*.bkml-container > * {
   background-color: #686868;
 }
-
-a:link {
-  color: white;
+*/
+a:link, a:visited {
+  color: inherit;
   text-decoration: none;
 }
 
@@ -23,49 +27,91 @@ a:link {
   text-align: left;
   line-height: 35px;
   vertical-align: middle;
+  
+  border-bottom: 2px solid rgba(150,150,150,1);
+  border-top: 2px solid rgba(150,150,150,1);
+  
+  margin-top: 1px;
+
+  font-size: 16px;
+  
 }
 
 .bkml-title-img {
-  background-color: #C00000;
   display: inline-block;
   height: 25px;
-  width: 30px;
+  width: 100px;
   margin: 5px 15px;
 }
 
+.bkml-share-container {
+  display: inline-block;
+  width: 250px;
+  margin: 12.5px;
+  border: 1px solid rgba(150,150,150,1);
+}
+
+.bkml-share-title {
+  background-color: rgba(250, 130, 50, 1);
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+
 .bkml-link-container {
-  width: 175px;
+  width: 200px;
   margin: 30px auto;
+  
+  border: 1px solid rgba(150,150,150,1);
+  border-radius: 2px;
 }
 
 .bkml-link-header {
-  height: 40px;
+  height: 35px;
   
-  line-height: 40px;
+  line-height: 35px;
   vertical-align: middle;
   
-  background-color: #CC6600;
+  color: rgba(230,160,120,1);
+  font-size: 0.9em;
+  
+  border-bottom: 1px solid rgba(150,150,150,1);
 }
 
 .bkml-link-text {
-  height: 60px;
+  height: 100px;
+  text-align: left;
+  padding: 10px;
+  
+  word-wrap: break-word;
+  color: rgba(170,170,170,1);
+  font-size: 0.9em;  
 }
 
 .bkml-link-copy {
   display: block;
-  background-color: #CC6600;
   
-  height: 40px;
+  /*Fix issue with link color display*/
+  color: rgba(230,160,120,1) !important;
   
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
   vertical-align: middle;
   
+  border-top: 1px solid rgba(150,150,150,1);
+  
+  font-size: 0.9em;
 }
 
 .bkml-social-container {
-  width: 200px;
-  height: 40px;
-  margin: 30px auto;
+  display: inline-block;
+  margin: 0 auto 30px auto;
+  text-align: center;
+  
+  border: 1px solid rgba(110,110,110,1);
+  border-radius: 2px;
+  
+  font-size: 0em;
 }
 
 .bkml-social-button {
@@ -76,11 +122,15 @@ a:link {
   
   line-height: 40px;
   vertical-align: middle;
+  
+  margin: 0;
+  
+  font-size: 16px;
 }
 
 .bkml-social-fb {
-  background-color: #0000FF;
+  background-color: rgba(50,90,160,1);
 }
 .bkml-social-tweet {
-  background-color: #3300CC;
+  background-color: rgba(85,150,200,1);
 }

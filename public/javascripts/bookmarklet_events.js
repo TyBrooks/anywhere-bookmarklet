@@ -11,7 +11,7 @@
       
       clipboard.on( "copy", function (event) {
         var clipboard = event.clipboardData;
-        clipboard.setData( "text/plain", "http:" + window.viglink_bkml.anywhereizedURL );
+        clipboard.setData( "text/plain", window.viglink_bkml.anywhereizedURL );
       });
     
       clipboard.on('aftercopy', function(event) {
@@ -23,6 +23,7 @@
     });
   }
   
+  // Documentation: https://dev.twitter.com/docs/tweet-button
   function formatTwitterLink($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }

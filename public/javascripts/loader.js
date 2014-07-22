@@ -89,7 +89,7 @@ Code Flow:
       // Build and append our HTML snippet
       var $bookmarklet = $(snippet);
       var anywhereizedURL = "http://redirect.viglink.com?key=" + window.viglink_bkml.key + "&u=" + encodeURIComponent(window.location.href);
-      $bookmarklet.find('.bkml-link-text').val(anywhereizedURL);
+      $bookmarklet.find('.bkml-link-text').text(anywhereizedURL);
       $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       $('body').append($bookmarklet);
       
