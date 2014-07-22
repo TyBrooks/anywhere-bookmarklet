@@ -15,10 +15,14 @@ router.get('/', function(req, res) {
 
 router.get('/preview', function(req,res) {
   res.render('bookmarklet', { title: "Bookmarklet Preview" });
-})
+});
 
 router.get('/bookmarklet', function(req, res) {
   res.render('html_bookmarklet');
-})
+});
+
+router.get('/account/users', function(req, res) {
+  res.render('test_json')
+});
 
 module.exports = router;

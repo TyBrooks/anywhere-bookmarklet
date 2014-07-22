@@ -28,6 +28,11 @@
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }
   
+  //TODO: eventually get rid of this one in favor of the one in the other file
+  function anywhereizeURL(key) {
+    return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
+  }
+  
   $(function() {
     // Wrap our jquery so that we don't load it until our html is loaded.
     window.viglink_bkml.initializeEvents = function() {
@@ -45,6 +50,14 @@
         //TODO: implement fb redirect
         alert("FB Click");
       })
+      
+      $bkml.find('#bkml-campaign-select').on('change', function(event) {
+        var newCampaign = $(this).val();
+        var newKey = window.viglink_bkml.campaigns[newCampaign];
+        var anywhereizedURL = anywhereizeURL(newKey);
+        $bkml.find('.bkml-link-text').text(anywhereizedURL);
+        $bkml.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
+      });
     }
   });
 })();

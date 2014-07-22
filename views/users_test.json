@@ -1,0 +1,56 @@
+{
+    "users": [
+        {
+            "application_type": {
+                "id": 152,
+                "name": "Browser Extension / Toolbar"
+            },
+            "id": 1569934,
+            "category": {
+                "name": "Cameras & Photo",
+                "code": "CP"
+            },
+            "audience": {
+                "name": "Everyone",
+                "code": "A"
+            },
+            "plugins": [
+                {
+                    "id": 1569935,
+                    "name": "Test Campaign Two - Link Insertion"
+                }
+            ],
+            "approval_status": {
+                "code": "N"
+            },
+            "name": "Test Campaign Two",
+            "key": "c71457e61268c998d4f4af9465946177"
+        },
+        {
+            "application_type": {
+                "id": 143,
+                "name": "None of These"
+            },
+            "id": 1569178,
+            "category": {
+                "name": "Other",
+                "code": "OT"
+            },
+            "audience": {
+                "name": "Everyone",
+                "code": "A"
+            },
+            "plugins": [
+                {
+                    "id": 1569192,
+                    "name": "Ty's Campaign - Link Insertion"
+                }
+            ],
+            "approval_status": {
+                "code": "P"
+            },
+            "name": "Ty's Campaign",
+            "key": "9cb01deed662e8c71059a9ee9a024d30"
+        }
+    ]
+}
