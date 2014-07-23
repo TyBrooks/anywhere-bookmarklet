@@ -25,3 +25,49 @@ https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=
 
 Testing with my own app id
 https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=https://developers.facebook.com/tools/explorer
+
+
+My Link from/to my app page:
+
+https://www.facebook.com/dialog/share?
+  app_id=1531981057020695
+  &display=popup
+  &href=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com
+  &redirect_uri=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com
+  
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com&redirect_uri=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com
+
+
+Link to like a redirect
+
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F&redirect_uri=http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F
+
+
+http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F
+
+Link to redirect itself
+  
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fredirect.viglink.com&redirect_uri=http%3A%2F%2Fredirect.viglink.com
+
+
+Link to Viglink
+
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fwww.viglink.com&redirect_uri=http%3A%2F%2Fwww.viglink.com
+
+
+Link to redirect using the bookmarklet page
+
+http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F
+  
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F&redirect_uri=http%3A%2F%2Fredirect.viglink.com%3Fkey%3Dc71457e61268c998d4f4af9465946177%26u%3Dhttp%253A%252F%252Fanywhere-bookmarklet.herokuapp.com%252F
+  
+  
+  
+  
+One last try
+
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fredirect.viglink.com&redirect_uri=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com  
+
+
+without http
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=http%3A%2F%2Fredirect.viglink.com&redirect_uri=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com  
