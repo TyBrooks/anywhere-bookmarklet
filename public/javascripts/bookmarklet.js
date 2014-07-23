@@ -146,7 +146,8 @@ var serverDomain = '//localhost:3000';
 var resources = [
   [serverDomain + '/bookmarklet', 'html'],
   [serverDomain + '/javascripts/vendor/ZeroClipboard.js', "js"],
-  [serverDomain + '/stylesheets/bookmarklet.css', "css"]
+  [serverDomain + '/stylesheets/bookmarklet.css', "css"],
+  [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
 ];
 
 var bkml = window.viglink_bkml = new Bookmarklet({

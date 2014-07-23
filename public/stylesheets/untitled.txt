@@ -1,0 +1,27 @@
+Facebook's share page
+
+https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=https://developers.facebook.com/tools/explorer
+
+
+Testing with a different uri
+
+
+https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=https://developers.facebook.com/tools/explorer
+- gives error, wrong domain
+
+
+Testing with a different href
+
+https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http%3A%2F%2Fwww.test.com&redirect_uri=ttps://developers.facebook.com/tools/explorer
+- doesn't do anything at all, white page
+
+
+Testing without a redirect
+
+
+https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F
+-displays nothing
+
+
+Testing with my own app id
+https://www.facebook.com/dialog/share?app_id=1531981057020695&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=https://developers.facebook.com/tools/explorer

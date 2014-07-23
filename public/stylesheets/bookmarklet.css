@@ -141,6 +141,18 @@ a:link, a:visited {
 .bkml-social-fb {
   background-color: rgba(50,90,160,1);
 }
+.fa-facebook {
+  color: rgba(50,90,160,1);
+}
+
+
 .bkml-social-tweet {
   background-color: rgba(85,150,200,1);
+}
+.fa-twitter {
+  color: rgba(85,150,200,1);
+}
+
+.fa-stack {
+  margin-right: 5px;
 }

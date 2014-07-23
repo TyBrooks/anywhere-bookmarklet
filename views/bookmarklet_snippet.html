@@ -1,3 +1,12 @@
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1531981057020695&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <div class="bkml-container">
     <div class="bkml-title">
         <img src='/images/logo_small.png' class='bkml-title-img'>
@@ -27,10 +36,16 @@
         </div>
         <div class="bkml-social-container">
             <a class="bkml-social-button bkml-social-tweet" href="https://twitter.com/share" target="_blank">
-                Tweet Link
+                <span class="fa-stack">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-twitter fa-stack-1x"></i>
+                </span>Tweet
             </a>
             <a href="#" class="bkml-social-button bkml-social-fb">
-                Share Link
+                <span class="fa-stack">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-facebook fa-stack-1x"></i>
+                </span>Share
             </a>
         </div>
     </div>
