@@ -133,20 +133,19 @@ Code Flow:
     
     HTMLpromise.done(function(snippet) {
       
-      // Build and append our HTML snippet
       var $bookmarklet = $(snippet);
-      // Build anywhereized URL
-      var currentCampaign = $('#bkml-campaign-selector').val();
-      var currentKey = window.viglink_bkml.campaigns[currentCampaign];
-      var anywhereizedURL = anywhereizeURL(currentKey)
-      //Set the anywhereized URL
-      $bookmarklet.find('.bkml-link-text').text(anywhereizedURL);
-      $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       // Build campaign selector
       for(var campaign in window.viglink_bkml.campaigns) {
         $option = $('<option val="' + window.viglink_bkml.campaigns[campaign] + '">' + campaign + '</option>');
         $bookmarklet.find('#bkml-campaign-select').append($option)
       }
+      // Build anywhereized URL
+      var currentCampaign = $bookmarklet.find('#bkml-campaign-select').val();
+      var currentKey = window.viglink_bkml.campaigns[currentCampaign];
+      var anywhereizedURL = anywhereizeURL(currentKey)
+      //Set the anywhereized URL
+      $bookmarklet.find('.bkml-link-text').text(anywhereizedURL);
+      $bookmarklet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       //Finally, attach the bookmarklet to the DOM
       $('body').append($bookmarklet);
       

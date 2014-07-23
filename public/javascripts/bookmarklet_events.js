@@ -11,7 +11,7 @@
       
       clipboard.on( "copy", function (event) {
         var clipboard = event.clipboardData;
-        clipboard.setData( "text/plain", window.viglink_bkml.anywhereizedURL );
+        clipboard.setData( "text/plain", $('#clipboard-target').data('clipboard-text' ));
       });
     
       clipboard.on('aftercopy', function(event) {
