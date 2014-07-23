@@ -1,3 +1,7 @@
+//TODO: 1. Add handler for if the user isn't logged in
+//TODO: 2. Handle multiple clicks
+//TODO: 3. Refactor user data method into a universal method
+
 function Bookmarklet(options) {
   this.resources = options.resources || [];
   this.loaded = options.loaded || false;
@@ -37,13 +41,7 @@ Bookmarklet.prototype.pullUserData = function() {
     contentType: 'application/json',
     async: false,
     success: function(data) {
-      var userData = data.users;
-      //Handle our user data
-      userData.forEach(function(campaignData) {
-         window.viglink_bkml.campaigns[campaignData.name] = campaignData.key;
-      });
-      
-      promise.resolve();
+      promise.resolve(data);
     }
   });
   
@@ -57,6 +55,7 @@ Bookmarklet.prototype.pullJSONP = function() {
 // Returns a promise that resolves when all resources are loaded
 Bookmarklet.prototype.loadResources = function() {
   var overallPromise = $.Deferred();
+  var that = this;
   
   promises = [];
 
@@ -66,13 +65,13 @@ Bookmarklet.prototype.loadResources = function() {
     var url = resource[0];
     
     if (type === "js") {
-      var promise = loadJSResource(url);
+      var promise = that.loadJSResource(url);
       promises.push(promise);
-    } else (type === 'css') {
-      var promise = loadCSSResource(url);
+    } else if (type === 'css') {
+      var promise = that.loadCSSResource(url);
       promises.push(promise);
-    } else (type === 'html') {
-      var promise = loadHTMLResource(url);
+    } else if (type === 'html') {
+      var promise = that.loadHTMLResource(url);
       promises.push(promise);
     }
   });
@@ -81,7 +80,7 @@ Bookmarklet.prototype.loadResources = function() {
     overallPromise.resolve(snippet);
   })
   
-  return overallPromise();
+  return overallPromise;
 }
 
 //Returns a promise when the resource is loaded
@@ -132,17 +131,12 @@ Bookmarklet.prototype.loadJSResource = function(url) {
 }
 
 Bookmarklet.prototype.attach = function($bkml) {
-  $('head').appendChild($bkml);
+  $('body').append($bkml);
 }
 
 Bookmarklet.prototype.remove = function() {
    $('.bkml-container').remove();
-}
-
-Bookmarklet.prototype.attachEvents = function() {
-  
-}
-
+} 
 
 // Initial Code Below:
 
@@ -174,8 +168,9 @@ function afterUserDataLoad(data) {
     var userData = data.users;
     bkml.campaigns = Object.create(null);
     userData.forEach(function(campaignData) {
-    bkml.campaigns[campaignData.name] = campaignData.key;
-    bkml.loggedIn = true;
+      bkml.campaigns[campaignData.name] = campaignData.key;
+      bkml.loggedIn = true;
+    });
   } else {
     bkml.loggedIn = false;
   }
@@ -187,18 +182,18 @@ function afterUserDataLoad(data) {
 
 function afterResourcesLoad(htmlSnippet) {
   var $bkmlSnippet = $(htmlSnippet);
-  buildHTML($bkmlSnippet);
+  buildHTML($bkmlSnippet, bkml.campaigns);
   initializeEvents($bkmlSnippet);
 }
 
-function buildHTML($bkmlSnippet) {
+function buildHTML($bkmlSnippet, campaignHash) {
   buildCampaignOptions($bkmlSnippet, campaignHash);
   //Current anywhereized URL should be the first option
   bkml.anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
   insertAnywhereizedURL($bkmlSnippet, bkml.anywhereizedURL);
   
-  formatTwitterLink($bkmklSnippet.find('.bkml-social-tweet'), bkml.anywhereizedURL);
-  bkml.attach();
+  formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), bkml.anywhereizedURL);
+  bkml.attach($bkmlSnippet);
 }
 
 function initializeEvents($bkmlSnippet) {
@@ -209,18 +204,18 @@ function initializeEvents($bkmlSnippet) {
         event.preventDefault();
       });
     
-      $bkml.find('.bkml-social-fb').on('click', function() {
+      $bkmlSnippet.find('.bkml-social-fb').on('click', function() {
         //TODO: implement fb redirect
         alert("FB Click");
       })
       
-      $bkml.find('#bkml-campaign-select').on('change', function(event) {
+      $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
         var anywhereizedURL = getAnywhereizedURL($('.bkml-container'));
         window.viglink_bkml.anywhereizedURL = anywhereizedURL;
         formatTwitterLink($('.bkml-social-tweet'), bkml.anywhereizedURL)
         
-        $bkml.find('.bkml-link-text').text(anywhereizedURL);
-        $bkml.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
+        $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
+        $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
       });
     }
 
@@ -246,7 +241,7 @@ function anywhereizeURL(key) {
   return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
 }
 
-function insertAnywhereizedURL($bkmlSnippet, anywhereizedUrl) {
+function insertAnywhereizedURL($bkmlSnippet, anywhereizedURL) {
   $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
   $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
 }
