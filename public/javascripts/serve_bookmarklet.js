@@ -1,9 +1,9 @@
 $(function() {
   dev = true;
   if (dev) {
-    code_src = '//localhost:3000/javascripts/bookmarklet.js'
+    code_src = 'http://localhost:3000/javascripts/bookmarklet.js'
   } else {
-    code_src = '//anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
+    code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
   }
   
   

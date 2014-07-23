@@ -98,6 +98,8 @@ a:link, a:visited {
   word-wrap: break-word;
   color: rgba(170,170,170,1);
   font-size: 0.9em;  
+  
+  overflow-y: auto;
 }
 
 .bkml-link-copy {
