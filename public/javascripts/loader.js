@@ -117,7 +117,7 @@ Code Flow:
     var HTMLSnippet = {
       grabHTML: function() {
         var HTMLPromise = $.Deferred();
-        $.ajax('//localhost:3000/bookmarklet', {
+        $.ajax('//' + serverDomain + '/bookmarklet', {
           dataType: "html",
           success: function(snippet) {
             HTMLPromise.resolve(snippet);
