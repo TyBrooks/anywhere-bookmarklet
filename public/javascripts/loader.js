@@ -10,7 +10,7 @@ Code Flow:
   // DEV SETTINGS
   
   // Toggle between dev and production (production = demo)
-  var dev = true;
+  var dev = false;
   
   var serverDomain = dev ? 'localhost:3000' : 'anywhere-bookmarklet.herokuapp.com';
   
