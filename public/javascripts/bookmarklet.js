@@ -6,7 +6,7 @@ function Bookmarklet(options) {
   this.resources = options.resources || [];
   this.loaded = options.loaded || false;
   this.campaigns = options.campaigns || Object.create(null);
-  this.serverDomain = '//localhost:3000';
+  this.serverDomain = 'http://anywhere-bookmarklet.com';
   this.anywhereizedUrl = null;
 }
 
@@ -36,7 +36,7 @@ Bookmarklet.prototype.ensureJQuery = function(callback) {
 //TODO: refactor this into a universal method
 Bookmarklet.prototype.pullUserData = function() {
   var promise = $.Deferred();
-  $.ajax('http://' + serverDomain + '/account/users', {
+  $.ajax(this.serverDomain + '/account/users', {
     dataType: 'json',
     contentType: 'application/json',
     async: false,
@@ -140,7 +140,7 @@ Bookmarklet.prototype.remove = function() {
 
 // Initial Code Below:
 
-var serverDomain = '//localhost:3000';
+var serverDomain = 'http://anywhere-bookmarklet.com';
 
 //ORDER MATTERS : The HTML snippet has to be first
 var resources = [
@@ -205,9 +205,8 @@ function initializeEvents($bkmlSnippet) {
         event.preventDefault();
       });
     
-      $bkmlSnippet.find('.bkml-social-fb').on('click', function() {
-        //TODO: implement fb redirect
-        alert("FB Click");
+      $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
+        //TODO: implement this... maybe
       })
       
       $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
