@@ -9,6 +9,7 @@
   right: 0;
   
   font-family: "Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 16px;
 
   box-shadow: -5px -5px 5px #999, -5px 5px 5px #999;
 }
@@ -33,8 +34,6 @@ a:link, a:visited {
   
   margin-top: 1px;
 
-  font-size: 16px;
-  
 }
 
 .bkml-title-img {
@@ -56,6 +55,7 @@ a:link, a:visited {
   height: 50px;
   line-height: 50px;
   vertical-align: middle;
+  font-size: 1.1em;
 }
 
 .bkml-campaign-container {
