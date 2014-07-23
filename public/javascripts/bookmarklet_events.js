@@ -1,7 +1,11 @@
 (function() {
   function initializeClipboard() {
+    var dev = false;
+  
+    var serverDomain = dev ? 'localhost:3000' : 'anywhere-bookmarklet.herokuapp.com';
+    
     ZeroClipboard.config({ 
-      swfPath: "//localhost:3000/swf/ZeroClipboard.swf",
+      swfPath: "//" + serverDomain + "/swf/ZeroClipboard.swf",
       trustedDomains: [window.location.protocol + "//" + window.location.host]
     });
   

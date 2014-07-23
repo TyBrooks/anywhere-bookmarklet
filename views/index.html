@@ -7,18 +7,22 @@
 	</head>
 	<body>
         <h1>Bookmarklet</h1>
-        <form class='get-bookmarklet' action='#' method='GET'>
-            <input type='text' id='user-api' placeholder='Enter API key' />
-            <input type='submit' name='user-api-submit' value='Get Bookmarklet Link' />
-        </form>
         
-        <div class='bookmarklet-holder' style="display: none">
-
-          <h3>Great! Drag this button to your Bookmark Bar</h3>
-          <a class="bookmarklet-link" href="#" id="bookmarklet-link">VL Anywhere</a>
-
-        </div>   
+        <a class="bookmarklet-link" href="#" id="bookmarklet-link">VL Anywhere</a>  
             
     </body>
 </html>
 
+<style>
+.bookmarklet-link {
+    display: inline-block;
+    background-color: blue;
+    color: white;
+    width: 250px;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    border-radius: 2px;
+    text-align: center;
+}
+</style>
