@@ -1,6 +1,9 @@
 //TODO: 1. Add handler for if the user isn't logged in
 //TODO: 2. Handle multiple clicks
 //TODO: 3. Refactor user data method into a universal method
+//TODO: 4. Figure out what the hell is wrong with the variable scoping here...
+
+
 (function() {
   
   function Bookmarklet(options) {
@@ -13,33 +16,26 @@
     this.anywhereizedUrl = null;
   }
 
-  // Asynch : ensures the jQuery library is present before loading other resourcs
-  //TODO: Find a way of managing async w/o callback hell
+  /*
+    NOTE: Apparently we can't actually trust that our site has already loaded a useable version of jQuery
+    Amazon has some sort of customized jQuery library that uses window.jQuery but doesn't provide the functionality we need.
+  */
   Bookmarklet.prototype.ensureJQuery = function(callback) {
-    if (!window.jQuery) {
-      var scriptElem = document.createElement("script");
-      scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
-      scriptElem.onload = function() {
-        // Additional step required: ensure no namespace conflicts (mootools, etc.)
-        // init function wrapped in IIFE so we can still use $ conflict-free
-        window.jQuery.noConflict();
-        (function($) {
-          callback();
-        })(window.jQuery);
-      }
-      document.getElementsByTagName("head")[0].appendChild(scriptElem);
-    } else {
-      // Even if jQuery is loaded, we can't trust that it's been namespaced to the bling.
-      (function($) {
-        callback();
-      })(window.jQuery);
+    var scriptElem = document.createElement("script");
+    scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
+    scriptElem.onload = function() {
+      // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
+      // return window.jQuery to it's past value. We'll use the window.js$
+      jq$ = window.jq$ = window.jQuery.noConflict(true);
+      callback();
     }
+    document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
 
   //TODO: refactor this into a universal method
   Bookmarklet.prototype.pullUserData = function() {
-    var promise = $.Deferred();
-    $.ajax(this.serverDomain + '/account/users', {
+    var promise = jq$.Deferred();
+    jq$.ajax(this.serverDomain + '/account/users', {
       dataType: 'json',
       contentType: 'application/json',
       async: false,
@@ -57,7 +53,7 @@
 
   // Returns a promise that resolves when all resources are loaded
   Bookmarklet.prototype.loadResources = function() {
-    var overallPromise = $.Deferred();
+    var overallPromise = jq$.Deferred();
     var that = this;
   
     promises = [];
@@ -79,7 +75,7 @@
       }
     });
   
-    $.when.apply($, promises).then(function(snippet) {
+    jq$.when.apply(jq$, promises).then(function(snippet) {
       overallPromise.resolve(snippet);
     })
   
@@ -88,8 +84,8 @@
 
   //Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadHTMLResource = function(url) {
-    var htmlPromise = $.Deferred();
-    $.ajax(this.serverDomain + '/bookmarklet', {
+    var htmlPromise = jq$.Deferred();
+    jq$.ajax(this.serverDomain + '/bookmarklet', {
       dataType: "html",
       success: function(snippet) {
         htmlPromise.resolve(snippet);
@@ -101,7 +97,7 @@
 
   // Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadCSSResource = function(url) {
-    var cssPromise = $.Deferred();
+    var cssPromise = jq$.Deferred();
     var styleElem = document.createElement("link");
     styleElem.setAttribute('rel', 'stylesheet');
     styleElem.type = 'text/css';
@@ -122,7 +118,7 @@
 
   // Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadJSResource = function(url) {
-    var jsPromise = $.Deferred();
+    var jsPromise = jq$.Deferred();
     var scriptElem = document.createElement("script");
     scriptElem.src = url;
     scriptElem.onload = function() {
@@ -134,11 +130,11 @@
   }
 
   Bookmarklet.prototype.attach = function($bkml) {
-    $('body').append($bkml);
+    jq$('body').append($bkml);
   }
 
   Bookmarklet.prototype.remove = function() {
-     $('.bkml-container').remove();
+    jq$('.bkml-container').remove();
   } 
 
   // Initial Code Below:
@@ -157,10 +153,12 @@
   var bkml = window.viglink_bkml = new Bookmarklet({
     resources: resources
   });
-
+  
   bkml.ensureJQuery(afterJQueryLoad);
 
   function afterJQueryLoad() {
+ 
+    
     var userDataPromise = bkml.pullUserData();
     userDataPromise.done(afterUserDataLoad);
   }
@@ -186,7 +184,7 @@
   }
 
   function afterResourcesLoad(htmlSnippet) {
-    var $bkmlSnippet = $(htmlSnippet);
+    var $bkmlSnippet = jq$(htmlSnippet);
     buildHTML($bkmlSnippet, bkml.campaigns);
     initializeEvents($bkmlSnippet);
   }
@@ -202,32 +200,32 @@
   }
 
   function initializeEvents($bkmlSnippet) {
-        initializeClipboard();
-      
-        // jQuery Events...
-        $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
-          event.preventDefault();
-        });
+      initializeClipboard();
     
-        $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
-          //TODO: implement this... maybe
-        })
+      // jQuery Events...
+      $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
+        event.preventDefault();
+      });
+  
+      $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
+        //TODO: implement this... maybe
+      })
+    
+      $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
+        var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
+        window.viglink_bkml.anywhereizedURL = anywhereizedURL;
+        formatTwitterLink(jq$('.bkml-social-tweet'), bkml.anywhereizedURL)
       
-        $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
-          var anywhereizedURL = getAnywhereizedURL($('.bkml-container'));
-          window.viglink_bkml.anywhereizedURL = anywhereizedURL;
-          formatTwitterLink($('.bkml-social-tweet'), bkml.anywhereizedURL)
-        
-          $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
-          $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
-        });
-      }
+        $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
+        $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
+      });
+    }
 
   // buildHTML Helper methods
 
   function buildCampaignOptions($bkmlSnippet, campaignHash) {
     for(var campaign in campaignHash) {
-      $option = $('<option val="' + campaignHash[campaign] + '">' + campaign + '</option>');
+      $option = jq$('<option val="' + campaignHash[campaign] + '">' + campaign + '</option>');
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
     }
   }
@@ -262,13 +260,13 @@
       trustedDomains: [window.location.protocol + "//" + window.location.host]
     });
 
-    var clipboard = new ZeroClipboard($('#clipboard-target'));
+    var clipboard = new ZeroClipboard(jq$('#clipboard-target'));
 
     clipboard.on('ready', function(readyEvent) {
     
       clipboard.on( "copy", function (event) {
         var clipboard = event.clipboardData;
-        clipboard.setData( "text/plain", $('#clipboard-target').data('clipboard-text' ));
+        clipboard.setData( "text/plain", jq$('#clipboard-target').data('clipboard-text' ));
       });
   
       clipboard.on('aftercopy', function(event) {
