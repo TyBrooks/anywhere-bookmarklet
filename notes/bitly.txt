@@ -1,0 +1,11 @@
+https://api-ssl.bitly.com/v3/shorten?
+
+long_url
+http://redirect.viglink.com?key=9cb01deed662e8c71059a9ee9a024d30&u=http%3A%2F%2Fshop.nordstrom.com%2Fs%2Fsalvatore-ferragamo-plum-driving-shoe-men%2F3672251%3Forigin%3Dcategory-personalizedsort%26contextualcategoryid%3D0%26fashionColor%3DBlack%26resultback%3D178%26cm_sp%3Dpersonalizedsort-_-browseresults-_-1_1_B%23
+encoded
+http%3A%2F%2Fredirect.viglink.com%3Fkey%3D9cb01deed662e8c71059a9ee9a024d30%26u%3Dhttp%253A%252F%252Fshop.nordstrom.com%252Fs%252Fsalvatore-ferragamo-plum-driving-shoe-men%252F3672251%253Forigin%253Dcategory-personalizedsort%2526contextualcategoryid%253D0%2526fashionColor%253DBlack%2526resultback%253D178%2526cm_sp%253Dpersonalizedsort-_-browseresults-_-1_1_B%2523
+
+access_token
+OMITTED FOR SECURITY
+
+use longUrl and ACCESS_TOKEN

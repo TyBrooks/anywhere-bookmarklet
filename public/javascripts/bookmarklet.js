@@ -5,7 +5,6 @@
 
 
 (function() {
-  
   function Bookmarklet(options) {
     var dev = true;
   
@@ -145,7 +144,7 @@
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
     [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboard.js', "js"],
+    [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
   ];
@@ -255,15 +254,19 @@
   // end buildHTML helpers
 
   function initializeClipboard() {
+    //TODO: Harden code, add logic for clipboard failure (just add an alert saying clipboard isn't working)
+    
+    var ZeroClipboard = window.ZeroClipboard;
+    
     ZeroClipboard.config({ 
-      swfPath: "//localhost:3000/swf/ZeroClipboard.swf",
+      swfPath: serverDomain + "/swf/ZeroClipboard.swf",
       trustedDomains: [window.location.protocol + "//" + window.location.host]
     });
-
+    
     var clipboard = new ZeroClipboard(jq$('#clipboard-target'));
 
     clipboard.on('ready', function(readyEvent) {
-    
+      alert('clipboard ready');
       clipboard.on( "copy", function (event) {
         var clipboard = event.clipboardData;
         clipboard.setData( "text/plain", jq$('#clipboard-target').data('clipboard-text' ));

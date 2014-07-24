@@ -2280,15 +2280,29 @@
   ZeroClipboard.prototype.getData = function() {
     return ZeroClipboard.getData.apply(this, _args(arguments));
   };
-  if (typeof define === "function" && define.amd) {
-    define(function() {
-      return ZeroClipboard;
-    });
-  } else if (typeof module === "object" && module && typeof module.exports === "object" && module.exports) {
-    module.exports = ZeroClipboard;
-  } else {
-    window.ZeroClipboard = ZeroClipboard;
-  }
+  
+  /* 
+    NOTE: NEEDED FOR A WORKAROUND. ADDED BY TY BROOKS
+    Even if a site uses AMD or CommonJS, we still need window.ZeroClipboard
+  */
+  
+  // This is the official code
+  
+  // if (typeof define === "function" && define.amd) {
+  //   define(function() {
+  //     return ZeroClipboard;
+  //   });
+  // } else if (typeof module === "object" && module && typeof module.exports === "object" && module.exports) {
+  //   module.exports = ZeroClipboard;
+  // } else {
+  //   window.ZeroClipboard = ZeroClipboard;
+  // }
+  
+  // This is my changed version 
+  
+  window.ZeroClipboard = ZeroClipboard
+  
+  
 })(function() {
   return this || window;
 }());
