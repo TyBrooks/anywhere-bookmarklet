@@ -188,10 +188,13 @@
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = grabLinkData();
     
-    $.when(userDataPromise, resourcesLoadPromise).then(afterResourcesLoad.bind(this, linkDataPromise))
+    $.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise))
   }
 
-  function afterResourcesLoad(linkDataPromise, userData, htmlSnippet) {
+  /*
+    Uses the user data (and the link data when the api call resolves) to determine which screen to show
+  */
+  function loadHTML(linkDataPromise, userData, htmlSnippet) {
     var $bkmlSnippet = jq$(htmlSnippet);
       
     if (isSignedIn(userData)) {
