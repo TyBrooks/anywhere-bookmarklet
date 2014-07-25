@@ -46,6 +46,14 @@ a:link, a:visited {
   width: 100px;
   margin: 5px 15px;
 }
+
+.bkml-title-dismiss {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  
+  color: rgba(75, 120, 185,1);
+}
 /* General end */
 
 

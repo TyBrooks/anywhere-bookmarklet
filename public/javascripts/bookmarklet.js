@@ -8,11 +8,9 @@
   function Bookmarklet(options) {
     var dev = true;
   
-    this.resources = options.resources || [];
-    this.loaded = options.loaded || false;
+    this.resources = options.resources || []; 
     this.campaigns = options.campaigns || Object.create(null);
     this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
-    this.anywhereizedUrl = null;
   }
 
   /*
@@ -205,7 +203,7 @@
       linkDataPromise.done(function(linkData) {
         if (isAffiliatable(linkData)) {
           addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
-          initializeCopyEvents($bkmlSnippet);
+          initializeShareEvents($bkmlSnippet);
       
           showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
@@ -222,6 +220,7 @@
       bkml.attach($bkmlSnippet);
     }
     
+    initializeGeneralEvents($bkmlSnippet);
   }
   
 /* End load order functions */
@@ -292,9 +291,9 @@
 
 /* End copy phase html builder helpers */
   
-/* Begin helper functions to intialize copy phase events */
+/* Begin helper functions to intialize share events */
   
-  function initializeCopyEvents($bkmlSnippet) {
+  function initializeShareEvents($bkmlSnippet) {
     initializeClipboard($bkmlSnippet);
   
     // jQuery Events...
@@ -349,17 +348,31 @@
 /* Login Page events */
   function initializeLoginEvents($bkmlSnippet, linkDataPromise) {
     $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
+      var $reload = $(this);
+      $reload.off('click');
+      
       spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
-      var oldVal = $(this).html();
-      $(this).html(spinnerHTML);
+      var oldVal = $reload.html();
+      $reload.html(spinnerHTML);
       
       var userDataPromise = bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
       userDataPromise.done(function(userData) {
-        $(this).html(oldVal);
+        $reload.html(oldVal);
         loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
       })
     });
   }
+/* Login End
+
+/* General Events */
+  
+  function initializeGeneralEvents($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-dismiss').on('click', function() {
+      window.viglink_bkml.remove();
+    })
+  }
+/* General End */
+  
   
 /* Page load helpers */
   function showSharePage($bkmlSnippet) {
