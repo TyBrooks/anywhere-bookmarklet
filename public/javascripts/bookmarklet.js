@@ -146,6 +146,7 @@
     [serverDomain + '/bookmarklet', 'html'],
     [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
+    // Have to host Font Awesome from the CDN for firefox for some reason
     [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
   ];
 
@@ -266,7 +267,7 @@
     var clipboard = new ZeroClipboard(jq$('#clipboard-target'));
 
     clipboard.on('ready', function(readyEvent) {
-      alert('clipboard ready');
+
       clipboard.on( "copy", function (event) {
         var clipboard = event.clipboardData;
         clipboard.setData( "text/plain", jq$('#clipboard-target').data('clipboard-text' ));
