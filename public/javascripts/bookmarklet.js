@@ -65,6 +65,7 @@
     var overallPromise = jq$.Deferred();
     var that = this;
   
+    //TODO: Fix scoping here
     promises = [];
 
     // resource is an array of [url, type]
@@ -202,7 +203,7 @@
           addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
           initializeCopyEvents($bkmlSnippet);
       
-          bkml.attach(htmlSnippet);
+          bkml.attach($bkmlSnippet);
         } else {
           showNotAffiliatable($bkmlSnippet);
           bkml.attach($bkmlSnippet);
@@ -284,7 +285,7 @@
 /* Begin helper functions to intialize copy phase events */
   
   function initializeCopyEvents($bkmlSnippet) {
-    initializeClipboard();
+    initializeClipboard($bkmlSnippet);
   
     // jQuery Events...
     $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
@@ -305,7 +306,7 @@
     });
   }
   
-  function initializeClipboard() {
+  function initializeClipboard($bkmlSnippet) {
     //TODO: Harden code, add logic for clipboard failure (just add an alert saying clipboard isn't working)
     
     var ZeroClipboard = window.ZeroClipboard;
@@ -315,7 +316,7 @@
       trustedDomains: [window.location.protocol + "//" + window.location.host]
     });
     
-    var clipboard = new ZeroClipboard(jq$('#clipboard-target'));
+    var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
     clipboard.on('ready', function(readyEvent) {
 
