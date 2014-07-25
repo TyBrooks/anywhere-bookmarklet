@@ -14,20 +14,29 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/preview', function(req,res) {
-  res.render('bookmarklet', { title: "Bookmarklet Preview" });
-});
-
 router.get('/bookmarklet', function(req, res) {
   res.render('html_bookmarklet');
 });
 
+// Fake API
+
 router.get('/account/users', function(req, res) {
-  res.render('user_data')
+  res.render('fake_api/user_data')
 });
 
 router.get('/api/link', function(req, res) {
-  res.render('link_data')
+  res.render('fake_api/link_data')
 })
+
+// Preview
+
+router.get('/preview', function(req,res) {
+  res.render('preview/bookmarklet', { title: "Bookmarklet Preview" });
+});
+
+router.get('/preview/login', function(req,res) {
+  res.render('preview/login', { title: "Login page preview" });
+});
+
 
 module.exports = router;
