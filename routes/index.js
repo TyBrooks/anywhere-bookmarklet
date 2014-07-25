@@ -23,7 +23,11 @@ router.get('/bookmarklet', function(req, res) {
 });
 
 router.get('/account/users', function(req, res) {
-  res.render('test_json')
+  res.render('user_data')
 });
+
+router.get('/api/link', function(req, res) {
+  res.render('link_data')
+})
 
 module.exports = router;
