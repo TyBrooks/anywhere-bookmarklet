@@ -32,7 +32,7 @@
   }
 
   //TODO: Refactor both ajax wrappers into a universal method?
-  Bookmarklet.prototype.jsonAPICall = function(url) {
+  Bookmarklet.prototype.callJsonAPI = function(url) {
     var promise = jq$.Deferred();
     
     jq$.ajax(url, {
@@ -46,7 +46,7 @@
     return promise;
   }
   
-  Bookmarklet.prototype.jsonpAPICall = function(url) {
+  Bookmarklet.prototype.callJsonpAPI = function(url) {
     var promise = jq$.Deferred();
     
     jq$.ajax(url, {
@@ -140,10 +140,11 @@
   
   Bookmarklet.prototype.buildCampaignHash = function(data) {
     var userData = data.users;
+    var that = this;
     this.campaigns = Object.create(null);
     
     userData.forEach(function(campaignData) {
-      this.campaigns[campaignData.name] = campaignData.key;
+      that.campaigns[campaignData.name] = campaignData.key;
     });
   }
 
@@ -181,15 +182,15 @@
 /* Begin Load order functions */
 
   function afterJQueryLoad() {
-    var userDataPromise = bkml.ajaxJSON(bkml.serverDomain + '/account/users');
+    var userDataPromise = bkml.callJsonAPI(bkml.serverDomain + '/account/users');
     var resourcesLoadPromise = bkml.loadResources();
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = grabLinkData();
     
-    $.when(userDataPromise, resourcesLoadPromise).then(afterResourcesLoad)
+    $.when(userDataPromise, resourcesLoadPromise).then(afterResourcesLoad.bind(this, linkDataPromise))
   }
 
-  function afterResourcesLoad(userData, htmlSnippet) {
+  function afterResourcesLoad(linkDataPromise, userData, htmlSnippet) {
     var $bkmlSnippet = jq$(htmlSnippet);
       
     if (isSignedIn(userData)) {
@@ -197,12 +198,12 @@
       
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
-        if (isAffiliatable(linkData))
+        if (isAffiliatable(linkData)) {
           addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
           initializeCopyEvents($bkmlSnippet);
       
           bkml.attach(htmlSnippet);
-        else {
+        } else {
           showNotAffiliatable($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         }
@@ -224,14 +225,14 @@
   
   function grabLinkData() {
     //TODO: Figure out how to implement a test key?
-    var testKey = 9cb01deed662e8c71059a9ee9a024d30;
+    var testKey = '9cb01deed662e8c71059a9ee9a024d30';
     var linkURL = serverDomain + '/api/link?optimize=false&format=jsonp&key=' + testKey + '&out=' + encodeURIComponent(window.location.href)
-    var linkDataPromise = window.viglink_bkml.jsonAJAX(linkURL); 
+    var linkDataPromise = window.viglink_bkml.callJsonAPI(linkURL); 
     
     return linkDataPromise;
   }
   
-  function isAfilliatable(linkData) {
+  function isAffiliatable(linkData) {
     return !!linkData.affiliatable;
   }
   
