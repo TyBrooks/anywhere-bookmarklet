@@ -31,13 +31,13 @@
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
 
-  //TODO: refactor this into a universal method
-  Bookmarklet.prototype.pullUserData = function() {
+  //TODO: Refactor both ajax wrappers into a universal method?
+  Bookmarklet.prototype.jsonAPICall = function(url) {
     var promise = jq$.Deferred();
-    jq$.ajax(this.serverDomain + '/account/users', {
+    
+    jq$.ajax(url, {
       dataType: 'json',
       contentType: 'application/json',
-      async: false,
       success: function(data) {
         promise.resolve(data);
       }
@@ -45,11 +45,21 @@
   
     return promise;
   }
-
-  Bookmarklet.prototype.pullJSONP = function() {
   
+  Bookmarklet.prototype.jsonpAPICall = function(url) {
+    var promise = jq$.Deferred();
+    
+    jq$.ajax(url, {
+      dataType: 'jsonp',
+      contentType: 'application/javascript',
+      success: function(data) {
+        promise.resolve(data);
+      }
+    });
+  
+    return promise;
   }
-
+  
   // Returns a promise that resolves when all resources are loaded
   Bookmarklet.prototype.loadResources = function() {
     var overallPromise = jq$.Deferred();
@@ -159,7 +169,7 @@
   function afterJQueryLoad() {
  
     
-    var userDataPromise = bkml.pullUserData();
+    var userDataPromise = bkml.ajaxJSON(bkml.serverDomain + '/account/users');
     userDataPromise.done(afterUserDataLoad);
   }
 
