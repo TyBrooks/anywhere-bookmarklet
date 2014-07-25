@@ -1,5 +1,5 @@
 $(function() {
-  dev = true;
+  dev = false;
   if (dev) {
     code_src = 'http://localhost:3000/javascripts/bookmarklet.js'
   } else {

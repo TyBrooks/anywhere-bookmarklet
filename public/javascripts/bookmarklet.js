@@ -6,7 +6,7 @@
 
 (function() {
   function Bookmarklet(options) {
-    var dev = true;
+    var dev = false;
   
     this.resources = options.resources || [];
     this.loaded = options.loaded || false;
@@ -137,7 +137,7 @@
   } 
 
   // Initial Code Below:
-  var dev = true;
+  var dev = false;
 
   var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
 
