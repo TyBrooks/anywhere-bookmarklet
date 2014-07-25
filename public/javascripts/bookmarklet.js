@@ -155,6 +155,7 @@
 
   Bookmarklet.prototype.remove = function() {
     jq$('.bkml-container').remove();
+    delete window.viglink_bkml;
   } 
 
 /* Initialization */
@@ -206,14 +207,18 @@
           addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
           initializeCopyEvents($bkmlSnippet);
       
+          showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         } else {
-          showNotAffiliatable($bkmlSnippet);
+          
+          showNotAffiliatablePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         }
       })
     } else {
-      showLogInRedirect($bkmlSnippet);
+      initializeLoginEvents($bkmlSnippet, linkDataPromise);
+      
+      showLoginPage($bkmlSnippet);
       bkml.attach($bkmlSnippet);
     }
     
@@ -255,6 +260,8 @@
 
 
   function buildCampaignOptions($bkmlSnippet, campaignHash) {
+    $bkmlSnippet.find('#bkml-campaign-select').empty();
+    
     for(var campaign in campaignHash) {
       $option = jq$('<option val="' + campaignHash[campaign] + '">' + campaign + '</option>');
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
@@ -338,5 +345,35 @@
   }
 
 /* End copy phase event helpers */
+  
+/* Login Page events */
+  function initializeLoginEvents($bkmlSnippet, linkDataPromise) {
+    $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
+      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
+      var oldVal = $(this).html();
+      $(this).html(spinnerHTML);
+      
+      var userDataPromise = bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
+      userDataPromise.done(function(userData) {
+        $(this).html(oldVal);
+        loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
+      })
+    });
+  }
+  
+/* Page load helpers */
+  function showSharePage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
+    //TODO: add the not-affilitable method here
+  }
+  
+  function showLoginPage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
+    //TODO: add the not-affilitable method here
+  }
+  
+  
 
 })();
