@@ -38,5 +38,8 @@ router.get('/preview/login', function(req,res) {
   res.render('preview/login', { title: "Login page preview" });
 });
 
+router.get('/preview/share', function(req,res) {
+  res.render('preview/share', { title: "Share page preview" });
+});
 
 module.exports = router;

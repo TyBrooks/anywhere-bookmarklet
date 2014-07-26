@@ -119,19 +119,36 @@ a:link, a:visited {
   overflow-y: auto;
 }
 
-.bkml-link-copy {
-  display: block;
+.bkml-link-copy-button-container {
+  display: inline-block;
+  margin: 0;
   
-  /*Fix issue with link color display*/
-  color: rgba(230,160,120,1) !important;
+  text-align: center;
+  font-size: 0em;
+  
+  border-top: 1px solid rgba(150,150,150,1);
+}
+
+.bkml-link-button {
+  display: inline-block;
   
   height: 30px;
   line-height: 30px;
   vertical-align: middle;
   
-  border-top: 1px solid rgba(150,150,150,1);
-  
-  font-size: 0.9em;
+  margin: 0;
+}
+
+.bkml-link-copy {
+  color: rgba(230,160,120,1) !important;
+  width: 135px;
+  font-size: 12px;
+}
+
+.bkml-link-shorten {
+  width: 65px;
+  background-color: rgba(230,160,120,1) !important;
+  font-size: 12px;
 }
 
 .bkml-social-container {
