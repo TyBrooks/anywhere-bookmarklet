@@ -164,14 +164,8 @@
     delete window.viglink_bkml;
   } 
 
-<<<<<<< HEAD
-  // Initial Code Below:
-  var dev = false;
 
-  var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
-=======
 /* Initialization */
->>>>>>> master
 
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
