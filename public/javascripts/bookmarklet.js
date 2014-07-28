@@ -1,18 +1,21 @@
-//TODO: 1. Add handler for if the user isn't logged in
-//TODO: 2. Handle multiple clicks
-//TODO: 3. Refactor user data method into a universal method
-//TODO: 4. Figure out what the hell is wrong with the variable scoping here...
+//TODO: 1. Add handler for if the user isn't logged in DONE
+//TODO: 2. Handle multiple clicks  DONE
+//TODO: 3. Refactor user data method into a universal method DONE
+//TODO: 4. Figure out what the hell is wrong with the variable scoping here... 
+//          - 
 
 
 (function() {
+  
+  var dev = false;
+  var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+  
   function Bookmarklet(options) {
     var dev = false;
   
-    this.resources = options.resources || [];
-    this.loaded = options.loaded || false;
+    this.resources = options.resources || []; 
     this.campaigns = options.campaigns || Object.create(null);
     this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
-    this.anywhereizedUrl = null;
   }
 
   /*
@@ -21,6 +24,8 @@
   */
   Bookmarklet.prototype.ensureJQuery = function(callback) {
     var scriptElem = document.createElement("script");
+    scriptElem.className = 'bkml-resource';
+    
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
     scriptElem.onload = function() {
       // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
@@ -31,13 +36,12 @@
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
 
-  //TODO: refactor this into a universal method
-  Bookmarklet.prototype.pullUserData = function() {
+  //TODO: Refactor both ajax wrappers into a universal method?
+  Bookmarklet.prototype.callJsonAPI = function(url) {
     var promise = jq$.Deferred();
-    jq$.ajax(this.serverDomain + '/account/users', {
+    
+    jq$.ajax(url, {
       dataType: 'json',
-      contentType: 'application/json',
-      async: false,
       success: function(data) {
         promise.resolve(data);
       }
@@ -45,16 +49,26 @@
   
     return promise;
   }
-
-  Bookmarklet.prototype.pullJSONP = function() {
   
+  Bookmarklet.prototype.callJsonpAPI = function(url) {
+    var promise = jq$.Deferred();
+    
+    jq$.ajax(url, {
+      dataType: 'jsonp',
+      success: function(data) {
+        promise.resolve(data);
+      }
+    });
+  
+    return promise;
   }
-
+  
   // Returns a promise that resolves when all resources are loaded
   Bookmarklet.prototype.loadResources = function() {
     var overallPromise = jq$.Deferred();
     var that = this;
   
+    //TODO: Fix scoping here
     promises = [];
 
     // resource is an array of [url, type]
@@ -98,6 +112,7 @@
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
     var styleElem = document.createElement("link");
+    styleElem.className = 'bkml-resource';
     styleElem.setAttribute('rel', 'stylesheet');
     styleElem.type = 'text/css';
     styleElem.href = url;
@@ -119,6 +134,7 @@
   Bookmarklet.prototype.loadJSResource = function(url) {
     var jsPromise = jq$.Deferred();
     var scriptElem = document.createElement("script");
+    scriptElem.className = 'bkml-resource';
     scriptElem.src = url;
     scriptElem.onload = function() {
       jsPromise.resolve();
@@ -127,6 +143,16 @@
   
     return jsPromise;
   }
+  
+  Bookmarklet.prototype.buildCampaignHash = function(data) {
+    var userData = data.users;
+    var that = this;
+    this.campaigns = Object.create(null);
+    
+    userData.forEach(function(campaignData) {
+      that.campaigns[campaignData.name] = campaignData.key;
+    });
+  }
 
   Bookmarklet.prototype.attach = function($bkml) {
     jq$('body').append($bkml);
@@ -134,12 +160,18 @@
 
   Bookmarklet.prototype.remove = function() {
     jq$('.bkml-container').remove();
+    jq$('.bkml-resource').remove();
+    delete window.viglink_bkml;
   } 
 
+<<<<<<< HEAD
   // Initial Code Below:
   var dev = false;
 
   var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+=======
+/* Initialization */
+>>>>>>> master
 
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
@@ -154,76 +186,93 @@
     resources: resources
   });
   
-  bkml.ensureJQuery(afterJQueryLoad);
+  bkml.ensureJQuery(afterJQueryLoad); // This starts us off
+
+/* End Initialization */  
+  
+/* Begin Load order functions */
 
   function afterJQueryLoad() {
- 
-    
-    var userDataPromise = bkml.pullUserData();
-    userDataPromise.done(afterUserDataLoad);
-  }
-
-  //Once user data loads, we either need to load a redirect-to-signin screen, or load all the resources
-  function afterUserDataLoad(data) {
-    var loggedIn;
-  
-    if (data.users) {
-      var userData = data.users;
-      bkml.campaigns = Object.create(null);
-      userData.forEach(function(campaignData) {
-        bkml.campaigns[campaignData.name] = campaignData.key;
-        bkml.loggedIn = true;
-      });
-    } else {
-      bkml.loggedIn = false;
-    }
-  
+    var userDataPromise = bkml.callJsonAPI(bkml.serverDomain + '/account/users');
     var resourcesLoadPromise = bkml.loadResources();
-    resourcesLoadPromise.done(afterResourcesLoad);
-  
+    //This doesn't need to resolve until after the first two have
+    var linkDataPromise = grabLinkData();
+    
+    jq$.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise))
   }
 
-  function afterResourcesLoad(htmlSnippet) {
+  /*
+    Uses the user data (and the link data when the api call resolves) to determine which screen to show
+  */
+  function loadHTML(linkDataPromise, userData, htmlSnippet) {
     var $bkmlSnippet = jq$(htmlSnippet);
-    buildHTML($bkmlSnippet, bkml.campaigns);
-    initializeEvents($bkmlSnippet);
+      
+    if (isSignedIn(userData)) {
+      bkml.buildCampaignHash(userData);
+      
+      //This call is made at the same time as resources load and user data grab
+      linkDataPromise.done(function(linkData) {
+        if (isAffiliatable(linkData)) {
+          addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
+          initializeShareEvents($bkmlSnippet);
+      
+          showSharePage($bkmlSnippet);
+          bkml.attach($bkmlSnippet);
+        } else {
+          initializeNotAffiliatableEvents($bkmlSnippet);
+          
+          showNotAffiliatablePage($bkmlSnippet);
+          bkml.attach($bkmlSnippet);
+        }
+      })
+    } else {
+      initializeLoginEvents($bkmlSnippet, linkDataPromise);
+      
+      showLoginPage($bkmlSnippet);
+      bkml.attach($bkmlSnippet);
+    }
+    
+    initializeGeneralEvents($bkmlSnippet);
   }
+  
+/* End load order functions */
+  
+/* Begin general helper functions */
+  
+  function isSignedIn(userData) {
+    return !!userData.users;
+  }
+  
+  function grabLinkData() {
+    //TODO: Figure out how to implement a test key?
+    var testKey = '9cb01deed662e8c71059a9ee9a024d30';
+    var linkURL = serverDomain + '/api/link?optimize=false&format=jsonp&key=' + testKey + '&out=' + encodeURIComponent(window.location.href)
+    var linkDataPromise = window.viglink_bkml.callJsonAPI(linkURL); 
+    
+    return linkDataPromise;
+  }
+  
+  function isAffiliatable(linkData) {
+    return !!linkData.affiliatable;
+  }
+  
+/* End general helper methods */
+  
+/* Begin copy phase html builder helpers */
 
-  function buildHTML($bkmlSnippet, campaignHash) {
+  function addLinkInfoToHTML($bkmlSnippet, campaignHash) {
     buildCampaignOptions($bkmlSnippet, campaignHash);
     //Current anywhereized URL should be the first option
     bkml.anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
     insertAnywhereizedURL($bkmlSnippet, bkml.anywhereizedURL);
   
     formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), bkml.anywhereizedURL);
-    bkml.attach($bkmlSnippet);
   }
 
-  function initializeEvents($bkmlSnippet) {
-      initializeClipboard();
-    
-      // jQuery Events...
-      $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
-        event.preventDefault();
-      });
-  
-      $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
-        //TODO: implement this... maybe
-      })
-    
-      $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
-        var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
-        window.viglink_bkml.anywhereizedURL = anywhereizedURL;
-        formatTwitterLink(jq$('.bkml-social-tweet'), bkml.anywhereizedURL)
-      
-        $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
-        $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
-      });
-    }
-
-  // buildHTML Helper methods
 
   function buildCampaignOptions($bkmlSnippet, campaignHash) {
+    $bkmlSnippet.find('#bkml-campaign-select').empty();
+    
     for(var campaign in campaignHash) {
       $option = jq$('<option val="' + campaignHash[campaign] + '">' + campaign + '</option>');
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
@@ -235,7 +284,7 @@
     var currentCampaign = $bkmlSnippet.find('#bkml-campaign-select').val();
     var currentKey = window.viglink_bkml.campaigns[currentCampaign];
     var anywhereizedURL = anywhereizeURL(currentKey)
-  
+
     return anywhereizedURL;
   }
 
@@ -244,7 +293,7 @@
   }
 
   function insertAnywhereizedURL($bkmlSnippet, anywhereizedURL) {
-    $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
+    $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL).data('long', anywhereizedURL).data('active', 'long').removeData('short');
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
   }
 
@@ -252,19 +301,66 @@
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }
 
-  // end buildHTML helpers
+/* End copy phase html builder helpers */
+  
+/* Begin helper functions to intialize share events */
+  
+  function initializeShareEvents($bkmlSnippet) {
+    initializeClipboard($bkmlSnippet);
+  
+    $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
+      event.preventDefault();
+    });
 
-  function initializeClipboard() {
+    $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
+      //TODO: implement this... maybe
+    })
+    
+    $bkmlSnippet.find('.bkml-link-shorten').on('click', handleShortenClick.bind(window.viglink_bkml, $bkmlSnippet));
+  
+    $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
+      var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
+      setNewLinkURL($bkmlSnippet, anywhereizedURL);
+    });
+  }
+  
+  function handleShortenClick($bkmlSnippet, event) {
+    $linkText = $bkmlSnippet.find('.bkml-link-text');
+    if ($linkText.data('active') === 'short') {
+      $linkText.text( $linkText.data('long') ).data('active', 'long');
+    } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
+      $linkText.text( $linkText.data('short') ).data('active', 'short');
+    } else {
+      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
+      var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
+      bitlyPromise.done(function(response) {
+        if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
+          if (response.data && response.data.url) {
+            var newURL = response.data.url;
+            $linkText.text(newURL).data('active', 'short').data('short', newURL);
+          }
+        }
+      })
+    }
+  }
+  
+  function setNewLinkURL($bkmlSnippet, url) {
+    formatTwitterLink(jq$('.bkml-social-tweet'), url)
+    insertAnywhereizedURL($bkmlSnippet, url);
+  }
+  
+  function initializeClipboard($bkmlSnippet) {
     //TODO: Harden code, add logic for clipboard failure (just add an alert saying clipboard isn't working)
     
     var ZeroClipboard = window.ZeroClipboard;
     
     ZeroClipboard.config({ 
       swfPath: serverDomain + "/swf/ZeroClipboard.swf",
-      trustedDomains: [window.location.protocol + "//" + window.location.host]
+      trustedDomains: [window.location.protocol + "//" + window.location.host],
+      containerClass: "global-zeroclipboard-container bkml-resource"
     });
     
-    var clipboard = new ZeroClipboard(jq$('#clipboard-target'));
+    var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
     clipboard.on('ready', function(readyEvent) {
 
@@ -281,4 +377,65 @@
   
     });
   }
+
+/* End copy phase event helpers */
+  
+/* Login Page events */
+  function initializeLoginEvents($bkmlSnippet, linkDataPromise) {
+    $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
+      var $reload = jq$(this);
+      $reload.off('click');
+      
+      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
+      var oldVal = $reload.html();
+      $reload.html(spinnerHTML);
+      
+      var userDataPromise = bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
+      userDataPromise.done(function(userData) {
+        $reload.html(oldVal);
+        loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
+      })
+    });
+  }
+/* Login End
+
+/* Not affiliatable events */
+  
+  function initializeNotAffiliatableEvents($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
+      window.viglink_bkml.remove();
+    });
+  }
+
+/* General Events */
+  
+  function initializeGeneralEvents($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-dismiss').on('click', function() {
+      window.viglink_bkml.remove();
+    })
+  }
+/* General End */
+  
+  
+/* Page load helpers */
+  function showSharePage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+  }
+  
+  function showLoginPage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+  }
+  
+  function showNotAffiliatablePage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
+  }
+  
+  
+
 })();
