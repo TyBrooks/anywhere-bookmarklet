@@ -280,7 +280,7 @@
   }
 
   function insertAnywhereizedURL($bkmlSnippet, anywhereizedURL) {
-    $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
+    $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL).data('long', anywhereizedURL).data('active', 'long').removeData('short');
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
   }
 
@@ -303,17 +303,7 @@
       //TODO: implement this... maybe
     })
     
-    $bkmlSnippet.find('.bkml-link-shorten').on('click', function(event) {
-      var oldURL = $bkmlSnippet.find('.bkml-link-text').text();
-      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent(oldURL);
-      var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
-      bitlyPromise.done(function(response) {
-        if (response.data && resnponse.data.url) {
-          var newURL = response.data.url;
-          $bkmlSnippet.find('.bkml-link-text').text(newURL);
-        }
-      })
-    });
+    $bkmlSnippet.find('.bkml-link-shorten').on('click', handleShortenClick.bind(window.viglink_bkml, $bkmlSnippet));
   
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
@@ -321,11 +311,29 @@
     });
   }
   
-  function setNewLinkUrl($bkmlSnippet, url) {
-    formatTwitterLink(jq$('.bkml-social-tweet'), url)
+  function handleShortenClick($bkmlSnippet, event) {
+    $linkText = $bkmlSnippet.find('.bkml-link-text');
+    if ($linkText.data('active') === 'short') {
+      $linkText.text( $linkText.data('long') ).data('active', 'long');
+    } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
+      $linkText.text( $linkText.data('short') ).data('active', 'short');
+    } else {
+      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
+      var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
+      bitlyPromise.done(function(response) {
+        if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
+          if (response.data && response.data.url) {
+            var newURL = response.data.url;
+            $linkText.text(newURL).data('active', 'short').data('short', newURL);
+          }
+        }
+      })
+    }
+  }
   
-    $bkmlSnippet.find('.bkml-link-text').text(url);
-    $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
+  function setNewLinkURL($bkmlSnippet, url) {
+    formatTwitterLink(jq$('.bkml-social-tweet'), url)
+    insertAnywhereizedURL($bkmlSnippet, url);
   }
   
   function initializeClipboard($bkmlSnippet) {
