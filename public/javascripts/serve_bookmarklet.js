@@ -6,7 +6,7 @@ $(function() {
     code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
   }
   
-  
+  //TODO: add 'bkml-resource' as className onto bookmarklet.js script
   $('.bookmarklet-link').attr('href', "javascript:(function(){if(!window.viglink_bkml || !window.viglink_bkml.initialized){document.body.appendChild(document.createElement('script')).src= '" + code_src + "'; }})();");
   
 })

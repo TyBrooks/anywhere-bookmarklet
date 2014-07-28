@@ -20,6 +20,8 @@
   */
   Bookmarklet.prototype.ensureJQuery = function(callback) {
     var scriptElem = document.createElement("script");
+    scriptElem.className = 'bkml-resource';
+    
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
     scriptElem.onload = function() {
       // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
@@ -106,6 +108,7 @@
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
     var styleElem = document.createElement("link");
+    styleElem.className = 'bkml-resource';
     styleElem.setAttribute('rel', 'stylesheet');
     styleElem.type = 'text/css';
     styleElem.href = url;
@@ -127,6 +130,7 @@
   Bookmarklet.prototype.loadJSResource = function(url) {
     var jsPromise = jq$.Deferred();
     var scriptElem = document.createElement("script");
+    scriptElem.className = 'bkml-resource';
     scriptElem.src = url;
     scriptElem.onload = function() {
       jsPromise.resolve();
@@ -152,6 +156,7 @@
 
   Bookmarklet.prototype.remove = function() {
     jq$('.bkml-container').remove();
+    jq$('.bkml-resource').remove();
     delete window.viglink_bkml;
   } 
 
@@ -344,7 +349,8 @@
     
     ZeroClipboard.config({ 
       swfPath: serverDomain + "/swf/ZeroClipboard.swf",
-      trustedDomains: [window.location.protocol + "//" + window.location.host]
+      trustedDomains: [window.location.protocol + "//" + window.location.host],
+      containerClass: "global-zeroclipboard-container bkml-resource"
     });
     
     var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
