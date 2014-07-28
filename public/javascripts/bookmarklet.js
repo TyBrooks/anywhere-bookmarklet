@@ -6,6 +6,10 @@
 
 
 (function() {
+  
+  var dev = true;
+  var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+  
   function Bookmarklet(options) {
     var dev = true;
   
@@ -161,10 +165,6 @@
   } 
 
 /* Initialization */
-  
-  var dev = true;
-
-  var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
 
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
