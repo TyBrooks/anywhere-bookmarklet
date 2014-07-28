@@ -1,7 +1,8 @@
-//TODO: 1. Add handler for if the user isn't logged in
-//TODO: 2. Handle multiple clicks
-//TODO: 3. Refactor user data method into a universal method
-//TODO: 4. Figure out what the hell is wrong with the variable scoping here...
+//TODO: 1. Add handler for if the user isn't logged in DONE
+//TODO: 2. Handle multiple clicks  DONE
+//TODO: 3. Refactor user data method into a universal method DONE
+//TODO: 4. Figure out what the hell is wrong with the variable scoping here... 
+//          - 
 
 
 (function() {
@@ -187,7 +188,7 @@
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = grabLinkData();
     
-    $.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise))
+    jq$.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise))
   }
 
   /*
@@ -296,7 +297,6 @@
   function initializeShareEvents($bkmlSnippet) {
     initializeClipboard($bkmlSnippet);
   
-    // jQuery Events...
     $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
       event.preventDefault();
     });
@@ -304,15 +304,30 @@
     $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
       //TODO: implement this... maybe
     })
+    
+    $bkmlSnippet.find('.bkml-link-shorten').on('click', function(event) {
+      var oldURL = $bkmlSnippet.find('.bkml-link-text').text();
+      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent(oldURL);
+      var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
+      bitlyPromise.done(function(response) {
+        if (response.data && resnponse.data.url) {
+          var newURL = response.data.url;
+          $bkmlSnippet.find('.bkml-link-text').text(newURL);
+        }
+      })
+    });
   
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
-      window.viglink_bkml.anywhereizedURL = anywhereizedURL;
-      formatTwitterLink(jq$('.bkml-social-tweet'), bkml.anywhereizedURL)
-    
-      $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL);
-      $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
+      setNewLinkURL($bkmlSnippet, anywhereizedURL);
     });
+  }
+  
+  function setNewLinkUrl($bkmlSnippet, url) {
+    formatTwitterLink(jq$('.bkml-social-tweet'), url)
+  
+    $bkmlSnippet.find('.bkml-link-text').text(url);
+    $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
   }
   
   function initializeClipboard($bkmlSnippet) {
@@ -348,7 +363,7 @@
 /* Login Page events */
   function initializeLoginEvents($bkmlSnippet, linkDataPromise) {
     $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
-      var $reload = $(this);
+      var $reload = jq$(this);
       $reload.off('click');
       
       spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
