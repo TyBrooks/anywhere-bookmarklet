@@ -36,7 +36,6 @@
     
     jq$.ajax(url, {
       dataType: 'json',
-      contentType: 'application/json',
       success: function(data) {
         promise.resolve(data);
       }
@@ -50,7 +49,6 @@
     
     jq$.ajax(url, {
       dataType: 'jsonp',
-      contentType: 'application/javascript',
       success: function(data) {
         promise.resolve(data);
       }
