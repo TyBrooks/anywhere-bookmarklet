@@ -258,3 +258,63 @@ a:link, a:visited {
 }
 
 /* Login end */ 
+
+
+/* 
+  Styling for Not affiliatable page 
+*/
+
+.bkml-notaff-container {
+  display: inline-block;
+  width: 250px;
+  margin: 12.5px;
+  border: 1px solid rgba(150,150,150,1);
+}
+
+.bkml-notaff-header {
+  background-color: rgba(250, 130, 50, 1);
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  font-size: 1.1em;
+}
+
+.bkml-notaff-message {
+    width: 200px;
+    margin: 20px auto;
+    color:  black;
+}
+
+.bkml-notaff-message-top {
+    display: inline-block;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.bkml-notaff-message-bottom {
+    margin-top: 20px;
+    font-size: 0.95em;
+    font-style: italic;
+}
+
+.bkml-notaff-close {
+    padding: 0;
+    
+    display: block;
+    margin: 50px auto 30px auto;
+    
+    width: 160px;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: rgba(70,120,180,1);
+
+    color: white;
+    font-size: 0.8em;
+}
+
+/* Not affiliatable end */ 

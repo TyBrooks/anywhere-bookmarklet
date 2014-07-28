@@ -42,4 +42,8 @@ router.get('/preview/share', function(req,res) {
   res.render('preview/share', { title: "Share page preview" });
 });
 
+router.get('/preview/not-affiliatable', function(req,res) {
+  res.render('preview/not-affiliatable', { title: "Not affiliatable page preview" });
+});
+
 module.exports = router;

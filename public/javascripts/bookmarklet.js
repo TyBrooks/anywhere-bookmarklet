@@ -207,6 +207,7 @@
           showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         } else {
+          initializeNotAffiliatableEvents($bkmlSnippet);
           
           showNotAffiliatablePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
@@ -385,6 +386,14 @@
   }
 /* Login End
 
+/* Not affiliatable events */
+  
+  function initializeNotAffiliatableEvents($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
+      window.viglink_bkml.remove();
+    });
+  }
+
 /* General Events */
   
   function initializeGeneralEvents($bkmlSnippet) {
@@ -399,13 +408,19 @@
   function showSharePage($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
     $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
-    //TODO: add the not-affilitable method here
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
   }
   
   function showLoginPage($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
     $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
-    //TODO: add the not-affilitable method here
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+  }
+  
+  function showNotAffiliatablePage($bkmlSnippet) {
+    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
   }
   
   
