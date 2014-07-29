@@ -246,13 +246,11 @@
   function addLinkInfoToHTML($bkmlSnippet, campaignHash) {
     buildCampaignOptions($bkmlSnippet, campaignHash);
     
-    //TODO: Fix this, shouldn't be depending on window.viglink_bkml anymore
-    
     //Current anywhereized URL should be the first option
-    window.viglink_bkml.anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
-    insertAnywhereizedURL($bkmlSnippet, window.viglink_bkml.anywhereizedURL);
+    var anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
+    insertAnywhereizedURL($bkmlSnippet, anywhereizedURL);
   
-    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), window.viglink_bkml.anywhereizedURL);
+    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), anywhereizedURL);
   }
 
 
@@ -278,6 +276,7 @@
     return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
   }
 
+  // This handles the link box 
   function insertAnywhereizedURL($bkmlSnippet, anywhereizedURL) {
     $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL).data('long', anywhereizedURL).data('active', 'long').removeData('short');
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
@@ -285,6 +284,12 @@
 
   function formatTwitterLink($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
+  }
+  
+  // This function handles all the logic when a link changes
+  function setNewLinkURL($bkmlSnippet, url) {
+    formatTwitterLink(jq$('.bkml-social-tweet'), url)
+    insertAnywhereizedURL($bkmlSnippet, url);
   }
 
 /* End copy phase html builder helpers */
@@ -328,11 +333,6 @@
         }
       })
     }
-  }
-  
-  function setNewLinkURL($bkmlSnippet, url) {
-    formatTwitterLink(jq$('.bkml-social-tweet'), url)
-    insertAnywhereizedURL($bkmlSnippet, url);
   }
   
   function initializeClipboard($bkmlSnippet) {
