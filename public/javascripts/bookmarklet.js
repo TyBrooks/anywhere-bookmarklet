@@ -460,7 +460,8 @@
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
-        alert("Clipboard Error: No Adobe Flash detected. Use Ctrl + C to copy link or install Flash.");
+        var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
+        window.prompt("Clipboard Error: No Adobe Flash detected. \n\nPress Ctrl + C to copy link manually.", currentLink);
       })
     })
     
@@ -471,7 +472,8 @@
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
-        alert("Clipboard Error: Your Adobe Flash is out of date. Use Ctrl + C to copy link or install a newer version.");
+        var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
+        window.prompt("Clipboard Error: Your Adobe Flash is out of date. \n\nPress Ctrl + C to copy link manually.", currentLink);
       })
     })
   }
