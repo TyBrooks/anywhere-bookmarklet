@@ -21,12 +21,13 @@
     NOTE: Apparently we can't actually trust that our site has already loaded a useable version of jQuery
     Amazon has some sort of customized jQuery library that uses window.jQuery but doesn't provide the functionality we need.
   */
-  Bookmarklet.prototype.ensureJQuery = function(callback) {
+  Bookmarklet.prototype.loadJQuery = function(callback) {
     var scriptElem = document.createElement("script");
     scriptElem.className = 'bkml-resource';
     
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
-    scriptElem.onload = function() {
+    scriptElem.onload = scriptElem.onreadystatechange = function() {
+      if (!this.readyState || (this.readyState === "complete" || this.readyState === "loaded") )
       // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
       // return window.jQuery to it's past value. We'll use the window.js$
       jq$ = window.jq$ = window.jQuery.noConflict(true);
@@ -223,7 +224,7 @@
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
     [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
+    [serverDomain + '/javascripts/vendor/ZeroClipboardv1.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
     ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
@@ -233,13 +234,13 @@
     resources: resources
   });
   
-  window.viglink_bkml.ensureJQuery(afterJQueryLoad); // This starts us off
+  window.viglink_bkml.loadJQuery(loadResources); // This starts us off
 
 /* End Initialization */  
   
 /* Begin Load order functions */
 
-  function afterJQueryLoad() {
+  function loadResources() {
     var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');
     var resourcesLoadPromise = window.viglink_bkml.loadResources();
     //This doesn't need to resolve until after the first two have
@@ -428,25 +429,25 @@
     
     var ZeroClipboard = window.ZeroClipboard;
     
-    ZeroClipboard.config({ 
-      swfPath: serverDomain + "/swf/ZeroClipboard.swf",
-      trustedDomains: [window.location.protocol + "//" + window.location.host],
-      containerClass: "global-zeroclipboard-container bkml-resource"
+    ZeroClipboard.config({
+      moviePath: serverDomain + '/swf/ZeroClipboardv1.swf',
+      swfPath: serverDomain + '/swf/ZeroClipboardv1.swf',
+      trustedOrigins: [window.location.protocol + "//" + window.location.host],
+      allowScriptAccess: 'always'
     });
     
     var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
-    clipboard.on('ready', function(readyEvent) {
+    clipboard.on('load', function(readyEvent) {
 
-      clipboard.on( "copy", function (event) {
-        var clipboard = event.clipboardData;
-        clipboard.setData( "text/plain", jq$('#clipboard-target').data('clipboard-text' ));
+      clipboard.on( "dataRequested", function (event) {
+        clipboard.setText( jq$('#clipboard-target').data('clipboard-text' ) );
       });
   
-      clipboard.on('aftercopy', function(event) {
+      clipboard.on('complete', function(event, args) {
         //TODO: Decide whether to alert the user
         alert("Formatted URL has been copied!");
-        console.log(event.data['text/plain']);
+        console.log(args.text);
       });
   
     });
