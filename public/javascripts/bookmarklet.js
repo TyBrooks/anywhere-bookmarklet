@@ -160,7 +160,7 @@
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
     [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
+    [serverDomain + '/javascripts/vendor/ZeroClipboardv1.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
     [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
@@ -351,25 +351,25 @@
     
     var ZeroClipboard = window.ZeroClipboard;
     
-    ZeroClipboard.config({ 
-      swfPath: serverDomain + "/swf/ZeroClipboard.swf",
-      trustedDomains: [window.location.protocol + "//" + window.location.host],
-      containerClass: "global-zeroclipboard-container bkml-resource"
+    ZeroClipboard.config({
+      moviePath: serverDomain + '/swf/ZeroClipboardv1.swf',
+      swfPath: serverDomain + '/swf/ZeroClipboardv1.swf',
+      trustedOrigins: [window.location.protocol + "//" + window.location.host],
+      allowScriptAccess: 'always'
     });
     
     var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
-    clipboard.on('ready', function(readyEvent) {
+    clipboard.on('load', function(readyEvent) {
 
-      clipboard.on( "copy", function (event) {
-        var clipboard = event.clipboardData;
-        clipboard.setData( "text/plain", jq$('#clipboard-target').data('clipboard-text' ));
+      clipboard.on( "dataRequested", function (event) {
+        clipboard.setText( jq$('#clipboard-target').data('clipboard-text' ) );
       });
   
-      clipboard.on('aftercopy', function(event) {
+      clipboard.on('complete', function(event, args) {
         //TODO: Decide whether to alert the user
         alert("Formatted URL has been copied!");
-        console.log(event.data['text/plain']);
+        console.log(args.text);
       });
   
     });
