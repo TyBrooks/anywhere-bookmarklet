@@ -22,12 +22,13 @@
     NOTE: Apparently we can't actually trust that our site has already loaded a useable version of jQuery
     Amazon has some sort of customized jQuery library that uses window.jQuery but doesn't provide the functionality we need.
   */
-  Bookmarklet.prototype.ensureJQuery = function(callback) {
+  Bookmarklet.prototype.loadJQuery = function(callback) {
     var scriptElem = document.createElement("script");
     scriptElem.className = 'bkml-resource';
     
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
-    scriptElem.onload = function() {
+    scriptElem.onload = scriptElem.onreadystatechange = function() {
+      if (!this.readyState || (this.readyState === "complete" || this.readyState === "loaded") )
       // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
       // return window.jQuery to it's past value. We'll use the window.js$
       jq$ = window.jq$ = window.jQuery.noConflict(true);
@@ -170,13 +171,13 @@
     resources: resources
   });
   
-  window.viglink_bkml.ensureJQuery(afterJQueryLoad); // This starts us off
+  window.viglink_bkml.loadJQuery(loadResources); // This starts us off
 
 /* End Initialization */  
   
 /* Begin Load order functions */
 
-  function afterJQueryLoad() {
+  function loadResources() {
     var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');
     var resourcesLoadPromise = window.viglink_bkml.loadResources();
     //This doesn't need to resolve until after the first two have
