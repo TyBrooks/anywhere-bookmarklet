@@ -7,11 +7,11 @@
 
 (function() {
   
-  var dev = true;
+  var dev = false;
   var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
-    var dev = true;
+    var dev = false;
   
     this.resources = options.resources || []; 
     this.campaigns = options.campaigns || Object.create(null);
@@ -153,6 +153,7 @@
     jq$('.bkml-resource').remove();
     delete window.viglink_bkml;
   } 
+
 
 /* Initialization */
 

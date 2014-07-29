@@ -8,7 +8,7 @@
 	<body>
         <h1>Anywhere Bookmarklet Demo</h1>
         <div class='badge-container'>
-            <a class="bookmarklet-link vl-badge anywhere-footer" href="#" id="bookmarklet-link"></a>  
+            <a class="bookmarklet-link vl-badge anywhere-footer" href="#" id="bookmarklet-link">VL Anywhere Bookmarklet</a>  
         </div>
         <p><span class='instructions'>Just click and drag this image to your bookmarks bar to install.</span></p>
     </body>
@@ -31,6 +31,7 @@
 }
 
 .vl-badge {
+    text-indent: -99999px;
     display: inline-block;
     margin: 0;
     padding: 0;
@@ -52,6 +53,7 @@
 }
 
 .vl-badge:after {
+    text-indent: initial;
     background-color: rgb(119, 120, 123);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
