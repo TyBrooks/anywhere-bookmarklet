@@ -456,7 +456,7 @@
     clipboard.on('noflash', function() {
       $copyButton = $bkmlSnippet.find('.bkml-link-copy');
       
-      $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
+      // $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
@@ -468,7 +468,7 @@
     clipboard.on('wrongflash', function() {
       $copyButton = $bkmlSnippet.find('.bkml-link-copy');
       
-      $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
+      // $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
