@@ -98,7 +98,7 @@
   //Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadHTMLResource = function(url) {
     var htmlPromise = jq$.Deferred();
-    jq$.ajax(this.serverDomain + '/bookmarklet', {
+    jq$.ajax(url, {
       dataType: "html",
       success: function(snippet) {
         htmlPromise.resolve(snippet);
@@ -111,21 +111,13 @@
   // Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
-    var styleElem = document.createElement("link");
-    styleElem.className = 'bkml-resource';
-    styleElem.setAttribute('rel', 'stylesheet');
-    styleElem.type = 'text/css';
-    styleElem.href = url;
-    document.getElementsByTagName("head")[0].appendChild(styleElem);
-    if ('onload' in document.createElement('link')) {
-      // Modern Browsers
-      styleElem.onload = function() {
-        cssPromise.resolve();
-      }
-    } else {
-      //TODO: Implement better, for now just assume it's going to work
+    
+    $style = $('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
+    $('head').append($style);
+    
+    $style.on('load', function() {
       cssPromise.resolve();
-    }  
+    })
   
     return cssPromise;
   }
@@ -133,14 +125,12 @@
   // Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadJSResource = function(url) {
     var jsPromise = jq$.Deferred();
-    var scriptElem = document.createElement("script");
-    scriptElem.className = 'bkml-resource';
-    scriptElem.src = url;
-    scriptElem.onload = function() {
+    
+    //Using jQuery to avoid compatibility issues with older IE not handling script.onready well
+    jq$.getScript(url, function() {
       jsPromise.resolve();
-    }
-    document.getElementsByTagName("head")[0].appendChild(scriptElem);
-  
+    })
+    
     return jsPromise;
   }
   
@@ -175,19 +165,19 @@
     [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
   ];
 
-  var bkml = window.viglink_bkml = new Bookmarklet({
+  window.viglink_bkml = new Bookmarklet({
     resources: resources
   });
   
-  bkml.ensureJQuery(afterJQueryLoad); // This starts us off
+  window.viglink_bkml.ensureJQuery(afterJQueryLoad); // This starts us off
 
 /* End Initialization */  
   
 /* Begin Load order functions */
 
   function afterJQueryLoad() {
-    var userDataPromise = bkml.callJsonAPI(bkml.serverDomain + '/account/users');
-    var resourcesLoadPromise = bkml.loadResources();
+    var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');
+    var resourcesLoadPromise = window.viglink_bkml.loadResources();
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = grabLinkData();
     
@@ -201,28 +191,28 @@
     var $bkmlSnippet = jq$(htmlSnippet);
       
     if (isSignedIn(userData)) {
-      bkml.buildCampaignHash(userData);
+      window.viglink_bkml.buildCampaignHash(userData);
       
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
         if (isAffiliatable(linkData)) {
-          addLinkInfoToHTML($bkmlSnippet, bkml.campaigns);
+          addLinkInfoToHTML($bkmlSnippet, window.viglink_bkml.campaigns);
           initializeShareEvents($bkmlSnippet);
       
           showSharePage($bkmlSnippet);
-          bkml.attach($bkmlSnippet);
+          window.viglink_bkml.attach($bkmlSnippet);
         } else {
           initializeNotAffiliatableEvents($bkmlSnippet);
           
           showNotAffiliatablePage($bkmlSnippet);
-          bkml.attach($bkmlSnippet);
+          window.viglink_bkml.attach($bkmlSnippet);
         }
       })
     } else {
       initializeLoginEvents($bkmlSnippet, linkDataPromise);
       
       showLoginPage($bkmlSnippet);
-      bkml.attach($bkmlSnippet);
+      window.viglink_bkml.attach($bkmlSnippet);
     }
     
     initializeGeneralEvents($bkmlSnippet);
@@ -255,11 +245,14 @@
 
   function addLinkInfoToHTML($bkmlSnippet, campaignHash) {
     buildCampaignOptions($bkmlSnippet, campaignHash);
+    
+    //TODO: Fix this, shouldn't be depending on window.viglink_bkml anymore
+    
     //Current anywhereized URL should be the first option
-    bkml.anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
-    insertAnywhereizedURL($bkmlSnippet, bkml.anywhereizedURL);
+    window.viglink_bkml.anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
+    insertAnywhereizedURL($bkmlSnippet, window.viglink_bkml.anywhereizedURL);
   
-    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), bkml.anywhereizedURL);
+    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), window.viglink_bkml.anywhereizedURL);
   }
 
 
@@ -383,7 +376,7 @@
       var oldVal = $reload.html();
       $reload.html(spinnerHTML);
       
-      var userDataPromise = bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
+      var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
       userDataPromise.done(function(userData) {
         $reload.html(oldVal);
         loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
