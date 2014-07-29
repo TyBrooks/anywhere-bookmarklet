@@ -7,6 +7,6 @@ $(function() {
   }
   
   //TODO: add 'bkml-resource' as className onto bookmarklet.js script
-  $('.bookmarklet-link').attr('href', "javascript:(function(){if(!window.viglink_bkml || !window.viglink_bkml.initialized){document.body.appendChild(document.createElement('script')).src= '" + code_src + "'; }})();");
+  $('.bookmarklet-link').attr('href', "javascript:(function(){if(!window.viglink_bkml){var scriptElem = document.createElement('script'); scriptElem.className = 'bkml-resource'; scriptElem.src='" +  code_src + "'; document.body.appendChild(scriptElem)}})();");
   
 })
