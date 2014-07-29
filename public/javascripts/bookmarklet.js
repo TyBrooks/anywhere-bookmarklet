@@ -112,8 +112,8 @@
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
     
-    $style = $('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
-    $('head').append($style);
+    $style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
+    jq$('head').append($style);
     
     $style.on('load', function() {
       cssPromise.resolve();
