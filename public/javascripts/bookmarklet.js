@@ -163,7 +163,7 @@
     [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
-    [serverDomain + '/fonts/font-awesome-4.1.0/css/font-awesome.min.css', 'css']
+    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
   ];
 
   window.viglink_bkml = new Bookmarklet({
@@ -292,12 +292,18 @@
     $bkmlSnippet.find('.bkml-link-text').text(url)
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
     
-    formatTwitterLink(jq$('.bkml-social-tweet'), url);
+    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), url);
+    formatFbLink($bkmlSnippet.find('.bkml-social-fb'), url);
   }
 
   function formatTwitterLink($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }  
+  
+  function formatFbLink($el, url) {
+    var shareURL = 'https://www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=' + encodeURIComponent(url) + '&t=' + encodeURIComponent(document.title);
+    $el.attr('href', shareURL); 
+  }
 /* End Link Helpers */
   
 
