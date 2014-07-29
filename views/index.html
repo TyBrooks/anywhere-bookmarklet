@@ -6,23 +6,77 @@
         <script src='/javascripts/serve_bookmarklet.js'></script>
 	</head>
 	<body>
-        <h1>Bookmarklet</h1>
-        
-        <a class="bookmarklet-link" href="#" id="bookmarklet-link">VL Anywhere</a>  
-            
+        <h1>Anywhere Bookmarklet Demo</h1>
+        <div class='badge-container'>
+            <a class="bookmarklet-link vl-badge anywhere-footer" href="#" id="bookmarklet-link"></a>  
+        </div>
+        <p><span class='instructions'>Just click and drag this image to your bookmarks bar to install.</span></p>
     </body>
 </html>
 
 <style>
+
 .bookmarklet-link {
     display: inline-block;
-    background-color: blue;
+    width: 100px;
+    height: 100px;
+    /*background-color: blue;
     color: white;
     width: 250px;
     height: 30px;
     line-height: 30px;
     vertical-align: middle;
     border-radius: 2px;
+    text-align: center;*/
+}
+
+.vl-badge {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    -webkit-background-clip: border-box, border-box;
+    -webkit-background-origin: padding-box, padding-box;
+    -webkit-background-size: auto, auto;
+    background:  url(https://publishers.viglink.com/assets/logo-badge-a06ec65b73f467376fad370f23376586.png) no-repeat,                              linear-gradient(45deg, rgba(54, 114, 186, 0.0980392), transparent);
+    background-color: white;
+    background-origin: padding-box, padding-box;
+    background-size: auto, auto;
+    background-clip: border-box, border-box;
+    border: 1px solid rgb(177, 179, 182);
+    border-radius: 6px;
+    background-position: 50% 20%;
+    background-attachment: scroll, scroll;
+    position: relative;
+    width: 100px;
+    
+}
+
+.vl-badge:after {
+    background-color: rgb(119, 120, 123);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    bottom: 0px;
+    color: rgb(255, 255, 255);
+    display: block;
+    height: 22px;
+    left: 0px;
+    line-height: 22.799999237060547px;
+    position: absolute;
+    right: 0px;
+    width: 100px;
+    content: "ANYWHERE";
     text-align: center;
+    font-size: 0.8em
+}
+
+.instructions {
+    display: inline-block;
+    font-style: italic;
+    font-size: 1.1em;
+}
+.badge-container {
+    width: ;
 }
 </style>
