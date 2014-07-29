@@ -7,11 +7,11 @@
 
 (function() {
   
-  var dev = false;
+  var dev = true;
   var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
-    var dev = false;
+    var dev = true;
   
     this.resources = options.resources || []; 
     this.campaigns = options.campaigns || Object.create(null);
@@ -197,7 +197,7 @@
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
         if (isAffiliatable(linkData)) {
-          addLinkInfoToHTML($bkmlSnippet, window.viglink_bkml.campaigns);
+          buildHTML($bkmlSnippet, window.viglink_bkml.campaigns);
           initializeShareEvents($bkmlSnippet);
       
           showSharePage($bkmlSnippet);
@@ -221,6 +221,8 @@
   
 /* End load order functions */
   
+  
+  
 /* Begin general helper functions */
   
   function isSignedIn(userData) {
@@ -242,16 +244,15 @@
   
 /* End general helper methods */
   
-/* Begin copy phase html builder helpers */
+  
+  
+/* Tools for building up the Share page html with user specific data */
 
-  function addLinkInfoToHTML($bkmlSnippet, campaignHash) {
+  function buildHTML($bkmlSnippet, campaignHash) {
     buildCampaignOptions($bkmlSnippet, campaignHash);
     
-    //Current anywhereized URL should be the first option
-    var anywhereizedURL = getAnywhereizedURL($bkmlSnippet);
-    insertAnywhereizedURL($bkmlSnippet, anywhereizedURL);
-  
-    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), anywhereizedURL);
+    var anywhereizedURL = getAnywhereizedURL($bkmlSnippet);  
+    setNewLink($bkmlSnippet, anywhereizedURL);
   }
 
 
@@ -263,6 +264,11 @@
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
     }
   }
+/* End HTML builder tools */
+
+
+
+/* Link Helpers */  
 
   function getAnywhereizedURL($bkmlSnippet) {
     // Build anywhereized URL
@@ -277,23 +283,24 @@
     return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
   }
 
-  // This handles the link box 
-  function insertAnywhereizedURL($bkmlSnippet, anywhereizedURL) {
-    $bkmlSnippet.find('.bkml-link-text').text(anywhereizedURL).data('long', anywhereizedURL).data('active', 'long').removeData('short');
-    $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', anywhereizedURL);
+  function setNewLink($bkmlSnippet, anywhereizedURL) {
+    insertLinkIntoHTML($bkmlSnippet, anywhereizedURL);
+    $bkmlSnippet.find('.bkml-link-text').data('long', anywhereizedURL).data('active', 'long').removeData('short');
+  }
+
+  function insertLinkIntoHTML($bkmlSnippet, url) {
+    $bkmlSnippet.find('.bkml-link-text').text(url)
+    $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
+    
+    formatTwitterLink(jq$('.bkml-social-tweet'), url);
   }
 
   function formatTwitterLink($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
-  }
+  }  
+/* End Link Helpers */
   
-  // This function handles all the logic when a link changes
-  function setNewLinkURL($bkmlSnippet, url) {
-    formatTwitterLink(jq$('.bkml-social-tweet'), url)
-    insertAnywhereizedURL($bkmlSnippet, url);
-  }
 
-/* End copy phase html builder helpers */
   
 /* Begin helper functions to intialize share events */
   
@@ -312,16 +319,18 @@
   
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
-      setNewLinkURL($bkmlSnippet, anywhereizedURL);
+      setNewLink($bkmlSnippet, anywhereizedURL);
     });
   }
   
   function handleShortenClick($bkmlSnippet, event) {
     $linkText = $bkmlSnippet.find('.bkml-link-text');
     if ($linkText.data('active') === 'short') {
-      $linkText.text( $linkText.data('long') ).data('active', 'long');
+      insertLinkIntoHTML($bkmlSnippet, $linkText.data('long'));
+      $linkText.data('active', 'long');
     } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
-      $linkText.text( $linkText.data('short') ).data('active', 'short');
+      insertLinkIntoHTML($bkmlSnippet, $linkText.data('short'));
+      $linkText.data('active', 'short');
     } else {
       var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
       var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
@@ -329,7 +338,8 @@
         if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
           if (response.data && response.data.url) {
             var newURL = response.data.url;
-            $linkText.text(newURL).data('active', 'short').data('short', newURL);
+            insertLinkIntoHTML($bkmlSnippet, newURL);
+            $linkText.data('active', 'short').data('short', newURL);
           }
         }
       })
