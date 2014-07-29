@@ -1,8 +1,7 @@
-//TODO: 1. Add handler for if the user isn't logged in DONE
-//TODO: 2. Handle multiple clicks  DONE
-//TODO: 3. Refactor user data method into a universal method DONE
-//TODO: 4. Figure out what the hell is wrong with the variable scoping here... 
-//          - 
+//TODO: 1. Refactor Ajax error callback out
+//TODO: 2. Figure out what the hell is wrong with the variable scoping here... 
+//TODO: 3. Get rid of !important css tags from clipboard button
+
 
 
 (function() {
@@ -44,6 +43,22 @@
       dataType: 'json',
       success: function(data) {
         promise.resolve(data);
+      },
+      timeout: 1500,
+      attempts: 0,
+      attemptLimit: 2,
+      error: function(xhr, textStatus, errorThrown) {
+        if (textStatus == 'timeout') {
+          this.attempts += 1;
+          if (this.attempts <= this.attemptsLimit) {
+            $.ajax(this);
+            return;
+          } else {
+            promise.reject(xhr, textStatus, errorThrown);
+          }
+        } else {
+          promise.reject(xhr, textStatus, errorThrown);
+        }
       }
     });
   
@@ -230,7 +245,10 @@
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = grabLinkData();
     
-    jq$.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise))
+    jq$.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise)).fail(function() {
+      alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!");
+      window.viglink_bkml.remove();
+    })
   }
 
   /*
@@ -256,6 +274,8 @@
           showNotAffiliatablePage($bkmlSnippet);
           window.viglink_bkml.attach($bkmlSnippet);
         }
+      }).fail(function() {
+        alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
     } else {
       initializeLoginEvents($bkmlSnippet, linkDataPromise);
@@ -430,6 +450,29 @@
       });
   
     });
+    
+    // Dealing with flash problems
+    clipboard.on('noflash', function() {
+      $copyButton = $bkmlSnippet.find('.bkml-link-copy');
+      
+      $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
+      
+      $copyButton.unbind('click');
+      $copyButton.on('click', function() {
+        alert("Clipboard Error: No Adobe Flash detected. Use Ctrl + C to copy link or install Flash.");
+      })
+    })
+    
+    clipboard.on('wrongflash', function() {
+      $copyButton = $bkmlSnippet.find('.bkml-link-copy');
+      
+      $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
+      
+      $copyButton.unbind('click');
+      $copyButton.on('click', function() {
+        alert("Clipboard Error: Your Adobe Flash is out of date. Use Ctrl + C to copy link or install a newer version.");
+      })
+    })
   }
 
 /* End copy phase event helpers */
