@@ -1,0 +1,73 @@
+javascript: {
+  /** @type {HTMLDocument} */
+  var doc = document;
+  /** @type {string} */
+  var fbUrl = "https://www.facebook.com/share";
+  /** @type {Location} */
+  var loc = doc.location;
+  /** @type {function (string): string} */
+  var encode = encodeURIComponent;
+  /** @type {string} */
+  var php = ".php?src=bm&v=4&i=1406665647&u=" + encode(loc.href) + "&t=" + encode(doc.title);
+}
+1;
+try {
+  if (!/^(.*\.)?facebook\.[^.]*$/.test(loc.host)) {
+    throw 0;
+  }
+  share_internal_bookmarklet(php);
+} catch (z$$2) {
+  /**
+   * @return {undefined}
+   */
+  a = function() {
+    if (!window.open(fbUrl + "r" + php, "sharer", "toolbar=0,status=0,resizable=1,width=626,height=436")) {
+      loc.href = fbUrl + php;
+    }
+  };
+  if (/Firefox/.test(navigator.userAgent)) {
+    setTimeout(a, 0);
+  } else {
+    a();
+  }
+}
+void 0;
+
+Test 1, VL website PASSES
+
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=
+
+http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com%2F
+
+&t=
+
+VL%20Anywhere%20Bookmarklet
+
+
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=http%3A%2F%2Fanywhere-bookmarklet.herokuapp.com%2F&t=VL%20Anywhere%20Bookmarklet
+
+
+Test 2, different site PASSES
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=
+
+http%3A%2F%2Fwww.amazon.com%2FScotchgard-Leather-Protector-Nubuck-7-Ounce%2Fdp%2FB0083GN…1%3Fie%3DUTF8%26qid%3D1406150561%26sr%3D8-1%26keywords%3Dsuede%2Bprotector
+&t=
+Amazon.com%3A%20Scotchgard%20Leather%20Protector%20for%20Suede%20and%20Nubuck%2C%207-Ounce%3A%20Home%20Improvement
+
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=http%3A%2F%2Fwww.amazon.com%2FScotchgard-Leather-Protector-Nubuck-7-Ounce%2Fdp%2FB0083GN…1%3Fie%3DUTF8%26qid%3D1406150561%26sr%3D8-1%26keywords%3Dsuede%2Bprotector&t=Amazon.com%3A%20Scotchgard%20Leather%20Protector%20for%20Suede%20and%20Nubuck%2C%207-Ounce%3A%20Home%20Improvement
+
+
+Test 3, amazon w/bitly
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=
+
+http%3A%2F%2Fbit.ly%2F1xqo6St
+&t=
+Amazon.com%3A%20Scotchgard%20Leather%20Protector%20for%20Suede%20and%20Nubuck%2C%207-Ounce%3A%20Home%20Improvement
+
+
+www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=http%3A%2F%2Fbit.ly%2F1xqo6St&t=Amazon.com%3A%20Scotchgard%20Leather%20Protector%20for%20Suede%20and%20Nubuck%2C%207-Ounce%3A%20Home%20Improvement
