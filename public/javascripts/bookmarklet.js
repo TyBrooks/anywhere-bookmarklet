@@ -90,6 +90,11 @@
   
     jq$.when.apply(jq$, promises).then(function(snippet) {
       overallPromise.resolve(snippet);
+    }).fail(function(xhr, textStatus, errorThrown) {
+      alert('Bookmarklet Error: There was an error loading the required resources');
+      console.log("Bookmarklet Error: " + textStatus);
+      console.log(xhr); //Include this?
+      window.viglink_bkml.remove();
     })
   
     return overallPromise;
@@ -102,6 +107,28 @@
       dataType: "html",
       success: function(snippet) {
         htmlPromise.resolve(snippet);
+      },
+      timeout: 1500,
+      attempts: 0,
+      attemptLimit: 2,
+      error: function(xhr, textStatus, errorThrown) {
+        if (textStatus == 'timeout') {
+          this.attempts += 1;
+          if (this.attempts <= this.attemptsLimit) {
+            $.ajax(this);
+            return;
+          } else {
+            // alert('Bookmarklet Error: Failed to load HTML resource from ' + url);
+            htmlPromise.reject(xhr, textStatus, errorThrown);
+          }
+        } else {
+          htmlPromise.reject(xhr, textStatus, errorThrown);
+          // if (xhr.status == 500) {
+//             alert('Bookmarklet Error: Internal Server Error');
+//           } else {
+//             alert('Bookmarklet Error: Unknown Error');
+//           }
+        }
       }
     });
   
@@ -115,6 +142,7 @@
     $style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
     jq$('head').append($style);
     
+    //TODO: use setInterval to try and reload the CSS in case of a timeout
     $style.on('load', function() {
       cssPromise.resolve();
     })
@@ -127,9 +155,29 @@
     var jsPromise = jq$.Deferred();
     
     //Using jQuery to avoid compatibility issues with older IE not handling script.onready well
-    jq$.getScript(url, function() {
-      jsPromise.resolve();
-    })
+    $.ajax({
+      url: url,
+      dataType: "script",
+      success: function() {
+        jsPromise.resolve();
+      },
+      timeout: 1500,
+      attempts: 0,
+      attemptLimit: 2,
+      error: function(xhr, textStatus, errorThrown) {
+        if (textStatus == 'timeout') {
+          this.attempts += 1;
+          if (this.attempts <= this.attemptsLimit) {
+            $.ajax(this);
+            return;
+          } else {
+            jsPromise.reject(xhr, textStatus, errorThrown);
+          }
+        } else {
+          jsPromise.reject(xhr, textStatus, errorThrown);
+        }
+      }
+    });
     
     return jsPromise;
   }
@@ -334,9 +382,11 @@
     if ($linkText.data('active') === 'short') {
       insertLinkIntoHTML($bkmlSnippet, $linkText.data('long'));
       $linkText.data('active', 'long');
+      $bkmlSnippet.find('.bkml-link-shorten').text('Shorten');
     } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
       insertLinkIntoHTML($bkmlSnippet, $linkText.data('short'));
       $linkText.data('active', 'short');
+      $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
     } else {
       var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
       var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
@@ -346,6 +396,7 @@
             var newURL = response.data.url;
             insertLinkIntoHTML($bkmlSnippet, newURL);
             $linkText.data('active', 'short').data('short', newURL);
+            $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
           }
         }
       })
