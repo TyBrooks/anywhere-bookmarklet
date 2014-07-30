@@ -227,6 +227,7 @@
   Bookmarklet.prototype.remove = function() {
     jq$('.bkml-container').remove();
     jq$('.bkml-resource').remove();
+    jq$('.global-zeroclipboard-container').remove();
     delete window.viglink_bkml;
   } 
 
