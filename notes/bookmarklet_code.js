@@ -29,3 +29,5 @@
 })();
 
 "(function() {if(!window.viglink_bkml){var scriptElem= document.createElement('script');scriptElem.className= 'bkml-resource';scriptElem.src='" +  code_src + "';document.body.appendChild(scriptElem);window.viglink_default_campaign = '" + defaultCampaign + "';}})();"
+
+"(function(){if(!window.viglink_bkml){var e=document.createElement('script');e.className='bkml-resource';e.src='" +  code_src + "';document.body.appendChild(e);window.viglink_default_campaign=" + defaultCampaign + "}})()"

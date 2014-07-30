@@ -18,6 +18,7 @@
     this.campaigns = [];
     this.campaignKeys = Object.create(null); // IE compatibility issue
     this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+    this.defaultCampaign = options.defaultCampaign || null;
   }
 
   /*
@@ -312,6 +313,9 @@
     
     campaignArr.forEach(function(campaign) {
       $option = jq$('<option val="' + bkml.campaignKeys[campaign] + '">' + campaign + '</option>');
+      if (campaign === bkml.defaultCampaign) {
+        $option.attr('selected', 'selected');
+      }
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
     });
   }
@@ -564,10 +568,16 @@
     // Have to host Font Awesome from the CDN for firefox for some reason
     ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
   ];
-
-  anywhereBkml = window.viglink_bkml = new AnywhereBkml({
+  
+  var bkmlOptions = {
     resources: resources
-  });
+  }
+  
+  if (window.viglink_default_campaign) {
+    bkmlOptions.defaultCampaign = unescape(window.viglink_default_campaign);
+  }
+
+  anywhereBkml = window.viglink_bkml = new AnywhereBkml(bkmlOptions);
   
   anywhereBkml.loadJQuery(anywhereBkml.grabResources.bind(anywhereBkml)); // This starts us off
 
