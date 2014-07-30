@@ -20,7 +20,7 @@ $(function() {
     dataType: 'jsonp',
     jsonpCallback: "usersData",
     success: function(campaignList) {
-      $opt = $('<option value="null">None Selected</option>');
+      $opt = $('<option value="null">None</option>');
       $('#default-campaign-selector').append($opt);
     
       campaignList.users.forEach(function(campaign) {
@@ -32,6 +32,7 @@ $(function() {
   
   $('#default-campaign-selector').on('change', function(event) {
     defaultCampaign = $(this).val();
+    defaultCampaign = defaultCampaign.replace(/\"/g, '\\"');
     
     if (defaultCampaign !== "null") {
       $('.bookmarklet-link').text("VL Anywhere Bookmarklet - " + defaultCampaign);
