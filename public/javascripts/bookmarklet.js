@@ -2,6 +2,7 @@
 //TODO: 2. Figure out what the hell is wrong with the variable scoping here... 
 //TODO: 3. Get rid of !important css tags from clipboard button
 //TODO  4. Make the mouse a pointer over the shorten button
+//TODO 5. Fix order load importance in html? (maybe)
 
 
 
