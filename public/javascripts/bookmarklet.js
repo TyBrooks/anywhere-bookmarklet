@@ -250,7 +250,7 @@
         bkml = this;
       
     if (bkml.isSignedIn(userData)) {
-      this.createCampaignHash(userData);
+      this.createCampaignHash($bkmlSnippet, userData);
       
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
@@ -283,7 +283,7 @@
   
 /* Helpers for building up the Share Page */  
   
-  AnywhereBkml.prototype.createCampaignHash = function(data) {
+  AnywhereBkml.prototype.createCampaignHash = function($bkmlSnippet, data) {
     var userData = data.users;
     var that = this;
     this.campaigns = [];
@@ -293,6 +293,10 @@
       that.campaigns.push(campaignData.name);
       that.campaignKeys[campaignData.name] = campaignData.key;
     });
+    
+    if (this.campaigns.length > 10) {
+      $bkmlSnippet.find('.bkml-campaign-filter-container').css({ "display": "block" });
+    }
   }
 
   AnywhereBkml.prototype.buildSharePageHTML = function($bkmlSnippet, campaignArr) {
