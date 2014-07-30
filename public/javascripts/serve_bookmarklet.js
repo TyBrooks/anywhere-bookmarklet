@@ -6,25 +6,28 @@ $(function() {
       users_api;
   if (dev) {
     code_src = 'http://localhost:3000/javascripts/bookmarklet.js'
-    users_api = 'http://localhost:3000/account/users'
   } else {
     code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
-    users_api = 'http://anywhere-bookmarklet.herokuapp.com/account/users'
   }
   
   var defaultCampaign = null;
   
   $('.bookmarklet-link').attr('href', "javascript:(function() {if(!window.viglink_bkml){var scriptElem= document.createElement('script');scriptElem.className= 'bkml-resource';scriptElem.src='" +  code_src + "';document.body.appendChild(scriptElem);}})();");
   
+  var users_api = 'http://www.viglink.com/account/users?callback=usersData'
   
-  $.getJSON(users_api, function(campaignList) {
-    $opt = $('<option value="null">None Selected</option>');
-    $('#default-campaign-selector').append($opt);
-    
-    campaignList.users.forEach(function(campaign) {
-      $opt = $('<option>').text(campaign.name).val(campaign.name);
+  $.ajax(users_api, {
+    dataType: 'jsonp',
+    jsonpCallback: "usersData",
+    success: function(campaignList) {
+      $opt = $('<option value="null">None Selected</option>');
       $('#default-campaign-selector').append($opt);
-    })
+    
+      campaignList.users.forEach(function(campaign) {
+        $opt = $('<option>').text(campaign.name).val(campaign.name);
+        $('#default-campaign-selector').append($opt);
+      });
+    }
   });
   
   $('#default-campaign-selector').on('change', function(event) {

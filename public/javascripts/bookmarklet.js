@@ -459,7 +459,6 @@
   
       clipboard.on('complete', function(event, args) {
         alert("Formatted URL has been copied!"); // Keep this? 
-        console.log(args.text);
       });
   
     });
