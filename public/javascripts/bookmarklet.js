@@ -15,7 +15,7 @@
     var dev = true;
   
     this.resources = options.resources || []; 
-    this.campaigns = options.campaigns || Object.create(null);
+    this.campaigns = options.campaigns || Object.create(null); // IE compatibility issue
     this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   }
 
@@ -29,11 +29,12 @@
     
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
     scriptElem.onload = scriptElem.onreadystatechange = function() {
-      if (!this.readyState || (this.readyState === "complete" || this.readyState === "loaded") )
-      // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
-      // return window.jQuery to it's past value. We'll use the window.js$
-      jq$ = window.jq$ = window.jQuery.noConflict(true);
-      callback();
+      if (!this.readyState || (this.readyState === "complete" || this.readyState === "loaded") ) {
+        // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
+        // return window.jQuery to it's past value. We'll use the window.js$
+        jq$ = window.jq$ = window.jQuery.noConflict(true);
+        callback();  
+      }
     }
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
@@ -173,7 +174,7 @@
     var jsPromise = jq$.Deferred();
     
     //Using jQuery to avoid compatibility issues with older IE not handling script.onready well
-    $.ajax({
+    jq$.ajax({
       url: url,
       dataType: "script",
       success: function() {
@@ -362,7 +363,7 @@
     var bkml = this;
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
-      setNewLink($bkmlSnippet, anywhereizedURL);
+      bkml.setNewLink($bkmlSnippet, anywhereizedURL);
     });
   }
 
@@ -467,8 +468,10 @@
 /* Not affiliatable events */
   
   AnywhereBkml.prototype.initializeNotAffiliatableEvents = function($bkmlSnippet) {
+    var bkml = this;
+    
     $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
-      this.remove();
+      bkml.remove();
     });
   }
 
@@ -533,7 +536,7 @@
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
     [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboardv1.js', "js"],
+    [serverDomain + '/javascripts/vendor/ZeroClipboardv1-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
     ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
