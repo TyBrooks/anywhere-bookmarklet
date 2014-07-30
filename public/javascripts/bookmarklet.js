@@ -1,6 +1,7 @@
 //TODO: 1. Refactor Ajax error callback out
 //TODO: 2. Figure out what the hell is wrong with the variable scoping here... 
 //TODO: 3. Get rid of !important css tags from clipboard button
+//TODO  4. Make the mouse a pointer over the shorten button
 
 
 
@@ -197,16 +198,6 @@
     
     return jsPromise;
   }
-  
-  Bookmarklet.prototype.buildCampaignHash = function(data) {
-    var userData = data.users;
-    var that = this;
-    this.campaigns = Object.create(null);
-    
-    userData.forEach(function(campaignData) {
-      that.campaigns[campaignData.name] = campaignData.key;
-    });
-  }
 
   Bookmarklet.prototype.attach = function($bkml) {
     jq$('body').append($bkml);
@@ -218,114 +209,95 @@
     delete window.viglink_bkml;
   } 
 
-
-/* Initialization */
-
-  //ORDER MATTERS : The HTML snippet has to be first
-  var resources = [
-    [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboardv1.js', "js"],
-    [serverDomain + '/stylesheets/bookmarklet.css', "css"],
-    // Have to host Font Awesome from the CDN for firefox for some reason
-    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
-  ];
-
-  window.viglink_bkml = new Bookmarklet({
-    resources: resources
-  });
+/* 
+    AnywhereBkml Methods 
+*/
   
-  window.viglink_bkml.loadJQuery(loadResources); // This starts us off
-
-/* End Initialization */  
+  function AnywhereBkml(options) {
+    this.constructor(options);
+  }
   
-/* Begin Load order functions */
+  function Surrogate() {};
+  Surrogate.prototype = Bookmarklet.prototype;
+  AnywhereBkml.prototype = new Surrogate();
 
-  function loadResources() {
-    var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');
-    var resourcesLoadPromise = window.viglink_bkml.loadResources();
-    //This doesn't need to resolve until after the first two have
-    var linkDataPromise = grabLinkData();
+
+/* Load VLA specific resources */
     
-    jq$.when(userDataPromise, resourcesLoadPromise).then(loadHTML.bind(this, linkDataPromise)).fail(function() {
+  AnywhereBkml.prototype.grabResources = function() {
+    var bkml = this;
+    
+    var userDataPromise = this.callJsonAPI(this.serverDomain + '/account/users');
+    var resourcesLoadPromise = this.loadResources();
+    //This doesn't need to resolve until after the first two have
+    var linkDataPromise = this.grabLinkData();
+    
+    jq$.when(userDataPromise, resourcesLoadPromise).then(this.loadHTML.bind(bkml, linkDataPromise)).fail(function() {
       alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!");
-      window.viglink_bkml.remove();
+      bkml.remove();
     })
   }
-
-  /*
-    Uses the user data (and the link data when the api call resolves) to determine which screen to show
-  */
-  function loadHTML(linkDataPromise, userData, htmlSnippet) {
-    var $bkmlSnippet = jq$(htmlSnippet);
+//end  
+  
+  
+/* General Event Flow function */
+  
+  AnywhereBkml.prototype.loadHTML = function(linkDataPromise, userData, htmlSnippet) {
+    var $bkmlSnippet = jq$(htmlSnippet),
+        bkml = this;
       
-    if (isSignedIn(userData)) {
-      window.viglink_bkml.buildCampaignHash(userData);
+    if (bkml.isSignedIn(userData)) {
+      this.createCampaignHash(userData);
       
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
-        if (isAffiliatable(linkData)) {
-          buildHTML($bkmlSnippet, window.viglink_bkml.campaigns);
-          initializeShareEvents($bkmlSnippet);
+        if (bkml.isAffiliatable(linkData)) {
+          bkml.buildSharePageHTML($bkmlSnippet, bkml.campaigns);
+          bkml.initializeShareEvents($bkmlSnippet);
       
-          showSharePage($bkmlSnippet);
-          window.viglink_bkml.attach($bkmlSnippet);
+          bkml.showSharePage($bkmlSnippet);
+          bkml.attach($bkmlSnippet);
         } else {
-          initializeNotAffiliatableEvents($bkmlSnippet);
+          bkml.initializeNotAffiliatableEvents($bkmlSnippet);
           
-          showNotAffiliatablePage($bkmlSnippet);
-          window.viglink_bkml.attach($bkmlSnippet);
+          bkml.showNotAffiliatablePage($bkmlSnippet);
+          bkml.attach($bkmlSnippet);
         }
       }).fail(function() {
         alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
     } else {
-      initializeLoginEvents($bkmlSnippet, linkDataPromise);
+      bkml.initializeLoginEvents($bkmlSnippet, linkDataPromise);
       
-      showLoginPage($bkmlSnippet);
-      window.viglink_bkml.attach($bkmlSnippet);
+      bkml.showLoginPage($bkmlSnippet);
+      bkml.attach($bkmlSnippet);
     }
     
-    initializeGeneralEvents($bkmlSnippet);
+    bkml.initializeGeneralEvents($bkmlSnippet);
   }
-  
-/* End load order functions */
-  
+//end  
   
   
-/* Begin general helper functions */
+/* Helpers for building up the Share Page */  
   
-  function isSignedIn(userData) {
-    return !!userData.users;
-  }
-  
-  function grabLinkData() {
-    //TODO: Figure out how to implement a test key?
-    var testKey = '9cb01deed662e8c71059a9ee9a024d30';
-    var linkURL = serverDomain + '/api/link?optimize=false&format=jsonp&key=' + testKey + '&out=' + encodeURIComponent(window.location.href)
-    var linkDataPromise = window.viglink_bkml.callJsonAPI(linkURL); 
+  AnywhereBkml.prototype.createCampaignHash = function(data) {
+    var userData = data.users;
+    var that = this;
+    this.campaigns = Object.create(null);
     
-    return linkDataPromise;
+    userData.forEach(function(campaignData) {
+      that.campaigns[campaignData.name] = campaignData.key;
+    });
   }
-  
-  function isAffiliatable(linkData) {
-    return !!linkData.affiliatable;
-  }
-  
-/* End general helper methods */
-  
-  
-  
-/* Tools for building up the Share page html with user specific data */
 
-  function buildHTML($bkmlSnippet, campaignHash) {
-    buildCampaignOptions($bkmlSnippet, campaignHash);
+  AnywhereBkml.prototype.buildSharePageHTML = function($bkmlSnippet, campaignHash) {
+    this.buildCampaignOptions($bkmlSnippet, campaignHash);
     
-    var anywhereizedURL = getAnywhereizedURL($bkmlSnippet);  
-    setNewLink($bkmlSnippet, anywhereizedURL);
+    var anywhereizedURL = this.getAnywhereizedURL($bkmlSnippet);  
+    this.setNewLink($bkmlSnippet, anywhereizedURL);
   }
 
-
-  function buildCampaignOptions($bkmlSnippet, campaignHash) {
+  AnywhereBkml.prototype.buildCampaignOptions = function($bkmlSnippet, campaignHash) {
     $bkmlSnippet.find('#bkml-campaign-select').empty();
     
     for(var campaign in campaignHash) {
@@ -333,89 +305,86 @@
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
     }
   }
-/* End HTML builder tools */
+// End
 
 
+/* Link Helpers for Share page */
 
-/* Link Helpers */  
-
-  function getAnywhereizedURL($bkmlSnippet) {
+  AnywhereBkml.prototype.getAnywhereizedURL = function($bkmlSnippet) {
     // Build anywhereized URL
     var currentCampaign = $bkmlSnippet.find('#bkml-campaign-select').val();
-    var currentKey = window.viglink_bkml.campaigns[currentCampaign];
-    var anywhereizedURL = anywhereizeURL(currentKey)
+    var currentKey = this.campaigns[currentCampaign];
+    var anywhereizedURL = this.anywhereizeURL(currentKey)
 
     return anywhereizedURL;
   }
 
-  function anywhereizeURL(key) {
+  AnywhereBkml.prototype.anywhereizeURL = function(key) {
     return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
   }
 
-  function setNewLink($bkmlSnippet, anywhereizedURL) {
-    insertLinkIntoHTML($bkmlSnippet, anywhereizedURL);
+  AnywhereBkml.prototype.setNewLink = function($bkmlSnippet, anywhereizedURL) {
+    this.insertLinkIntoHTML($bkmlSnippet, anywhereizedURL);
     $bkmlSnippet.find('.bkml-link-text').data('long', anywhereizedURL).data('active', 'long').removeData('short');
   }
 
-  function insertLinkIntoHTML($bkmlSnippet, url) {
+  AnywhereBkml.prototype.insertLinkIntoHTML = function($bkmlSnippet, url) {
     $bkmlSnippet.find('.bkml-link-text').text(url)
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
-    
-    formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), url);
-    formatFbLink($bkmlSnippet.find('.bkml-social-fb'), url);
+  
+    this.formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), url);
+    this.formatFbLink($bkmlSnippet.find('.bkml-social-fb'), url);
   }
 
-  function formatTwitterLink($el, url) {
+  AnywhereBkml.prototype.formatTwitterLink = function($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }  
-  
-  function formatFbLink($el, url) {
+
+  AnywhereBkml.prototype.formatFbLink = function($el, url) {
     var shareURL = 'https://www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=' + encodeURIComponent(url) + '&t=' + encodeURIComponent(document.title);
     $el.attr('href', shareURL); 
   }
-/* End Link Helpers */
-  
+// End
 
-  
-/* Begin helper functions to intialize share events */
-  
-  function initializeShareEvents($bkmlSnippet) {
-    initializeClipboard($bkmlSnippet);
-  
+
+/* Share Event Helpers */
+
+  AnywhereBkml.prototype.initializeShareEvents = function($bkmlSnippet) {
+    this.initializeClipboard($bkmlSnippet);
+
     $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
       event.preventDefault();
     });
 
-    $bkmlSnippet.find('.bkml-social-fb').on('click', function(event) {
-      //TODO: implement this... maybe
-    })
-    
-    $bkmlSnippet.find('.bkml-link-shorten').on('click', handleShortenClick.bind(window.viglink_bkml, $bkmlSnippet));
-  
+    $bkmlSnippet.find('.bkml-link-shorten').on('click', this.handleShortenClick.bind(this, $bkmlSnippet));
+
+    var bkml = this;
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
-      var anywhereizedURL = getAnywhereizedURL(jq$('.bkml-container'));
+      var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
       setNewLink($bkmlSnippet, anywhereizedURL);
     });
   }
-  
-  function handleShortenClick($bkmlSnippet, event) {
+
+  AnywhereBkml.prototype.handleShortenClick = function($bkmlSnippet, event) {
     $linkText = $bkmlSnippet.find('.bkml-link-text');
     if ($linkText.data('active') === 'short') {
-      insertLinkIntoHTML($bkmlSnippet, $linkText.data('long'));
+      this.insertLinkIntoHTML($bkmlSnippet, $linkText.data('long'));
       $linkText.data('active', 'long');
       $bkmlSnippet.find('.bkml-link-shorten').text('Shorten');
     } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
-      insertLinkIntoHTML($bkmlSnippet, $linkText.data('short'));
+      this.insertLinkIntoHTML($bkmlSnippet, $linkText.data('short'));
       $linkText.data('active', 'short');
       $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
     } else {
       var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
       var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
+      
+      var bkml = this;
       bitlyPromise.done(function(response) {
         if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
           if (response.data && response.data.url) {
             var newURL = response.data.url;
-            insertLinkIntoHTML($bkmlSnippet, newURL);
+            bkml.insertLinkIntoHTML($bkmlSnippet, newURL);
             $linkText.data('active', 'short').data('short', newURL);
             $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
           }
@@ -423,15 +392,13 @@
       })
     }
   }
-  
-  function initializeClipboard($bkmlSnippet) {
-    //TODO: Harden code, add logic for clipboard failure (just add an alert saying clipboard isn't working)
-    
+
+  AnywhereBkml.prototype.initializeClipboard = function($bkmlSnippet) {    
     var ZeroClipboard = window.ZeroClipboard;
     
     ZeroClipboard.config({
-      moviePath: serverDomain + '/swf/ZeroClipboardv1.swf',
-      swfPath: serverDomain + '/swf/ZeroClipboardv1.swf',
+      moviePath: this.serverDomain + '/swf/ZeroClipboardv1.swf',
+      swfPath: this.serverDomain + '/swf/ZeroClipboardv1.swf',
       trustedOrigins: [window.location.protocol + "//" + window.location.host],
       allowScriptAccess: 'always'
     });
@@ -445,8 +412,7 @@
       });
   
       clipboard.on('complete', function(event, args) {
-        //TODO: Decide whether to alert the user
-        alert("Formatted URL has been copied!");
+        alert("Formatted URL has been copied!"); // Keep this? 
         console.log(args.text);
       });
   
@@ -455,8 +421,6 @@
     // Dealing with flash problems
     clipboard.on('noflash', function() {
       $copyButton = $bkmlSnippet.find('.bkml-link-copy');
-      
-      // $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
@@ -468,8 +432,6 @@
     clipboard.on('wrongflash', function() {
       $copyButton = $bkmlSnippet.find('.bkml-link-copy');
       
-      // $copyButton.css({ "text-decoration": "line-through", "color": "rgb(100,100,100) !important" })
-      
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
         var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
@@ -477,11 +439,13 @@
       })
     })
   }
+//End
 
-/* End copy phase event helpers */
-  
+
 /* Login Page events */
-  function initializeLoginEvents($bkmlSnippet, linkDataPromise) {
+  AnywhereBkml.prototype.initializeLoginEvents = function($bkmlSnippet, linkDataPromise) {
+    var bkml = this;
+    
     $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
       var $reload = jq$(this);
       $reload.off('click');
@@ -490,10 +454,10 @@
       var oldVal = $reload.html();
       $reload.html(spinnerHTML);
       
-      var userDataPromise = window.viglink_bkml.callJsonAPI(window.viglink_bkml.serverDomain + '/account/users');  
+      var userDataPromise = bkml.callJsonAPI(bkml.serverDomain + '/account/users');  
       userDataPromise.done(function(userData) {
         $reload.html(oldVal);
-        loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
+        bkml.loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
       })
     });
   }
@@ -501,41 +465,84 @@
 
 /* Not affiliatable events */
   
-  function initializeNotAffiliatableEvents($bkmlSnippet) {
+  AnywhereBkml.prototype.initializeNotAffiliatableEvents = function($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
-      window.viglink_bkml.remove();
+      this.remove();
     });
   }
 
 /* General Events */
   
-  function initializeGeneralEvents($bkmlSnippet) {
+  AnywhereBkml.prototype.initializeGeneralEvents = function($bkmlSnippet) {
+    var bkml = this;
+    
     $bkmlSnippet.find('.bkml-dismiss').on('click', function() {
-      window.viglink_bkml.remove();
+      bkml.remove();
     })
   }
 /* General End */
   
   
 /* Page load helpers */
-  function showSharePage($bkmlSnippet) {
+  AnywhereBkml.prototype.showSharePage = function($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
     $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
     $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
   }
   
-  function showLoginPage($bkmlSnippet) {
+  AnywhereBkml.prototype.showLoginPage = function($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
     $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
     $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
   }
   
-  function showNotAffiliatablePage($bkmlSnippet) {
+  AnywhereBkml.prototype.showNotAffiliatablePage = function($bkmlSnippet) {
     $bkmlSnippet.find('.bkml-notaff-container').css('display', 'inline-block');
     $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
     $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
   }
+//End
   
   
+/* Begin general helper functions */
+  
+    AnywhereBkml.prototype.isSignedIn = function(userData) {
+      return !!userData.users;
+    }
+  
+    AnywhereBkml.prototype.grabLinkData = function() {
+      //TODO: Figure out how to implement a test key?
+      var testKey = '9cb01deed662e8c71059a9ee9a024d30';
+      var linkURL = this.serverDomain + '/api/link?optimize=false&format=jsonp&key=' + testKey + '&out=' + encodeURIComponent(window.location.href)
+      var linkDataPromise = this.callJsonAPI(linkURL); 
+    
+      return linkDataPromise;
+    }
+  
+    AnywhereBkml.prototype.isAffiliatable = function(linkData) {
+      return !!linkData.affiliatable;
+    }
+// End
+  
+/* 
+    Code Initialization
+*/
+
+
+  //ORDER MATTERS : The HTML snippet has to be first
+  var resources = [
+    [serverDomain + '/bookmarklet', 'html'],
+    [serverDomain + '/javascripts/vendor/ZeroClipboardv1.js', "js"],
+    [serverDomain + '/stylesheets/bookmarklet.css', "css"],
+    // Have to host Font Awesome from the CDN for firefox for some reason
+    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
+  ];
+
+  anywhereBkml = window.viglink_bkml = new AnywhereBkml({
+    resources: resources
+  });
+  
+  anywhereBkml.loadJQuery(anywhereBkml.grabResources.bind(anywhereBkml)); // This starts us off
+
 
 })();
