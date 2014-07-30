@@ -14,8 +14,9 @@
   function Bookmarklet(options) {
     var dev = true;
   
-    this.resources = options.resources || []; 
-    this.campaigns = options.campaigns || Object.create(null); // IE compatibility issue
+    this.resources = options.resources || [];
+    this.campaigns = [];
+    this.campaignKeys = Object.create(null); // IE compatibility issue
     this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   }
 
@@ -285,27 +286,30 @@
   AnywhereBkml.prototype.createCampaignHash = function(data) {
     var userData = data.users;
     var that = this;
-    this.campaigns = Object.create(null);
+    this.campaigns = [];
+    this.campaignKeys = Object.create(null);
     
     userData.forEach(function(campaignData) {
-      that.campaigns[campaignData.name] = campaignData.key;
+      that.campaigns.push(campaignData.name);
+      that.campaignKeys[campaignData.name] = campaignData.key;
     });
   }
 
-  AnywhereBkml.prototype.buildSharePageHTML = function($bkmlSnippet, campaignHash) {
-    this.buildCampaignOptions($bkmlSnippet, campaignHash);
+  AnywhereBkml.prototype.buildSharePageHTML = function($bkmlSnippet, campaignArr) {
+    this.buildCampaignOptions($bkmlSnippet, campaignArr);
     
     var anywhereizedURL = this.getAnywhereizedURL($bkmlSnippet);  
     this.setNewLink($bkmlSnippet, anywhereizedURL);
   }
 
-  AnywhereBkml.prototype.buildCampaignOptions = function($bkmlSnippet, campaignHash) {
+  AnywhereBkml.prototype.buildCampaignOptions = function($bkmlSnippet, campaignArr) {
     $bkmlSnippet.find('#bkml-campaign-select').empty();
+    var bkml = this;
     
-    for(var campaign in campaignHash) {
-      $option = jq$('<option val="' + campaignHash[campaign] + '">' + campaign + '</option>');
+    campaignArr.forEach(function(campaign) {
+      $option = jq$('<option val="' + bkml.campaignKeys[campaign] + '">' + campaign + '</option>');
       $bkmlSnippet.find('#bkml-campaign-select').append($option)
-    }
+    });
   }
 // End
 
@@ -315,7 +319,7 @@
   AnywhereBkml.prototype.getAnywhereizedURL = function($bkmlSnippet) {
     // Build anywhereized URL
     var currentCampaign = $bkmlSnippet.find('#bkml-campaign-select').val();
-    var currentKey = this.campaigns[currentCampaign];
+    var currentKey = this.campaignKeys[currentCampaign];
     var anywhereizedURL = this.anywhereizeURL(currentKey)
 
     return anywhereizedURL;
@@ -359,11 +363,26 @@
     });
 
     $bkmlSnippet.find('.bkml-link-shorten').on('click', this.handleShortenClick.bind(this, $bkmlSnippet));
-
+    
     var bkml = this;
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
       bkml.setNewLink($bkmlSnippet, anywhereizedURL);
+    });
+    
+    $bkmlSnippet.find('#bkml-campaign-filter').on('change', function(event) {
+      var input = $(this).val();
+      
+      var matchingCampaigns = bkml.campaigns.filter(function(campaign) {
+        return (campaign.indexOf(input) !== -1);
+      });
+      
+      bkml.buildCampaignOptions($bkmlSnippet, matchingCampaigns);
+      $bkmlSnippet.find('#bkml-campaign-select').trigger('change');
+    });
+    
+    $bkmlSnippet.find('.bkml-campaign-form').on('submit', function(event) {
+      event.preventDefault();
     });
   }
 
