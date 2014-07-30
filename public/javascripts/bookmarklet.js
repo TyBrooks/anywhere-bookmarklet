@@ -71,13 +71,30 @@
     return promise;
   }
   
-  Bookmarklet.prototype.callJsonpAPI = function(url) {
+  Bookmarklet.prototype.callJsonpAPI = function(url, callbackName) {
     var promise = jq$.Deferred();
     
     jq$.ajax(url, {
       dataType: 'jsonp',
       success: function(data) {
         promise.resolve(data);
+      },
+      jsonpCallback: callbackName,
+      timeout: 1500,
+      attempts: 0,
+      attemptLimit: 2,
+      error: function(xhr, textStatus, errorThrown) {
+        if (textStatus == 'timeout') {
+          this.attempts += 1;
+          if (this.attempts <= this.attemptsLimit) {
+            $.ajax(this);
+            return;
+          } else {
+            promise.reject(xhr, textStatus, errorThrown);
+          }
+        } else {
+          promise.reject(xhr, textStatus, errorThrown);
+        }
       }
     });
   
@@ -231,7 +248,7 @@
   AnywhereBkml.prototype.grabResources = function() {
     var bkml = this;
     
-    var userDataPromise = this.callJsonAPI(this.serverDomain + '/account/users');
+    var userDataPromise = this.grabUserData();
     var resourcesLoadPromise = this.loadResources();
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = this.grabLinkData();
@@ -540,19 +557,35 @@
     AnywhereBkml.prototype.isSignedIn = function(userData) {
       return !!userData.users;
     }
-  
-    AnywhereBkml.prototype.grabLinkData = function() {
-      //TODO: Figure out how to implement a test key?
-      var testKey = '9cb01deed662e8c71059a9ee9a024d30';
-      var linkURL = this.serverDomain + '/api/link?optimize=false&format=jsonp&key=' + testKey + '&out=' + encodeURIComponent(window.location.href)
-      var linkDataPromise = this.callJsonAPI(linkURL); 
     
-      return linkDataPromise;
-    }
-  
     AnywhereBkml.prototype.isAffiliatable = function(linkData) {
       return !!linkData.affiliatable;
     }
+    
+    AnywhereBkml.prototype.grabLinkData = function() {
+      //TODO: Figure out how to implement a test key?
+      var testKey = '9cb01deed662e8c71059a9ee9a024d30',
+          rootUrl = 'http://api.viglink.com/api/link',
+          out = encodeURIComponent(window.location.href),
+          format = "jsonp",
+          jsonp = 'linkData';
+      
+      var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&jsonp=" + jsonp + "&optimize=false";
+      var linkDataPromise = this.callJsonpAPI(linkURL, jsonp); 
+    
+      return linkDataPromise;
+    }
+    
+    AnywhereBkml.prototype.grabUserData = function() {
+      var rootUrl = "http://www.viglink.com/account/users",
+          callback = "userData";
+          
+      var userURL = rootUrl + "?callback=" + callback;
+      var userDataPromise = this.callJsonpAPI(userURL, callback);
+      
+      return userDataPromise;
+    }
+
 // End
   
 /* 
