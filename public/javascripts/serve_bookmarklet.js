@@ -1,7 +1,7 @@
 //TODO: Deal with if default_campaign has " in campaign name...
 
 $(function() {
-  var dev = true,
+  var dev = false,
       code_src,
       users_api;
   if (dev) {
