@@ -51,10 +51,10 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-title-dismiss {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 13px;
+  right: 13px;
   
-  color: rgba(75, 120, 185,1);
+  color: rgba(120,120,120,1);
   cursor: pointer;
 }
 /* General end */
@@ -186,11 +186,9 @@ a:link, a:visited, a:hover, a:active {
   font-size: 12px;
 }
 #clipboard-target.bkml-link-copy:active {
-  background-color: rgb(240, 237, 234);
   color: rgb(250,130,50);
 }
 #clipboard-target.bkml-link-copy.zeroclipboard-is-active {
-  background-color: rgb(240, 237, 234);
   color: rgb(250,130,50);
 }
 
@@ -232,6 +230,9 @@ a:link, a:visited, a:hover, a:active {
 .bkml-social-fb {
   background-color: rgba(50,90,160,1);
 }
+.bkml-social-fb:active {
+  background-color: rgba(4, 61, 162, 1);
+}
 .fa-facebook {
   color: rgba(50,90,160,1);
 }
@@ -239,6 +240,9 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-social-tweet {
   background-color: rgba(85,150,200,1);
+}
+.bkml-social-tweet:active {
+  background-color: rgba(36, 124, 192, 1);
 }
 .fa-twitter {
   color: rgba(85,150,200,1);
