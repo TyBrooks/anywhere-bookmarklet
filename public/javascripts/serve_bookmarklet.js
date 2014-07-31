@@ -32,7 +32,9 @@ $(function() {
   
   $('#default-campaign-selector').on('change', function(event) {
     defaultCampaign = $(this).val();
-    defaultCampaign = defaultCampaign.replace(/\"/g, '\\"');
+    defaultCampaign = defaultCampaign.replace(/[\"\']/g, function(quote) {
+      return "\\" + quote;
+    });
     
     if (defaultCampaign !== "null") {
       $('.bookmarklet-link').text("VL Anywhere Bookmarklet - " + defaultCampaign);

@@ -180,10 +180,18 @@ a:link, a:visited, a:hover, a:active {
   cursor: pointer;
 }
 
-.bkml-link-copy {
-  color: rgba(230,160,120,1) !important;
+#clipboard-target.bkml-link-copy {
+  color: rgba(230,160,120,1);
   width: 135px;
   font-size: 12px;
+}
+#clipboard-target.bkml-link-copy:active {
+  background-color: rgb(240, 237, 234);
+  color: rgb(250,130,50);
+}
+#clipboard-target.bkml-link-copy.zeroclipboard-is-active {
+  background-color: rgb(240, 237, 234);
+  color: rgb(250,130,50);
 }
 
 .bkml-link-shorten {
@@ -191,6 +199,9 @@ a:link, a:visited, a:hover, a:active {
   color: #F8F8F8;
   background-color: rgba(230,160,120,1) !important;
   font-size: 12px;
+}
+.bkml-link-shorten:active {
+  background-color: rgba(250, 130, 50, 1) !important;
 }
 
 .bkml-social-container {

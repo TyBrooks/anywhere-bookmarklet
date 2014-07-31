@@ -390,6 +390,8 @@
 
     $bkmlSnippet.find('.bkml-link-shorten').on('click', this.handleShortenClick.bind(this, $bkmlSnippet));
     
+    // Handling when the user changes the campaign selection
+    
     var bkml = this;
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
@@ -426,6 +428,9 @@
       var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
       var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
       
+      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
+      $bkmlSnippet.find('.bkml-link-shorten').html(spinnerHTML);
+      
       var bkml = this;
       bitlyPromise.done(function(response) {
         if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
@@ -436,6 +441,8 @@
             $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
           }
         }
+      }).fail(function() {
+        $bkmlSnippet.find('.bkml-link-shorten').text("Shorten");
       })
     }
   }
