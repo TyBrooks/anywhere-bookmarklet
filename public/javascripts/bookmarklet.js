@@ -56,7 +56,7 @@
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
-            $.ajax(this);
+            jq$.ajax(this);
             return;
           } else {
             promise.reject(xhr, textStatus, errorThrown);
@@ -86,7 +86,7 @@
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
-            $.ajax(this);
+            jq$.ajax(this);
             return;
           } else {
             promise.reject(xhr, textStatus, errorThrown);
@@ -145,14 +145,14 @@
       success: function(snippet) {
         htmlPromise.resolve(snippet);
       },
-      timeout: 1500,
+      timeout: 3000,
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
-            $.ajax(this);
+            jq$.ajax(this);
             return;
           } else {
             htmlPromise.reject(xhr, textStatus, errorThrown);
@@ -192,14 +192,14 @@
       success: function() {
         jsPromise.resolve();
       },
-      timeout: 1500,
+      timeout: 3000,
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
-            $.ajax(this);
+            jq$.ajax(this);
             return;
           } else {
             jsPromise.reject(xhr, textStatus, errorThrown);
