@@ -50,7 +50,7 @@
       success: function(data) {
         promise.resolve(data);
       },
-      timeout: 1500,
+      timeout: 3000,
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {
@@ -80,7 +80,7 @@
         promise.resolve(data);
       },
       jsonpCallback: callbackName,
-      timeout: 1500,
+      timeout: 3000,
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {

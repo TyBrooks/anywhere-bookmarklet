@@ -51,7 +51,7 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-title-dismiss {
   position: absolute;
-  top: 13px;
+  top: 12px;
   right: 13px;
   
   color: rgba(120,120,120,1);
@@ -195,11 +195,11 @@ a:link, a:visited, a:hover, a:active {
 .bkml-link-shorten {
   width: 65px;
   color: #F8F8F8;
-  background-color: rgba(230,160,120,1) !important;
+  background-color: rgba(230,160,120,1);
   font-size: 12px;
 }
 .bkml-link-shorten:active {
-  background-color: rgba(250, 130, 50, 1) !important;
+  background-color: rgba(250, 130, 50, 1);
 }
 
 .bkml-social-container {
