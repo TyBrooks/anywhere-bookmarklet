@@ -1,18 +1,17 @@
 //TODO: 1. Refactor Ajax error callback out
 //TODO: 2. Figure out what the hell is wrong with the variable scoping here... 
-//TODO: 3. Get rid of !important css tags from clipboard button
-//TODO  4. Make the mouse a pointer over the shorten button
+//TODO: 3. Handle css load failures
 //TODO 5. Fix order load importance in html? (maybe)
 
 
 
 (function() {
   
-  var dev = false;
+  var dev = true;
   var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
-    var dev = false;
+    var dev = true;
   
     this.resources = options.resources || [];
     this.campaigns = [];
@@ -71,7 +70,7 @@
     return promise;
   }
   
-  Bookmarklet.prototype.callJsonpAPI = function(url, callbackName) {
+  Bookmarklet.prototype.callJsonpAPI = function(url, callbackParam) {
     var promise = jq$.Deferred();
     
     jq$.ajax(url, {
@@ -79,7 +78,7 @@
       success: function(data) {
         promise.resolve(data);
       },
-      jsonpCallback: callbackName,
+      jsonp: callbackParam,
       timeout: 3000,
       attempts: 0,
       attemptLimit: 2,
@@ -156,16 +155,10 @@
             $.ajax(this);
             return;
           } else {
-            // alert('Bookmarklet Error: Failed to load HTML resource from ' + url);
             htmlPromise.reject(xhr, textStatus, errorThrown);
           }
         } else {
           htmlPromise.reject(xhr, textStatus, errorThrown);
-          // if (xhr.status == 500) {
-//             alert('Bookmarklet Error: Internal Server Error');
-//           } else {
-//             alert('Bookmarklet Error: Unknown Error');
-//           }
         }
       }
     });
@@ -575,20 +568,20 @@
           rootUrl = 'http://api.viglink.com/api/link',
           out = encodeURIComponent(window.location.href),
           format = "jsonp",
-          jsonp = 'linkData';
+          callbackParam = 'jsonp';
       
-      var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&jsonp=" + jsonp + "&optimize=false";
-      var linkDataPromise = this.callJsonpAPI(linkURL, jsonp); 
+      var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
+      var linkDataPromise = this.callJsonpAPI(linkURL, callbackParam); 
     
       return linkDataPromise;
     }
     
     AnywhereBkml.prototype.grabUserData = function() {
       var rootUrl = "http://www.viglink.com/account/users",
-          callback = "userData";
+          callbackParam = "callback";
           
-      var userURL = rootUrl + "?callback=" + callback;
-      var userDataPromise = this.callJsonpAPI(userURL, callback);
+      var userURL = rootUrl;
+      var userDataPromise = this.callJsonpAPI(userURL, callbackParam);
       
       return userDataPromise;
     }
