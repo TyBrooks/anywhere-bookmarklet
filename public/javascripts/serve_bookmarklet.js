@@ -5,7 +5,7 @@ $(function() {
       code_src,
       users_api;
   if (dev) {
-    code_src = 'http://localhost:3000/javascripts/bookmarklet.js'
+    code_src = 'http://10.0.2.2/javascripts/bookmarklet.js'
   } else {
     code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
   }
@@ -23,7 +23,7 @@ $(function() {
     dataType: 'jsonp',
     jsonpCallback: "usersData",
     success: function(campaignList) {
-      campaignList.users.forEach(function(campaign) {
+      campaignList.users && campaignList.users.forEach(function(campaign) { // Failure is still interpreted as success
         $opt = $('<option>').text(campaign.name).val(campaign.name);
         $('#default-campaign-selector').append($opt);
       });

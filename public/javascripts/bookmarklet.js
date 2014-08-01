@@ -8,15 +8,15 @@
 (function() {
   
   var dev = true;
-  var serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+  var serverDomain = dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
     var dev = true;
   
     this.resources = options.resources || [];
     this.campaigns = [];
-    this.campaignKeys = Object.create(null); // IE compatibility issue
-    this.serverDomain = dev ? 'http://localhost:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+    this.campaignKeys = {};// IE compatibility issue
+    this.serverDomain = dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
@@ -564,7 +564,7 @@
     
     AnywhereBkml.prototype.grabLinkData = function() {
       //TODO: Figure out how to implement a test key?
-      var testKey = '9cb01deed662e8c71059a9ee9a024d30',
+      var testKey = '9cb01deed662e8c',
           rootUrl = 'http://api.viglink.com/api/link',
           out = encodeURIComponent(window.location.href),
           format = "jsonp",
