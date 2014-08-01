@@ -500,7 +500,7 @@
       var oldVal = $reload.html();
       $reload.html(spinnerHTML);
       
-      var userDataPromise = bkml.callJsonAPI(bkml.serverDomain + '/account/users');  
+      var userDataPromise = bkml.grabUserData();  
       userDataPromise.done(function(userData) {
         $reload.html(oldVal);
         bkml.loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data

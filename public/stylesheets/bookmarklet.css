@@ -1,3 +1,6 @@
+/* TODO: Make orange text consistent */
+
+
 /* 
   General Styling
 */
@@ -9,7 +12,7 @@
   color: #F8F8F8;
   text-align: center;
   
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   
