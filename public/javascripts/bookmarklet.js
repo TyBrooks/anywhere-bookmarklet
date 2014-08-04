@@ -7,16 +7,15 @@
 
 (function() {
   
-  var dev = true;
-  var serverDomain = dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+  viglink_dev = true;
+  var serverDomain = viglink_dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
-    var dev = true;
   
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignKeys = {};// IE compatibility issue
-    this.serverDomain = dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
+    this.serverDomain = viglink_dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
@@ -170,11 +169,11 @@
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
     
-    $style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
-    jq$('head').append($style);
+    $bkml_style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
+    jq$('head').append($bkml_style);
     
     //TODO: use setInterval to try and reload the CSS in case of a timeout
-    $style.on('load', function() {
+    $bkml_style.on('load', function() {
       cssPromise.resolve();
     })
   
@@ -564,7 +563,7 @@
     
     AnywhereBkml.prototype.grabLinkData = function() {
       //TODO: Figure out how to implement a test key?
-      var testKey = '9cb01deed662e8c',
+      var testKey = '9cb01deed662e8c71059a9ee9a024d30',
           rootUrl = 'http://api.viglink.com/api/link',
           out = encodeURIComponent(window.location.href),
           format = "jsonp",
@@ -577,7 +576,7 @@
     }
     
     AnywhereBkml.prototype.grabUserData = function() {
-      var rootUrl = "http://www.viglink.com/account/users",
+      var rootUrl = "http://publishers.viglink.com/account/users",
           callbackParam = "callback";
           
       var userURL = rootUrl;

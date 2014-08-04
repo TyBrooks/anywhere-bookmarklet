@@ -5,7 +5,7 @@ $(function() {
       code_src,
       users_api;
   if (dev) {
-    code_src = 'http://10.0.2.2/javascripts/bookmarklet.js'
+    code_src = 'http://10.0.2.2:3000/javascripts/bookmarklet.js'
   } else {
     code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
   }
