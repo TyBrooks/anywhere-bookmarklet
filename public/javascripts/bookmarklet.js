@@ -8,6 +8,7 @@
 (function() {
   
   viglink_dev = true;
+  viglinkServeLocal = true;
   var serverDomain = viglink_dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
@@ -24,21 +25,70 @@
     Amazon has some sort of customized jQuery library that uses window.jQuery but doesn't provide the functionality we need.
   */
   Bookmarklet.prototype.loadJQuery = function(callback) {
-    var scriptElem = document.createElement("script");
+    var scriptElem = document.createElement("script"),
+        loaded = false, //Later IEs have both readyState and onload, need to make sure we only trigger once
+        bkml = this;
     scriptElem.className = 'bkml-resource';
     
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
     scriptElem.onload = scriptElem.onreadystatechange = function() {
-      if (!this.readyState || (this.readyState === "complete" || this.readyState === "loaded") ) {
+      if (!loaded && (!this.readyState || this.readyState === "loaded" )) {
         // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
         // return window.jQuery to it's past value. We'll use the window.js$
+        loaded = true;      
         jq$ = window.jq$ = window.jQuery.noConflict(true);
+        jq$.support.cors = true; // IE compat - doesn't support cross origin html ajax calls otherwise
+        if ( window.XDomainRequest ) {
+          bkml.shimAjaxIE(jq$);
+        }
+        
         callback();  
       }
     }
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
-
+  
+  Bookmarklet.prototype.shimAjaxIE = function(jQuery) {
+    jQuery.ajaxTransport(function( s ) {
+  		if ( s.crossDomain && s.async ) {
+  			if ( s.timeout ) {
+  				s.xdrTimeout = s.timeout;
+  				delete s.timeout;
+  			}
+  			var xdr;
+  			return {
+  				send: function( _, complete ) {
+  					function callback( status, statusText, responses, responseHeaders ) {
+  						xdr.onload = xdr.onerror = xdr.ontimeout = jQuery.noop;
+  						xdr = undefined;
+  						complete( status, statusText, responses, responseHeaders );
+  					}
+  					xdr = new XDomainRequest();
+  					xdr.onload = function() {
+  						callback( 200, "OK", { text: xdr.responseText }, "Content-Type: " + xdr.contentType );
+  					};
+  					xdr.onerror = function() {
+  						callback( 404, "Not Found" );
+  					};
+  					xdr.onprogress = jQuery.noop;
+  					xdr.ontimeout = function() {
+  						callback( 0, "timeout" );
+  					};
+  					xdr.timeout = s.xdrTimeout || Number.MAX_VALUE;
+  					xdr.open( s.type, s.url );
+  					xdr.send( ( s.hasContent && s.data ) || null );
+  				},
+  				abort: function() {
+  					if ( xdr ) {
+  						xdr.onerror = jQuery.noop;
+  						xdr.abort();
+  					}
+  				}
+  			};
+  		}
+  	});
+  }
+  
   //TODO: Refactor both ajax wrappers into a universal method?
   Bookmarklet.prototype.callJsonAPI = function(url) {
     var promise = jq$.Deferred();
@@ -148,6 +198,9 @@
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {
+        console.log("HTML ERROR");
+        console.log(textStatus);
+        console.log(errorThrown);
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
@@ -451,13 +504,18 @@
     
     var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
-    clipboard.on('load', function(readyEvent) {
-
-      clipboard.on( "dataRequested", function (event) {
-        clipboard.setText( jq$('#clipboard-target').data('clipboard-text' ) );
-      });
+    
+    
+    clipboard.on('load', function(client, args) {
+      console.log("CLIPBOARD LOADED");
+      jq$('#global-zeroclipboard-html-bridge').css({"background-color": "black"});
+      
+      // clipboard.on( "dataRequested", function (client, args) {
+//         console.log('CLICKED');
+//         client.setText( jq$('#clipboard-target').data('clipboard-text') );
+//       });
   
-      clipboard.on('complete', function(event, args) {
+      clipboard.on('complete', function(client, args) {
         alert("Formatted URL has been copied!"); // Keep this? 
       });
   
@@ -564,23 +622,23 @@
     AnywhereBkml.prototype.grabLinkData = function() {
       //TODO: Figure out how to implement a test key?
       var testKey = '9cb01deed662e8c71059a9ee9a024d30',
-          rootUrl = 'http://api.viglink.com/api/link',
+          rootUrl = viglinkServeLocal ? 'http://10.0.2.2:3000/api/link' : 'http://api.viglink.com/api/link',
           out = encodeURIComponent(window.location.href),
           format = "jsonp",
           callbackParam = 'jsonp';
       
       var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
-      var linkDataPromise = this.callJsonpAPI(linkURL, callbackParam); 
+      var linkDataPromise = viglinkServeLocal ? this.callJsonAPI(linkURL, callbackParam) : this.callJsonpAPI(linkURL, callbackParam); 
     
       return linkDataPromise;
     }
     
     AnywhereBkml.prototype.grabUserData = function() {
-      var rootUrl = "http://publishers.viglink.com/account/users",
+      var rootUrl = viglinkServeLocal ? "http://10.0.2.2:3000/account/users" : "http://publishers.viglink.com/account/users",
           callbackParam = "callback";
           
       var userURL = rootUrl;
-      var userDataPromise = this.callJsonpAPI(userURL, callbackParam);
+      var userDataPromise = viglinkServeLocal ? this.callJsonAPI(userURL, callbackParam) : this.callJsonpAPI(userURL, callbackParam);
       
       return userDataPromise;
     }
