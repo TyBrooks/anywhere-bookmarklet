@@ -496,26 +496,19 @@
     var ZeroClipboard = window.ZeroClipboard;
     
     ZeroClipboard.config({
-      moviePath: this.serverDomain + '/swf/ZeroClipboardv1.swf',
-      swfPath: this.serverDomain + '/swf/ZeroClipboardv1.swf',
-      trustedOrigins: [window.location.protocol + "//" + window.location.host],
-      allowScriptAccess: 'always'
+      swfPath: this.serverDomain + '/swf/ZeroClipboard.swf',
+      trustedDomains: [window.location.protocol + "//" + window.location.host],
+      containerId: "global-zeroclipboard-html-bridge-VL",
+      swfObjectId: "global-zeroclipboard-flash-bridge-VL",
     });
     
     var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
     
-    
-    clipboard.on('load', function(client, args) {
+    clipboard.on('ready', function(client, args) {
       console.log("CLIPBOARD LOADED");
-      jq$('#global-zeroclipboard-html-bridge').css({"background-color": "black"});
       
-      // clipboard.on( "dataRequested", function (client, args) {
-//         console.log('CLICKED');
-//         client.setText( jq$('#clipboard-target').data('clipboard-text') );
-//       });
-  
-      clipboard.on('complete', function(client, args) {
+      clipboard.on('aftercopy', function(client, args) {
         alert("Formatted URL has been copied!"); // Keep this? 
       });
   
@@ -653,7 +646,7 @@
   //ORDER MATTERS : The HTML snippet has to be first
   var resources = [
     [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboardv1-VL.js', "js"],
+    [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
     ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
