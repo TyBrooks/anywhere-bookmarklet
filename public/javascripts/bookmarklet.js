@@ -103,7 +103,7 @@
   Bookmarklet.prototype.ajax =function(url, dataType, jsonp) {
     var promise = jq$.Deferred();
     
-    jq$.ajax(url, $.extend({
+    jq$.ajax(url, jq$.extend({
         dataType: dataType,
         success: function(data) {
           promise.resolve(data);
@@ -504,7 +504,6 @@
 
   AnywhereBkml.prototype.initializeClipboard = function($bkmlSnippet) {    
     var bkml = this,
-        $linkText = $bkmlSnippet.find('.bkml-link-text'),
         $copyButton = $bkmlSnippet.find('.bkml-link-copy');
     
     
@@ -526,20 +525,19 @@
     });
     
     // Dealing with flash problems
-    clipboard.on('noflash', bkml.initializeAlternateCopyHandlers.bind(bkml, $copyButton, $linkText, "You don't have Adobe Flash installed."));
-
-    clipboard.on('wrongflash', bkml.initializeAlternateCopyHandlers.bind(bkml, $copyButton, $linkText, "Your Adobe Flash is out of date."));
-
+    clipboard.on('error', bkml.initializeAlternateCopyHandlers.bind(bkml, $copyButton));
   }
 //End
 
-  AnywhereBkml.prototype.initializeAlternateCopyHandlers = function($copyButton, $linkText, message) {
+  AnywhereBkml.prototype.initializeAlternateCopyHandlers = function($copyButton, error) {
+    var bkml = this;
+    
     $copyButton.unbind('click');
     $copyButton.on('click', function() {
       bkml.logEvent('link copy: manual : oldFlash');
       
-      var currentLink = $linkText.data('clipboard-text');
-      window.prompt("Clipboard Error: " + message + "\n\nPress Ctrl + C to copy link manually.", currentLink);
+      var currentLink = $copyButton.data('clipboard-text');
+      window.prompt("Clipboard Error: " + error.message + "\n\nPress Ctrl + C to copy link manually.", currentLink);
     })
   }
 
