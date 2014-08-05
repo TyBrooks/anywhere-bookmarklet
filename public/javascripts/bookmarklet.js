@@ -70,7 +70,6 @@
   					xdr.onload = function() {
   						var status = 200;
   						var message = xdr.responseText;
-              // console.log(message);
   						var r = xdr.responseText;
   						if (r.StatusCode && r.Message) {
   							status = r.StatusCode;
@@ -192,7 +191,7 @@
       alert('Bookmarklet Error: There was an error loading the required resources');
       console.log("Bookmarklet Error: " + textStatus);
       console.log(xhr); //Include this?
-      window.viglink_bkml.remove();
+      that.remove();
     })
   
     return overallPromise;
@@ -210,10 +209,6 @@
       attempts: 0,
       attemptLimit: 2,
       error: function(xhr, textStatus, errorThrown) {
-        console.log("HTML ERROR");
-        console.log(textStatus);
-        console.log(errorThrown);
-        console.log(url);
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
@@ -288,6 +283,10 @@
     jq$('.global-zeroclipboard-container').remove();
     delete window.viglink_bkml;
   } 
+  
+  Bookmarklet.prototype.logEvent = function(type) {
+    console.log(type);
+  }
 
 /* 
     AnywhereBkml Methods 
@@ -313,6 +312,8 @@
     var linkDataPromise = this.grabLinkData();
     
     jq$.when(userDataPromise, resourcesLoadPromise).then(this.loadHTML.bind(bkml, linkDataPromise)).fail(function() {
+      bkml.logEvent("load failure: cause= failedResourceload");
+      
       alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!");
       bkml.remove();
     })
@@ -332,21 +333,29 @@
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
         if (bkml.isAffiliatable(linkData)) {
+          this.logEvent("load success : affiliatable");
+          
           bkml.buildSharePageHTML($bkmlSnippet, bkml.campaigns);
           bkml.initializeShareEvents($bkmlSnippet);
       
           bkml.showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         } else {
+          this.logEvent("load success : not affiliatable");
+          
           bkml.initializeNotAffiliatableEvents($bkmlSnippet);
           
           bkml.showNotAffiliatablePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         }
       }).fail(function() {
+        bkml.logEvent("load failure : link data")
+        
         alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
     } else {
+      this.logEvent("load success : not logged");
+      
       bkml.initializeLoginEvents($bkmlSnippet, linkDataPromise);
       
       bkml.showLoginPage($bkmlSnippet);
@@ -470,6 +479,11 @@
     $bkmlSnippet.find('.bkml-campaign-form').on('submit', function(event) {
       event.preventDefault();
     });
+    
+    $bkmlSnippet.find('.bkml-social-button').on('click', function(event) {
+      var type = $(this).data('social');
+      bkml.logEvent('social-share: ' + type);
+    });
   }
 
   AnywhereBkml.prototype.handleShortenClick = function($bkmlSnippet, event) {
@@ -507,25 +521,23 @@
   }
 
   AnywhereBkml.prototype.initializeClipboard = function($bkmlSnippet) {    
-    var ZeroClipboard = window.ZeroClipboard;
     
-    ZeroClipboard.config({
+    window.ZeroClipboard.config({
       swfPath: this.serverDomain + '/swf/ZeroClipboard.swf',
       trustedDomains: [window.location.protocol + "//" + window.location.host],
       containerId: "global-zeroclipboard-html-bridge-VL",
       swfObjectId: "global-zeroclipboard-flash-bridge-VL"
     });
-    
-    var clipboard = new ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
+    var clipboard = new window.ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
 
-    
+    var bkml = this;
     clipboard.on('ready', function(client, args) {
-      console.log("CLIPBOARD LOADED");
       
       clipboard.on('aftercopy', function(client, args) {
+        bkml.logEvent("link copy: auto");
         alert("Formatted URL has been copied!"); // Keep this? 
       });
-  
+      
     });
     
     // Dealing with flash problems
@@ -534,6 +546,7 @@
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
+        bkml.logEvent('link copy: manual : noflash')
         var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
         window.prompt("Clipboard Error: No Adobe Flash detected. \n\nPress Ctrl + C to copy link manually.", currentLink);
       })
@@ -544,6 +557,7 @@
       
       $copyButton.unbind('click');
       $copyButton.on('click', function() {
+        bkml.logEvent('link copy: manual : oldFlash');
         var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
         window.prompt("Clipboard Error: Your Adobe Flash is out of date. \n\nPress Ctrl + C to copy link manually.", currentLink);
       })
