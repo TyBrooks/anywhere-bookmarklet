@@ -284,8 +284,38 @@
     delete window.viglink_bkml;
   } 
   
-  Bookmarklet.prototype.logEvent = function(type) {
+  Bookmarklet.prototype.logEvent = function(data) {
     console.log(type);
+    var bkml = this,
+        currentUser = jq$('#bkml-campaign-select').val() || window.viglink_default_campaign || null; // null? "unknown" ? ;
+    
+    var returnData = {
+      type: data.type,
+      user: currentUser,
+      time: Date.now(),
+      url: window.location.href
+    };
+    
+    if (type === "share") {
+      returnData.shareInfo = {
+        site: data.site,
+        shortened: jq$('.bkml-link-shorten').data('active') === "short",
+        asDefaultCampaign: currentUser === window.viglink_default_campaign
+      }
+    } else if (type === "copy") {
+      returnData.copyInfo = {
+        shoretened: jq$('.bkml-link-shorten').data('active') === "short",
+        asDefaultCampaign: currentUser === window.viglink_default_campaign
+        method: data.method,
+        flash: data.flash // Okay, wrong, none
+      }
+    } else if (type === "load") {
+      returnData.loadInfo = {
+        success: data.success,
+        outcome: data.outcome // Which page if successful, OR reason for failure if failed
+      }
+    }
+    
   }
 
 /* 
