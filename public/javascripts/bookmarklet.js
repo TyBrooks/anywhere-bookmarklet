@@ -37,65 +37,10 @@
         // return window.jQuery to it's past value. We'll use the window.js$
         loaded = true;      
         jq$ = window.jq$ = window.jQuery.noConflict(true);
-        // jq$.support.cors = true;
-         // IE compat - doesn't support cross origin html ajax calls otherwise
-        if ( window.XDomainRequest ) {
-          console.log("SHIMMING");
-          // Based on https://github.com/jaubourg/ajaxHooks/blob/master/src/ajax/xdr.js
-
-          (function( jQuery ) {
-            	jQuery.ajaxTransport(function( s ) {
-            		if ( s.crossDomain && s.async ) {
-            			if ( s.timeout ) {
-            				s.xdrTimeout = s.timeout;
-            				delete s.timeout;
-            			}
-            			var xdr;
-            			return {
-            				send: function( _, complete ) {
-            					function callback( status, statusText, responses, responseHeaders ) {
-            						xdr.onload = xdr.onerror = xdr.ontimeout = xdr.onprogress = jQuery.noop;
-            						xdr = undefined;
-            						jQuery.event.trigger( "ajaxStop" );
-            						complete( status, statusText, responses, responseHeaders );
-            					}
-            					xdr = new XDomainRequest();
-            					xdr.open( s.type, s.url );
-            					xdr.onload = function() {
-            						var status = 200;
-            						var message = xdr.responseText;
-                        // console.log(message);
-            						var r = xdr.responseText;
-            						if (r.StatusCode && r.Message) {
-            							status = r.StatusCode;
-            							message = r.Message;
-            						}
-            						callback( status , message, { text: message }, "Content-Type: " + xdr.contentType );
-            					};
-            					xdr.onerror = function() {
-            						callback( 500, "Unable to Process Data" );
-            					};
-            					xdr.onprogress = function() {};
-            					if ( s.xdrTimeout ) {
-            						xdr.ontimeout = function() {
-            							callback( 0, "timeout" );
-            						};
-            						xdr.timeout = s.xdrTimeout;
-            					}
-            					xdr.send( ( s.hasContent && s.data ) || null );
-            				},
-            				abort: function() {
-            					if ( xdr ) {
-            						xdr.onerror = jQuery.noop();
-            						xdr.abort();
-            					}
-            				}
-            			};
-            		}
-            	});
-          })(window.jq$);     
+         // IE compat - doesn't support cross origin html ajax calls. Everything else we can grab from jsonp
+        if ( window.XDomainRequest && !jq$.support.cors) {
+          bkml.shimAjaxIE(window.jq$);            
         } 
-        
         callback(); 
       }
     }
@@ -103,13 +48,56 @@
   }
   
   Bookmarklet.prototype.shimAjaxIE = function(jQuery) {
-    /*!
-     * jQuery-ajaxTransport-XDomainRequest - v1.0.2 - 2014-05-02
-     * https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
-     * Copyright (c) 2014 Jason Moon (@JSONMOON)
-     * Licensed MIT (/blob/master/LICENSE.txt)
-     */
-    (function(a){a(jq$)}(function(jq$){if(jq$.support.cors||!jq$.ajaxTransport||!window.XDomainRequest){return}var n=/^https?:\/\//i;var o=/^get|post$/i;var p=new RegExp('^'+location.protocol,'i');jq$.ajaxTransport('* text html xml json',function(j,k,l){if(!j.crossDomain||!j.async||!o.test(j.type)||!n.test(j.url)||!p.test(j.url)){return}var m=null;return{send:function(f,g){var h='';var i=(k.dataType||'').toLowerCase();m=new XDomainRequest();if(/^\d+$/.test(k.timeout)){m.timeout=k.timeout}m.ontimeout=function(){g(500,'timeout')};m.onload=function(){var a='Content-Length: '+m.responseText.length+'\r\nContent-Type: '+m.contentType;var b={code:200,message:'success'};var c={text:m.responseText};try{if(i==='html'||/text\/html/i.test(m.contentType)){c.html=m.responseText}else if(i==='json'||(i!=='text'&&/\/json/i.test(m.contentType))){try{c.json=$.parseJSON(m.responseText)}catch(e){b.code=500;b.message='parseerror'}}else if(i==='xml'||(i!=='text'&&/\/xml/i.test(m.contentType))){var d=new ActiveXObject('Microsoft.XMLDOM');d.async=false;try{d.loadXML(m.responseText)}catch(e){d=undefined}if(!d||!d.documentElement||d.getElementsByTagName('parsererror').length){b.code=500;b.message='parseerror';throw'Invalid XML: '+m.responseText;}c.xml=d}}catch(parseMessage){throw parseMessage;}finally{g(b.code,b.message,c,a)}};m.onprogress=function(){};m.onerror=function(){g(500,'error',{text:m.responseText})};if(k.data){h=($.type(k.data)==='string')?k.data:$.param(k.data)}m.open(j.type,j.url);m.send(h)},abort:function(){if(m){m.abort()}}}})}));
+    // Code courtesy of https://gist.github.com/michaelcox/2655118  
+  	jQuery.ajaxTransport(function( s ) {
+  		if ( s.crossDomain && s.async ) {
+  			if ( s.timeout ) {
+  				s.xdrTimeout = s.timeout;
+  				delete s.timeout;
+  			}
+  			var xdr;
+  			return {
+  				send: function( _, complete ) {
+  					function callback( status, statusText, responses, responseHeaders ) {
+  						xdr.onload = xdr.onerror = xdr.ontimeout = xdr.onprogress = jQuery.noop;
+  						xdr = undefined;
+  						jQuery.event.trigger( "ajaxStop" );
+  						complete( status, statusText, responses, responseHeaders );
+  					}
+  					xdr = new XDomainRequest();
+  					xdr.open( s.type, s.url );
+  					xdr.onload = function() {
+  						var status = 200;
+  						var message = xdr.responseText;
+              // console.log(message);
+  						var r = xdr.responseText;
+  						if (r.StatusCode && r.Message) {
+  							status = r.StatusCode;
+  							message = r.Message;
+  						}
+  						callback( status , message, { text: message }, "Content-Type: " + xdr.contentType );
+  					};
+  					xdr.onerror = function() {
+  						callback( 500, "Unable to Process Data" );
+  					};
+  					xdr.onprogress = function() {};
+  					if ( s.xdrTimeout ) {
+  						xdr.ontimeout = function() {
+  							callback( 0, "timeout" );
+  						};
+  						xdr.timeout = s.xdrTimeout;
+  					}
+  					xdr.send( ( s.hasContent && s.data ) || null );
+  				},
+  				abort: function() {
+  					if ( xdr ) {
+  						xdr.onerror = jQuery.noop();
+  						xdr.abort();
+  					}
+  				}
+  			};
+  		}
+  	});
   }
   
   //TODO: Refactor both ajax wrappers into a universal method?
@@ -494,8 +482,9 @@
       $linkText.data('active', 'short');
       $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
     } else {
-      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long'));
-      var bitlyPromise = window.viglink_bkml.callJsonAPI(bitlyAPI);
+      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long')),
+          callback = 'callback';
+      var bitlyPromise = window.viglink_bkml.callJsonpAPI(bitlyAPI, callback);
       
       spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
       $bkmlSnippet.find('.bkml-link-shorten').html(spinnerHTML);
