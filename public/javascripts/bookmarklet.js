@@ -455,8 +455,13 @@
   }
 
   AnywhereBkml.prototype.setNewLink = function($bkmlSnippet, anywhereizedURL) {
+    var $shortenButton = $bkmlSnippet.find('.bkml-link-shorten');
+    
+    $shortenButton.removeData('short');
+    this.setShortenButtonAttrs($shortenButton, 'long', anywhereizedURL);
+    
     this.insertLinkIntoHTML($bkmlSnippet, anywhereizedURL);
-    $bkmlSnippet.find('.bkml-link-text').data('long', anywhereizedURL).data('active', 'long').removeData('short');
+    
   }
 
   AnywhereBkml.prototype.insertLinkIntoHTML = function($bkmlSnippet, url) {
@@ -519,36 +524,48 @@
   }
 
   AnywhereBkml.prototype.handleShortenClick = function($bkmlSnippet, event) {
-    $linkText = $bkmlSnippet.find('.bkml-link-text');
-    if ($linkText.data('active') === 'short') {
-      this.insertLinkIntoHTML($bkmlSnippet, $linkText.data('long'));
-      $linkText.data('active', 'long');
-      $bkmlSnippet.find('.bkml-link-shorten').text('Shorten');
-    } else if ($linkText.data('active') === 'long' && $linkText.data('short') ) {
-      this.insertLinkIntoHTML($bkmlSnippet, $linkText.data('short'));
-      $linkText.data('active', 'short');
-      $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
-    } else {
-      var bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793' + '&longUrl=' + encodeURIComponent($linkText.data('long')),
-          callback = 'callback';
-      var bitlyPromise = window.viglink_bkml.callJsonpAPI(bitlyAPI, callback);
+    var $linkText = $bkmlSnippet.find('.bkml-link-text'),
+        $shortenButton = $bkmlSnippet.find('.bkml-link-shorten'),
+        spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>',
+        bkml = this;
+        
+    if ($shortenButton.data('active') === 'long' && !$shortenButton.data('short')) {
+      $shortenButton.html(spinnerHTML);
       
-      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
-      $bkmlSnippet.find('.bkml-link-shorten').html(spinnerHTML);
+      var bitlyPromise = this.grabBitlyData($shortenButton.data('long'));
       
-      var bkml = this;
       bitlyPromise.done(function(response) {
-        if (!($linkText.data('active') === 'short') && !$linkText.data('short') ) { // make sure two ajax requests don't conflict
-          if (response.data && response.data.url) {
-            var newURL = response.data.url;
-            bkml.insertLinkIntoHTML($bkmlSnippet, newURL);
-            $linkText.data('active', 'short').data('short', newURL);
-            $bkmlSnippet.find('.bkml-link-shorten').text('Lengthen');
-          }
+        // Ensure we don't have a duplicate request coming in and we have a valid response
+        if (!($shortenButton.data('active') === 'short') && response.data && response.data.url) {
+          var shortenedUrl = response.data.url;
+          bkml.setShortenButtonAttrs($shortenButton, 'short', shortenedUrl);
+          bkml.insertLinkIntoHTML($bkmlSnippet, shortenedUrl);
         }
-      }).fail(function() {
-        $bkmlSnippet.find('.bkml-link-shorten').text("Shorten");
-      })
+      }).always(function() {
+        if ($shortenButton.html() === spinnerHTML) {
+          bkml.setShortenButtonAttrs($shortenButton, 'long', $shortenButton.data('long'));
+        }
+      });
+      
+    } else if ($shortenButton.data('active') === 'short') {
+      this.setShortenButtonAttrs($shortenButton, 'long', $shortenButton.data('long'));
+      this.insertLinkIntoHTML($bkmlSnippet, $shortenButton.data('long'));
+    } else {
+      this.setShortenButtonAttrs($shortenButton, 'short', $shortenButton.data('short'));
+      this.insertLinkIntoHTML($bkmlSnippet, $shortenButton.data('short'));
+    }
+  
+  }
+  
+  AnywhereBkml.prototype.setShortenButtonAttrs = function($shortenButton, active, url) {
+    $shortenButton.data('active', active);
+    
+    if (active === 'short') {
+      $shortenButton.data('short', url).text('Lengthen');
+    } else if (active === 'long') {
+      $shortenButton.data('long', url).text('Shorten');
+    } else {
+      $shortenButton.text('Not a valid campaign');
     }
   }
 
@@ -661,7 +678,42 @@
   }
 //End
   
+/* Begin Data Grabbing functions */
+
+  AnywhereBkml.prototype.grabLinkData = function() {
+    //TODO: Figure out how to implement a test key?
+    var testKey = '9cb01deed662e8c71059a9ee9a024d30',
+        rootUrl = viglinkServeLocal ? viglink_localhost + '/api/link' : 'http://api.viglink.com/api/link',
+        out = encodeURIComponent(window.location.href),
+        format = "jsonp",
+        callbackParam = 'jsonp';
   
+    var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
+    var linkDataPromise = viglinkServeLocal ? this.callJsonAPI(linkURL, callbackParam) : this.callJsonpAPI(linkURL, callbackParam); 
+
+    return linkDataPromise;
+  }
+
+  AnywhereBkml.prototype.grabUserData = function() {
+    var rootUrl = viglinkServeLocal ? viglink_localhost + "/account/users" : "http://publishers.viglink.com/account/users",
+        callbackParam = "callback";
+      
+    var userURL = rootUrl;
+    var userDataPromise = viglinkServeLocal ? this.callJsonAPI(userURL, callbackParam) : this.callJsonpAPI(userURL, callbackParam);
+  
+    return userDataPromise;
+  }
+
+  AnywhereBkml.prototype.grabBitlyData = function(url) {
+    var apiKey = 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793',
+        bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + apiKey + '&longUrl=' + encodeURIComponent(url),
+        callback = 'callback';
+      
+    var bitlyPromise = window.viglink_bkml.callJsonpAPI(bitlyAPI, callback);
+    return bitlyPromise;
+  }
+// End  
+    
 /* Begin general helper functions */
   
     AnywhereBkml.prototype.isSignedIn = function(userData) {
@@ -671,31 +723,6 @@
     AnywhereBkml.prototype.isAffiliatable = function(linkData) {
       return !!linkData.affiliatable;
     }
-    
-    AnywhereBkml.prototype.grabLinkData = function() {
-      //TODO: Figure out how to implement a test key?
-      var testKey = '9cb01deed662e8c71059a9ee9a024d30',
-          rootUrl = viglinkServeLocal ? viglink_localhost + '/api/link' : 'http://api.viglink.com/api/link',
-          out = encodeURIComponent(window.location.href),
-          format = "jsonp",
-          callbackParam = 'jsonp';
-      
-      var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
-      var linkDataPromise = viglinkServeLocal ? this.callJsonAPI(linkURL, callbackParam) : this.callJsonpAPI(linkURL, callbackParam); 
-    
-      return linkDataPromise;
-    }
-    
-    AnywhereBkml.prototype.grabUserData = function() {
-      var rootUrl = viglinkServeLocal ? viglink_localhost + "/account/users" : "http://publishers.viglink.com/account/users",
-          callbackParam = "callback";
-          
-      var userURL = rootUrl;
-      var userDataPromise = viglinkServeLocal ? this.callJsonAPI(userURL, callbackParam) : this.callJsonpAPI(userURL, callbackParam);
-      
-      return userDataPromise;
-    }
-
 // End
   
 /* 
