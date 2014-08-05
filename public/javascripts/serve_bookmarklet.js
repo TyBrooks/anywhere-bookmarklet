@@ -1,13 +1,15 @@
 //TODO: Deal with if default_campaign has " in campaign name...
 
 $(function() {
+  var localhost = (true) ? "//localhost:3000" : "//10.0.2.2:3000"
+  
   var dev = true,
       code_src,
       users_api;
   if (dev) {
-    code_src = 'http://10.0.2.2:3000/javascripts/bookmarklet.js'
+    code_src = localhost + '/javascripts/bookmarklet.js';
   } else {
-    code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js'
+    code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js';
   }
   
   var defaultCampaign = null;
