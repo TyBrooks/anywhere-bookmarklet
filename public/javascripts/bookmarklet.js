@@ -8,7 +8,7 @@
 (function() {
   
   viglink_dev = true;
-  viglinkServeLocal = true;
+  viglinkServeLocal = false;
   var serverDomain = viglink_dev ? 'http://10.0.2.2:3000' : 'http://anywhere-bookmarklet.herokuapp.com';
   
   function Bookmarklet(options) {
@@ -36,57 +36,41 @@
         // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
         // return window.jQuery to it's past value. We'll use the window.js$
         loaded = true;      
-        jq$ = window.jq$ = window.jQuery.noConflict(true);
-        jq$.support.cors = true; // IE compat - doesn't support cross origin html ajax calls otherwise
+         // IE compat - doesn't support cross origin html ajax calls otherwise
         if ( window.XDomainRequest ) {
-          bkml.shimAjaxIE(jq$);
-        }
-        
-        callback();  
+          console.log("SHIMMING");
+          
+          var shimScript = document.createElement('script');
+          shimScript.src = 'http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.2/jquery.xdomainrequest.min.js';
+          var shimLoaded = false;
+          shimScript.onload = shimScript.onreadystatechange = function() {
+            if (!shimLoaded && (!this.readyState || this.readyState === "loaded" )) {
+              console.log("ShIM LOADED");
+              shimLoaded = true;
+              jq$ = window.jq$ = window.jQuery.noConflict(true);
+              jq$.support.cors = true;
+              callback();
+            }
+          }
+        } else {
+          jq$ = window.jq$ = window.jQuery.noConflict(true);
+          jq$.support.cors = true;
+          callback(); 
+        }  
       }
+      document.getElementsByTagName("head")[0].appendChild(shimScript);
     }
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
   
   Bookmarklet.prototype.shimAjaxIE = function(jQuery) {
-    jQuery.ajaxTransport(function( s ) {
-  		if ( s.crossDomain && s.async ) {
-  			if ( s.timeout ) {
-  				s.xdrTimeout = s.timeout;
-  				delete s.timeout;
-  			}
-  			var xdr;
-  			return {
-  				send: function( _, complete ) {
-  					function callback( status, statusText, responses, responseHeaders ) {
-  						xdr.onload = xdr.onerror = xdr.ontimeout = jQuery.noop;
-  						xdr = undefined;
-  						complete( status, statusText, responses, responseHeaders );
-  					}
-  					xdr = new XDomainRequest();
-  					xdr.onload = function() {
-  						callback( 200, "OK", { text: xdr.responseText }, "Content-Type: " + xdr.contentType );
-  					};
-  					xdr.onerror = function() {
-  						callback( 404, "Not Found" );
-  					};
-  					xdr.onprogress = jQuery.noop;
-  					xdr.ontimeout = function() {
-  						callback( 0, "timeout" );
-  					};
-  					xdr.timeout = s.xdrTimeout || Number.MAX_VALUE;
-  					xdr.open( s.type, s.url );
-  					xdr.send( ( s.hasContent && s.data ) || null );
-  				},
-  				abort: function() {
-  					if ( xdr ) {
-  						xdr.onerror = jQuery.noop;
-  						xdr.abort();
-  					}
-  				}
-  			};
-  		}
-  	});
+    /*!
+     * jQuery-ajaxTransport-XDomainRequest - v1.0.2 - 2014-05-02
+     * https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
+     * Copyright (c) 2014 Jason Moon (@JSONMOON)
+     * Licensed MIT (/blob/master/LICENSE.txt)
+     */
+    (function(a){a(jq$)}(function(jq$){if(jq$.support.cors||!jq$.ajaxTransport||!window.XDomainRequest){return}var n=/^https?:\/\//i;var o=/^get|post$/i;var p=new RegExp('^'+location.protocol,'i');jq$.ajaxTransport('* text html xml json',function(j,k,l){if(!j.crossDomain||!j.async||!o.test(j.type)||!n.test(j.url)||!p.test(j.url)){return}var m=null;return{send:function(f,g){var h='';var i=(k.dataType||'').toLowerCase();m=new XDomainRequest();if(/^\d+$/.test(k.timeout)){m.timeout=k.timeout}m.ontimeout=function(){g(500,'timeout')};m.onload=function(){var a='Content-Length: '+m.responseText.length+'\r\nContent-Type: '+m.contentType;var b={code:200,message:'success'};var c={text:m.responseText};try{if(i==='html'||/text\/html/i.test(m.contentType)){c.html=m.responseText}else if(i==='json'||(i!=='text'&&/\/json/i.test(m.contentType))){try{c.json=$.parseJSON(m.responseText)}catch(e){b.code=500;b.message='parseerror'}}else if(i==='xml'||(i!=='text'&&/\/xml/i.test(m.contentType))){var d=new ActiveXObject('Microsoft.XMLDOM');d.async=false;try{d.loadXML(m.responseText)}catch(e){d=undefined}if(!d||!d.documentElement||d.getElementsByTagName('parsererror').length){b.code=500;b.message='parseerror';throw'Invalid XML: '+m.responseText;}c.xml=d}}catch(parseMessage){throw parseMessage;}finally{g(b.code,b.message,c,a)}};m.onprogress=function(){};m.onerror=function(){g(500,'error',{text:m.responseText})};if(k.data){h=($.type(k.data)==='string')?k.data:$.param(k.data)}m.open(j.type,j.url);m.send(h)},abort:function(){if(m){m.abort()}}}})}));
   }
   
   //TODO: Refactor both ajax wrappers into a universal method?
@@ -201,6 +185,7 @@
         console.log("HTML ERROR");
         console.log(textStatus);
         console.log(errorThrown);
+        console.log(url);
         if (textStatus == 'timeout') {
           this.attempts += 1;
           if (this.attempts <= this.attemptsLimit) {
