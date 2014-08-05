@@ -100,31 +100,34 @@
   	});
   }
   
-  Bookmarklet.prototype.ajax =function(url, dataType) {
+  Bookmarklet.prototype.ajax =function(url, dataType, jsonp) {
     var promise = jq$.Deferred();
     
-    jq$.ajax(url, {
-      dataType: dataType,
-      success: function(data) {
-        promise.resolve(data);
-      },
-      timeout: 3000,
-      attempts: 0,
-      attemptLimit: 2,
-      error: function(xhr, textStatus, errorThrown) {
-        if (textStatus == 'timeout') {
-          this.attempts += 1;
-          if (this.attempts <= this.attemptsLimit) {
-            jq$.ajax(this);
-            return;
+    jq$.ajax(url, $.extend({
+        dataType: dataType,
+        success: function(data) {
+          promise.resolve(data);
+        },
+        timeout: 3000,
+        attempts: 0,
+        attemptLimit: 2,
+        error: function(xhr, textStatus, errorThrown) {
+          if (textStatus == 'timeout') {
+            this.attempts += 1;
+            if (this.attempts <= this.attemptsLimit) {
+              jq$.ajax(this);
+              return;
+            } else {
+              promise.reject(xhr, textStatus, errorThrown);
+            }
           } else {
             promise.reject(xhr, textStatus, errorThrown);
           }
-        } else {
-          promise.reject(xhr, textStatus, errorThrown);
         }
-      }
-    });
+      }, {
+        jsonp: jsonp
+      })
+    );
     
    return promise; 
   }
@@ -199,7 +202,7 @@
   }
   
   Bookmarklet.prototype.callJsonpAPI = function(url, callbackParam) {
-    var jsonpPromise = this.ajax(url, 'jsonp');
+    var jsonpPromise = this.ajax(url, 'jsonp', callbackParam);
     return jsonpPromise;
   }
 
