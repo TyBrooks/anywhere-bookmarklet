@@ -285,7 +285,9 @@
   } 
   
   Bookmarklet.prototype.logEvent = function(data) {
-    console.log(type);
+    console.log(data);
+    return; // Don't need to execute below yet
+    
     var bkml = this,
         currentUser = jq$('#bkml-campaign-select').val() || window.viglink_default_campaign || null; // null? "unknown" ? ;
     
@@ -305,7 +307,7 @@
     } else if (type === "copy") {
       returnData.copyInfo = {
         shoretened: jq$('.bkml-link-shorten').data('active') === "short",
-        asDefaultCampaign: currentUser === window.viglink_default_campaign
+        asDefaultCampaign: currentUser === window.viglink_default_campaign,
         method: data.method,
         flash: data.flash // Okay, wrong, none
       }
@@ -363,7 +365,7 @@
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
         if (bkml.isAffiliatable(linkData)) {
-          this.logEvent("load success : affiliatable");
+          bkml.logEvent("load success : affiliatable");
           
           bkml.buildSharePageHTML($bkmlSnippet, bkml.campaigns);
           bkml.initializeShareEvents($bkmlSnippet);
@@ -371,7 +373,7 @@
           bkml.showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         } else {
-          this.logEvent("load success : not affiliatable");
+          bkml.logEvent("load success : not affiliatable");
           
           bkml.initializeNotAffiliatableEvents($bkmlSnippet);
           
@@ -384,7 +386,7 @@
         alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
     } else {
-      this.logEvent("load success : not logged");
+      bkml.logEvent("load success : not logged");
       
       bkml.initializeLoginEvents($bkmlSnippet, linkDataPromise);
       
