@@ -100,12 +100,11 @@
   	});
   }
   
-  //TODO: Refactor both ajax wrappers into a universal method?
-  Bookmarklet.prototype.callJsonAPI = function(url) {
+  Bookmarklet.prototype.ajax =function(url, dataType) {
     var promise = jq$.Deferred();
     
     jq$.ajax(url, {
-      dataType: 'json',
+      dataType: dataType,
       success: function(data) {
         promise.resolve(data);
       },
@@ -126,38 +125,8 @@
         }
       }
     });
-  
-    return promise;
-  }
-  
-  Bookmarklet.prototype.callJsonpAPI = function(url, callbackParam) {
-    var promise = jq$.Deferred();
     
-    jq$.ajax(url, {
-      dataType: 'jsonp',
-      success: function(data) {
-        promise.resolve(data);
-      },
-      jsonp: callbackParam,
-      timeout: 3000,
-      attempts: 0,
-      attemptLimit: 2,
-      error: function(xhr, textStatus, errorThrown) {
-        if (textStatus == 'timeout') {
-          this.attempts += 1;
-          if (this.attempts <= this.attemptsLimit) {
-            jq$.ajax(this);
-            return;
-          } else {
-            promise.reject(xhr, textStatus, errorThrown);
-          }
-        } else {
-          promise.reject(xhr, textStatus, errorThrown);
-        }
-      }
-    });
-  
-    return promise;
+   return promise; 
   }
   
   // Returns a promise that resolves when all resources are loaded
@@ -199,31 +168,8 @@
 
   //Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadHTMLResource = function(url) {
-    var htmlPromise = jq$.Deferred();
-    jq$.ajax(url, {
-      dataType: "html",
-      success: function(snippet) {
-        htmlPromise.resolve(snippet);
-      },
-      timeout: 3000,
-      attempts: 0,
-      attemptLimit: 2,
-      error: function(xhr, textStatus, errorThrown) {
-        if (textStatus == 'timeout') {
-          this.attempts += 1;
-          if (this.attempts <= this.attemptsLimit) {
-            jq$.ajax(this);
-            return;
-          } else {
-            htmlPromise.reject(xhr, textStatus, errorThrown);
-          }
-        } else {
-          htmlPromise.reject(xhr, textStatus, errorThrown);
-        }
-      }
-    });
-  
-    return htmlPromise; 
+    var htmlPromise = this.ajax(url, 'html');
+    return htmlPromise;
   }
 
   // Returns a promise when the resource is loaded
@@ -243,34 +189,18 @@
 
   // Returns a promise when the resource is loaded
   Bookmarklet.prototype.loadJSResource = function(url) {
-    var jsPromise = jq$.Deferred();
-    
-    //Using jQuery to avoid compatibility issues with older IE not handling script.onready well
-    jq$.ajax({
-      url: url,
-      dataType: "script",
-      success: function() {
-        jsPromise.resolve();
-      },
-      timeout: 3000,
-      attempts: 0,
-      attemptLimit: 2,
-      error: function(xhr, textStatus, errorThrown) {
-        if (textStatus == 'timeout') {
-          this.attempts += 1;
-          if (this.attempts <= this.attemptsLimit) {
-            jq$.ajax(this);
-            return;
-          } else {
-            jsPromise.reject(xhr, textStatus, errorThrown);
-          }
-        } else {
-          jsPromise.reject(xhr, textStatus, errorThrown);
-        }
-      }
-    });
-    
-    return jsPromise;
+    var scriptPromise = this.ajax(url, 'script');
+    return scriptPromise;
+  }
+  
+  Bookmarklet.prototype.callJsonAPI = function(url) {
+    var jsonPromise = this.ajax(url, 'json');
+    return jsonPromise;
+  }
+  
+  Bookmarklet.prototype.callJsonpAPI = function(url, callbackParam) {
+    var jsonpPromise = this.ajax(url, 'jsonp');
+    return jsonpPromise;
   }
 
   Bookmarklet.prototype.attach = function($bkml) {
@@ -570,6 +500,10 @@
   }
 
   AnywhereBkml.prototype.initializeClipboard = function($bkmlSnippet) {    
+    var bkml = this,
+        $linkText = $bkmlSnippet.find('.bkml-link-text'),
+        $copyButton = $bkmlSnippet.find('.bkml-link-copy');
+    
     
     window.ZeroClipboard.config({
       swfPath: this.serverDomain + '/swf/ZeroClipboard.swf',
@@ -578,8 +512,7 @@
       swfObjectId: "global-zeroclipboard-flash-bridge-VL"
     });
     var clipboard = new window.ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
-
-    var bkml = this;
+    
     clipboard.on('ready', function(client, args) {
       
       clipboard.on('aftercopy', function(client, args) {
@@ -590,29 +523,22 @@
     });
     
     // Dealing with flash problems
-    clipboard.on('noflash', function() {
-      $copyButton = $bkmlSnippet.find('.bkml-link-copy');
-      
-      $copyButton.unbind('click');
-      $copyButton.on('click', function() {
-        bkml.logEvent('link copy: manual : noflash')
-        var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
-        window.prompt("Clipboard Error: No Adobe Flash detected. \n\nPress Ctrl + C to copy link manually.", currentLink);
-      })
-    })
-    
-    clipboard.on('wrongflash', function() {
-      $copyButton = $bkmlSnippet.find('.bkml-link-copy');
-      
-      $copyButton.unbind('click');
-      $copyButton.on('click', function() {
-        bkml.logEvent('link copy: manual : oldFlash');
-        var currentLink = $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text');
-        window.prompt("Clipboard Error: Your Adobe Flash is out of date. \n\nPress Ctrl + C to copy link manually.", currentLink);
-      })
-    })
+    clipboard.on('noflash', bkml.initializeAlternateCopyHandlers.bind(bkml, $copyButton, $linkText, "You don't have Adobe Flash installed."));
+
+    clipboard.on('wrongflash', bkml.initializeAlternateCopyHandlers.bind(bkml, $copyButton, $linkText, "Your Adobe Flash is out of date."));
+
   }
 //End
+
+  AnywhereBkml.prototype.initializeAlternateCopyHandlers = function($copyButton, $linkText, message) {
+    $copyButton.unbind('click');
+    $copyButton.on('click', function() {
+      bkml.logEvent('link copy: manual : oldFlash');
+      
+      var currentLink = $linkText.data('clipboard-text');
+      window.prompt("Clipboard Error: " + message + "\n\nPress Ctrl + C to copy link manually.", currentLink);
+    })
+  }
 
 
 /* Login Page events */
