@@ -1,5 +1,4 @@
-//TODO: 1. Refactor Ajax error callback out
-//TODO: 2. Figure out what the hell is wrong with the variable scoping here... 
+//TODO: 2. Figure out what the hell is wrong with the variable scoping line 140 
 //TODO: 3. Handle css load failures
 //TODO 5. Fix order load importance in html? (maybe)
 
