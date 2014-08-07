@@ -1,6 +1,22 @@
 //TODO: Deal with if default_campaign has " in campaign name...
 
 $(function() {
+  function bookmarkletCode(options) {
+    var user = options.user,
+        campaign = options.campaign;
+      
+    var campaignString = campaign ? "window.viglink_default_campaign=\"" + campaign + "\";" : "",
+        userString = user ? "window.viglink_user='" + user +"';" : "";    
+      
+    var string = "javascript:(function(){if(!window.viglink_bkml)" +
+                  "{var e=document.createElement('script');e.className='bkml-resource';" +
+                  "e.src='" +  code_src + "';document.body.appendChild(e);"
+                  + campaignString + userString + "}})()"
+                
+                
+    return string;
+  }
+  
   var localhost = (true) ? "//localhost:3000" : "//10.0.2.2:3000"
   
   var dev = true,
@@ -12,9 +28,12 @@ $(function() {
     code_src = 'http://anywhere-bookmarklet.herokuapp.com/javascripts/bookmarklet.js';
   }
   
-  var defaultCampaign = null;
+  var defaultCampaign = null,
+      defaultUser,
+      campaignIds = {};
   
-  $('.bookmarklet-link').attr('href', "javascript:(function() {if(!window.viglink_bkml){var scriptElem= document.createElement('script');scriptElem.className= 'bkml-resource';scriptElem.src='" +  code_src + "';document.body.appendChild(scriptElem);}})();");
+  
+  $('.bookmarklet-link').attr('href', "#");
   
   var users_api = 'http://www.viglink.com/account/users?callback=usersData'
   
@@ -28,22 +47,27 @@ $(function() {
       campaignList.users && campaignList.users.forEach(function(campaign) { // Failure is still interpreted as success
         $opt = $('<option>').text(campaign.name).val(campaign.name);
         $('#default-campaign-selector').append($opt);
+        
+        campaignIds[campaign.name] = campaign.id;
+        defaultUser = defaultUser || campaign.id;
       });
+      
+      $('.bookmarklet-link').text("VL Anywhere Bookmarklet").attr("href", bookmarkletCode({ "user" : defaultUser}));
     }
   });
   
   $('#default-campaign-selector').on('change', function(event) {
-    defaultCampaign = $(this).val();
-    defaultCampaign = defaultCampaign.replace(/[\"\']/g, function(quote) {
+    var defaultCampaign = $(this).val(),
+    formattedDefaultCampaign = defaultCampaign.replace(/[\"\']/g, function(quote) {
       return "\\" + quote;
     });
     
     if (defaultCampaign !== "null") {
       $('.bookmarklet-link').text("VL Anywhere Bookmarklet - " + defaultCampaign);
-      $('.bookmarklet-link').attr('href', "javascript:(function(){if(!window.viglink_bkml){var e=document.createElement('script');e.className='bkml-resource';e.src='" +  code_src + "';document.body.appendChild(e);window.viglink_default_campaign=\"" + defaultCampaign + "\"}})()");
+      $('.bookmarklet-link').attr('href', bookmarkletCode({ "campaign" : formattedDefaultCampaign, "user" : campaignIds[defaultCampaign] }));
     } else {
       $('.bookmarklet-link').text("VL Anywhere Bookmarklet");
-      $('.bookmarklet-link').attr('href', "javascript:(function() {if(!window.viglink_bkml){var scriptElem= document.createElement('script');scriptElem.className= 'bkml-resource';scriptElem.src='" +  code_src + "';document.body.appendChild(scriptElem);}})();");
+      $('.bookmarklet-link').attr('href', bookmarkletCode({ "user" : defaultUser }));
     }
     
   });

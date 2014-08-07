@@ -211,6 +211,10 @@
     var jsonpPromise = this.ajax(url, 'jsonp', callbackParam);
     return jsonpPromise;
   }
+  
+  Bookmarklet.prototype.sendLogData = function(bookmarkletData) {
+    
+  }
 
   Bookmarklet.prototype.attach = function($bkml) {
     jq$('body').append($bkml);
@@ -231,32 +235,14 @@
         currentUser = jq$('#bkml-campaign-select').val() || window.viglink_default_campaign || null; // null? "unknown" ? ;
     
     var returnData = {
-      type: data.type,
-      user: currentUser,
-      time: Date.now(),
-      url: window.location.href
+      "bookmarklet" : {
+        et: data.type,
+        uid: data.id, // || window.viglink_default_userId, make this work
+        url: window.location.href
+      }  
     };
     
-    if (type === "share") {
-      returnData.shareInfo = {
-        site: data.site,
-        shortened: jq$('.bkml-link-shorten').data('active') === "short",
-        asDefaultCampaign: currentUser === window.viglink_default_campaign
-      }
-    } else if (type === "copy") {
-      returnData.copyInfo = {
-        shoretened: jq$('.bkml-link-shorten').data('active') === "short",
-        asDefaultCampaign: currentUser === window.viglink_default_campaign,
-        method: data.method,
-        flash: data.flash // Okay, wrong, none
-      }
-    } else if (type === "load") {
-      returnData.loadInfo = {
-        success: data.success,
-        outcome: data.outcome // Which page if successful, OR reason for failure if failed
-      }
-    }
-    
+    this.sendLogData(returnData);
   }
 
 /* 
@@ -283,7 +269,10 @@
     var linkDataPromise = this.grabLinkData();
     
     jq$.when(userDataPromise, resourcesLoadPromise).then(this.loadHTML.bind(bkml, linkDataPromise)).fail(function() {
-      bkml.logEvent("load failure: cause= failedResourceload");
+      bkml.logEvent({
+        type: "Load Failure",
+        user: window.viglink_user
+      });
       
       alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!");
       bkml.remove();
@@ -304,7 +293,10 @@
       //This call is made at the same time as resources load and user data grab
       linkDataPromise.done(function(linkData) {
         if (bkml.isAffiliatable(linkData)) {
-          bkml.logEvent("load success : affiliatable");
+          bkml.logEvent({
+            type: "Load Success",
+            user: window.viglink_user
+          });
           
           bkml.buildSharePageHTML($bkmlSnippet, bkml.campaigns);
           bkml.initializeShareEvents($bkmlSnippet);
@@ -312,7 +304,10 @@
           bkml.showSharePage($bkmlSnippet);
           bkml.attach($bkmlSnippet);
         } else {
-          bkml.logEvent("load success : not affiliatable");
+          bkml.logEvent({
+            type: "Load NotAff",
+            user: window.viglink_user
+          });
           
           bkml.initializeNotAffiliatableEvents($bkmlSnippet);
           
@@ -320,12 +315,18 @@
           bkml.attach($bkmlSnippet);
         }
       }).fail(function() {
-        bkml.logEvent("load failure : link data")
+        bkml.logEvent({
+          type: "Load Failure",
+          user: window.viglink_user
+        })
         
         alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
     } else {
-      bkml.logEvent("load success : not logged");
+      bkml.logEvent({
+        type: "Load NotLogged",
+        user: window.viglink_user
+      });
       
       bkml.initializeLoginEvents($bkmlSnippet, linkDataPromise);
       
@@ -350,6 +351,7 @@
       that.campaigns.push(campaignName);
       that.campaignInfo[campaignName] = that.campaignInfo[campaignName] || {};
       that.campaignInfo[campaignName]["key"] = campaignData.key;
+      that.campaignInfo[campaignName]["userId"] = campaignData.id;
     });
     
     if (this.campaigns.length > 10) {
@@ -468,7 +470,10 @@
     
     $bkmlSnippet.find('.bkml-social-button').on('click', function(event) {
       var type = $(this).data('social');
-      bkml.logEvent('social-share: ' + type);
+      bkml.logEvent({
+        type: "Share " + type,
+        user: bkml.campaignInfo[bkml.selectedCampaignKey($bkmlSnippet)]["userId"]
+      });
     });
   }
 
@@ -537,7 +542,10 @@
     clipboard.on('ready', function(client, args) {
       
       clipboard.on('aftercopy', function(client, args) {
-        bkml.logEvent("link copy: auto");
+        bkml.logEvent({
+          type: "Copy Auto",
+          user: bkml.campaignInfo[bkml.selectedCampaignKey($bkmlSnippet)]["userId"]
+        });
         alert("Formatted URL has been copied!"); // Keep this? 
       });
       
@@ -553,7 +561,10 @@
     
     $copyButton.unbind('click');
     $copyButton.on('click', function() {
-      bkml.logEvent('link copy: manual : oldFlash');
+      bkml.logEvent({
+        type: "Copy Manual",
+        user: bkml.campaignInfo[bkml.selectedCampaignKey($bkmlSnippet)]["userId"]
+      });
       
       var currentLink = $copyButton.data('clipboard-text');
       window.prompt("Clipboard Error: " + error.message + "\n\nPress Ctrl + C to copy link manually.", currentLink);
