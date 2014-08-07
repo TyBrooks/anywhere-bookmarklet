@@ -1,5 +1,5 @@
+//TODO 1. Is CSS timeout an issue?
 //TODO: 2. Figure out what the hell is wrong with the variable scoping line 140 
-//TODO: 3. Handle css load failures
 //TODO 5. Fix order load importance in html? (maybe)
 
 
@@ -181,10 +181,17 @@
     $bkml_style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
     jq$('head').append($bkml_style);
     
-    //TODO: use setInterval to try and reload the CSS in case of a timeout
+    var cssTimeout = setInterval(function() {
+      cssPromise.reject({ "reason": "cssTimeout" }, "Error: CSS Load timeout", url);
+    }, 5000);
+    
     $bkml_style.on('load', function() {
+      clearInterval(cssTimeout);
       cssPromise.resolve();
-    })
+    }).on('error', function() {
+      clearInterval(cssTimeout);
+      cssPromise.reject();
+    });
   
     return cssPromise;
   }

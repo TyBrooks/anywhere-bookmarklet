@@ -46,4 +46,11 @@ router.get('/preview/not-affiliatable', function(req,res) {
   res.render('preview/not-affiliatable', { title: "Not affiliatable page preview" });
 });
 
+router.get('/timeout-test', function(req, res) {
+  res.write('response');
+  setInterval(function() {
+    res.end();
+  }, 8000);
+})
+
 module.exports = router;
