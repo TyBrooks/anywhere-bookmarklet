@@ -15,7 +15,7 @@
   
     this.resources = options.resources || [];
     this.campaigns = [];
-    this.campaignKeys = {};// IE compatibility issue
+    this.campaignInfo = {};// IE compatibility issue
     this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
     this.defaultCampaign = options.defaultCampaign || null;
   }
@@ -344,11 +344,12 @@
     var userData = data.users;
     var that = this;
     this.campaigns = [];
-    this.campaignKeys = Object.create(null);
     
     userData.forEach(function(campaignData) {
-      that.campaigns.push(campaignData.name);
-      that.campaignKeys[campaignData.name] = campaignData.key;
+      var campaignName = campaignData.name;
+      that.campaigns.push(campaignName);
+      that.campaignInfo[campaignName] = that.campaignInfo[campaignName] || {};
+      that.campaignInfo[campaignName]["key"] = campaignData.key;
     });
     
     if (this.campaigns.length > 10) {
@@ -368,7 +369,7 @@
     var bkml = this;
     
     campaignArr.forEach(function(campaign) {
-      $option = jq$('<option val="' + bkml.campaignKeys[campaign] + '">' + campaign + '</option>');
+      $option = jq$('<option val="' + bkml.campaignInfo[campaign]["key"] + '">' + campaign + '</option>');
       if (campaign === bkml.defaultCampaign) {
         $option.attr('selected', 'selected');
       }
@@ -383,7 +384,7 @@
   AnywhereBkml.prototype.getAnywhereizedURL = function($bkmlSnippet) {
     // Build anywhereized URL
     var currentCampaign = $bkmlSnippet.find('#bkml-campaign-select').val();
-    var currentKey = this.campaignKeys[currentCampaign];
+    var currentKey = this.campaignInfo[currentCampaign]["key"];
     var anywhereizedURL = this.anywhereizeURL(currentKey)
 
     return anywhereizedURL;
