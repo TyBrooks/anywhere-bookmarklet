@@ -7,7 +7,7 @@
 
 
 .bkml-container {
-  width: 275px;
+  width: 305px;
   background-color: #F8F8F8;
   color: #F8F8F8;
   text-align: center;
@@ -16,7 +16,7 @@
   top: 0;
   right: 0;
   
-  font-family: "Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-family: "Helvetica","Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 16px;
   
   font-weight: 400;
@@ -33,29 +33,41 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .bkml-title {
-  height: 35px;
+  height: 52px;
   text-align: left;
-  line-height: 35px;
+  line-height: 52px;
   vertical-align: middle;
   
   border-bottom: 2px solid rgba(150,150,150,1);
   border-top: 2px solid rgba(150,150,150,1);
   
   margin-top: 1px;
+  
+  text-transform: uppercase;
+  font-size: 0.85em;
+  font-weight: 100;
+  letter-spacing: 1px;
+  color: rgb(80,80,100);
+  
+  background-image: linear-gradient(to top, rgb(205,205,205), rgb(255,255,255));
 
+}
+
+.bkml-title-text {
+  
 }
 
 .bkml-title-img {
   display: inline-block;
-  height: 25px;
+  height: 26px;
   width: 100px;
-  margin: 5px 15px;
+  margin: 13px 15px;
 }
 
 .bkml-title-dismiss {
   position: absolute;
   top: 12px;
-  right: 13px;
+  right: 15px;
   
   color: rgba(120,120,120,1);
   cursor: pointer;
@@ -70,17 +82,24 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-share-container {
   display: inline-block;
-  width: 250px;
+  width: 275px;
   margin: 12.5px;
   border: 1px solid rgba(150,150,150,1);
 }
 
 .bkml-share-header {
-  background-color: rgba(250, 130, 50, 1);
+  background-color: rgba(255, 147, 68, 1);
   height: 50px;
   line-height: 50px;
   vertical-align: middle;
-  font-size: 1.1em;
+  
+  text-transform: uppercase;
+  
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 1.125em;
+  font-weight: 500;
+  
+  
 }
 
 .bkml-campaign-container {
@@ -99,7 +118,7 @@ a:link, a:visited, a:hover, a:active {
 #bkml-campaign-select {
   display: block;
   font-size: 0.8em;
-  width: 200px;
+  width: 230px;
   margin: 5px auto 10px auto;
 }
 
@@ -112,7 +131,7 @@ a:link, a:visited, a:hover, a:active {
 #bkml-campaign-filter {
   display: inline-block;
   font-size: 0.8em;
-  width: 150px;
+  width: 230px;
   margin: 5px auto 10px auto;
   height: 16px;
 }
@@ -128,7 +147,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .bkml-link-container {
-  width: 200px;
+  width: 231px;
   margin: 30px auto;
   
   border: 1px solid rgba(150,150,150,1);
@@ -164,7 +183,7 @@ a:link, a:visited, a:hover, a:active {
 .bkml-link-copy-button-container {
   display: inline-block;
   margin: 0;
-  width: 200px;
+  width: 230px;
   
   text-align: center;
   font-size: 0em;
@@ -219,7 +238,7 @@ a:link, a:visited, a:hover, a:active {
 .bkml-social-button {
   display: inline-block;
 
-  width: 100px;  
+  width: 115px;  
   height: 40px;
   
   line-height: 40px;
@@ -264,7 +283,7 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-login-container {
   display: inline-block;
-  width: 250px;
+  width: 275px;
   margin: 12.5px;
   border: 1px solid rgba(150,150,150,1);
 }
@@ -278,7 +297,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .bkml-redirect-container {
-    width: 200px;
+    width: 230px;
     margin: 20px auto;
     color:  black;
 }
@@ -326,7 +345,7 @@ a:link, a:visited, a:hover, a:active {
 
 .bkml-notaff-container {
   display: inline-block;
-  width: 250px;
+  width: 275px;
   margin: 12.5px;
   border: 1px solid rgba(150,150,150,1);
 }
@@ -340,7 +359,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .bkml-notaff-message {
-    width: 200px;
+    width: 230px;
     margin: 20px auto;
     color:  black;
 }

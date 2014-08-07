@@ -686,7 +686,8 @@
     [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
-    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
+    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css'],
+    ['//fonts.googleapis.com/css?family=Lato:400,700', 'css']
   ];
   
   var bkmlOptions = {
