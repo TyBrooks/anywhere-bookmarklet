@@ -383,7 +383,7 @@
 
   AnywhereBkml.prototype.getAnywhereizedURL = function($bkmlSnippet) {
     // Build anywhereized URL
-    var currentCampaign = $bkmlSnippet.find('#bkml-campaign-select').val();
+    var currentCampaign = this.selectedCampaignKey($bkmlSnippet);
     var currentKey = this.campaignInfo[currentCampaign]["key"];
     var anywhereizedURL = this.anywhereizeURL(currentKey)
 
@@ -440,6 +440,15 @@
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
       bkml.setNewLink($bkmlSnippet, anywhereizedURL);
+      
+      
+      //This is a workaround to avoid having to rewrite the shorten url checking logic. 
+      var campaignName = jq$(this).val(),
+          shortUrl = bkml.campaignInfo[campaignName]["shortUrl"];
+      if (shortUrl) {
+        var $shortenButton = $bkmlSnippet.find('.bkml-link-shorten');
+        $shortenButton.data('short', shortUrl);
+      }
     });
     
     $bkmlSnippet.find('#bkml-campaign-filter').on('change', function(event) {
@@ -480,6 +489,9 @@
           var shortenedUrl = response.data.url;
           bkml.setShortenButtonAttrs($shortenButton, 'short', shortenedUrl);
           bkml.insertLinkIntoHTML($bkmlSnippet, shortenedUrl);
+          
+          var currentCampaign = bkml.selectedCampaignKey($bkmlSnippet);
+          bkml.campaignInfo[currentCampaign]["shortUrl"] = shortenedUrl;
         }
       }).always(function() {
         if ($shortenButton.html() === spinnerHTML) {
@@ -656,6 +668,10 @@
     
     AnywhereBkml.prototype.isAffiliatable = function(linkData) {
       return !!linkData.affiliatable;
+    }
+    
+    AnywhereBkml.prototype.selectedCampaignKey = function($bkmlSnippet) {
+      return $bkmlSnippet.find('#bkml-campaign-select').val();
     }
 // End
   
