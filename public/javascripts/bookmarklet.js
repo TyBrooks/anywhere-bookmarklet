@@ -606,21 +606,21 @@
   
 /* Page load helpers */
   AnywhereBkml.prototype.showSharePage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'none');
   }
   
   AnywhereBkml.prototype.showLoginPage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'none');
   }
   
   AnywhereBkml.prototype.showNotAffiliatablePage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'none');
   }
 //End
   

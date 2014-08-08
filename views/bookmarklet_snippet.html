@@ -4,82 +4,95 @@
     </div>
     
     <!-- Login Page -->
-    <div class='bkml-login-container' style='display: none;'>
-        <div class='bkml-login-header'>
-            Please Log In
-        </div>
-        <div class='bkml-redirect-container'>
-            <div class='bkmk-redirect-text'>
-                Sign in to share this link and earn! 
-                <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">VigLink Sign In Page</a>
+    
+    <div class='bkml-login-page'>
+        <div class='bkml-login-container'>
+            <div class='bkml-login-header'>
+                Please Sign In
             </div>
-            <button class='bkml-redirect-done'>Reload Bookmarklet</button>
+            <div class='bkml-redirect-container'>
+                <i class='fa fa-minus-circle fa-5x'></i>
+            
+                <div class='bkml-redirect-text'>
+                    Sign in to share this link and earn!<br> 
+                    <div class='bkml-redirect-link-container'>
+                        <div class='bkml-redirect-link-image'></div>
+                        <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
+                    </div>
+                </div>
+            </div>
         </div>
+        <a class='bkml-redirect-done bkml-bottom-button'>Reload Bookmarklet</a>
     </div>
     <!-- Login end -->
     
     <!-- Not Affiliatable Page -->
     
-    <div class='bkml-notaff-container' style='display: none;'>
-        <div class='bkml-notaff-header'>
-            Not Affiliatable
-        </div>
-        <div class='bkml-notaff-message'>
-            <div class='bkml-notaff-message-text'>
+    <div class='bkml-notaff-page'>
+        <div class='bkml-notaff-container'>
+            <div class='bkml-notaff-header bkml-section-header'>
+                Not Affiliatable
+            </div>
+            <div class='bkml-notaff-message'>
+            <i class='fa fa-exclamation-circle fa-5x'></i>
                 <span class='bkml-notaff-message-top'>Sorry, this page is not currently affiliatable.</span>
                 <span class='bkml-notaff-message-bottom'>We're constantly adding merchants to our network, so check back again later!</span>
             </div>
-            <button class='bkml-notaff-close'>Close Bookmarklet</button>
         </div>
+        <a class='bkml-notaff-close bkml-bottom-button'>Close Bookmarklet</a>
     </div>
     <!-- Not affiliatable end -->
     
     <!-- Share page -->
-    <div class='bkml-share-container'>
-        <div class='bkml-share-header'>
-            Share this Page
-        </div>
-        <div class='bkml-campaign-container'>
-            <form>
-                <label for='bkml-campaign-select'>Current Campaign:</label>
-                <div class='bkml-select-parent'>
-                    <i class='fa fa-arrows-v'></i>
-                    <select id='bkml-campaign-select'>
-                        <option val='test'>Test</option>
-                    </select>
-                </div>
-            </form>
-        </div>
-        <div class="bkml-link-container">
-            <div class="bkml-link-header">
-                Share This Link To Earn
-            </div>
-            <div class="bkml-link-text"> http://redirect.viglink.com?key=c71457e61268c998d4f4af9465946177&u=http%3A%2F%2Fshop.nordstrom.com%2Fs%2Fhalogen-marlie-calf-hair-pointy-toe-pump-women%2F3672251%3Forigin%345345F302%
-            </div>
-            <div class='bkml-link-copy-button-container'>
-                <a id="clipboard-target" class="bkml-link-copy bkml-link-button">
-                    Copy To Clipboard
-                </a>
-                <a class='bkml-link-shorten bkml-link-button'>
-                    Shorten
-                </a>
-            </div>
-        </div>
-    </div>
     
-    <div class="bkml-social-container">
-        <a class="bkml-social-button bkml-social-tweet" href="https://twitter.com/share" target="_blank">
-            <span class="fa-stack">
-              <i class="fa fa-circle-thin fa-stack-2x"></i>
-              <i class="fa fa-twitter fa-stack-1x"></i>
-            </span>Tweet Link
-        </a>
-        <a href="http://www.facebook.com" class="bkml-social-button bkml-social-fb">
-            <span class="fa-stack">
-              <i class="fa fa-circle-thin fa-stack-2x"></i>
-              <i class="fa fa-facebook fa-stack-1x"></i>
-            </span>Share Link
-        </a>
+    <div class='bkml-share-page'>
+        <div class='bkml-share-container'>
+            <div class='bkml-share-header bkml-section-header'>
+                Share this Page
+            </div>
+            <div class='bkml-campaign-container'>
+                <form>
+                    <label for='bkml-campaign-select'>Current Campaign:</label>
+                    <div class='bkml-select-parent'>
+                        <i class='fa fa-arrows-v'></i>
+                        <select id='bkml-campaign-select'>
+                            <option val='test'>Test</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="bkml-link-container">
+                <div class="bkml-link-header">
+                    Share This Link To Earn
+                </div>
+<!--TODO: Change this -->
+                <div class="bkml-link-text"> http://redirect.viglink.com?key=c71457e61268c998d4f4af9465946177&u=http%3A%2F%2Fshop.nordstrom.com%2Fs%2Fhalogen-marlie-calf-hair-pointy-toe-pump-women%2F3672251%3Forigin%345345F302% 
+                </div>
+                <div class='bkml-link-copy-button-container'>
+                    <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
+                        Copy To Clipboard
+                    </a>
+                    <a class='bkml-link-shorten bkml-link-button'>
+                        Shorten
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+        <div class="bkml-social-container">
+            <a class="bkml-social-button bkml-social-tweet" href="https://twitter.com/share" target="_blank">
+                <span class="fa-stack">
+                  <i class="fa fa-circle-thin fa-stack-2x"></i>
+                  <i class="fa fa-twitter fa-stack-1x"></i>
+                </span>Tweet Link
+            </a>
+            <a href="http://www.facebook.com" class="bkml-social-button bkml-social-fb">
+                <span class="fa-stack">
+                  <i class="fa fa-circle-thin fa-stack-2x"></i>
+                  <i class="fa fa-facebook fa-stack-1x"></i>
+                </span>Share Link
+            </a>
+        </div>
     </div>
     <!-- Share end -->
     

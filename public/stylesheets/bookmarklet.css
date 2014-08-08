@@ -1,11 +1,6 @@
-/* TODO: Make orange text consistent */
-
-
 /* 
   General Styling
 */
-
-
 .bkml-container {
   width: 305px;
   background-color: rgb(245,245,245);
@@ -47,10 +42,6 @@
 
 }
 
-.bkml-title-text {
-  
-}
-
 .bkml-title-img {
   display: inline-block;
   height: 26px;
@@ -66,6 +57,43 @@
   color: rgba(120,120,120,1);
   cursor: pointer;
 }
+
+
+.bkml-section-header {
+  background-color: #ff9344;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  
+  text-transform: uppercase;
+  
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 1.125em;
+  font-weight: 500;
+  color: rgb(255,255,255);
+  
+  
+}
+
+.bkml-bottom-button {
+    padding: 0;
+    display: block;
+    margin: 10px auto 30px auto;
+    
+    width: 275px;
+    height: 38px;
+    line-height: 38px;
+    vertical-align: middle;
+    
+    border-radius: 20px;
+    background-color: #196bac;
+
+    color: white;
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
+
+
 /* General end */
 
 
@@ -82,21 +110,6 @@
   margin-bottom: 0;
 }
 
-.bkml-share-header {
-  background-color: rgba(255, 147, 68, 1);
-  height: 50px;
-  line-height: 50px;
-  vertical-align: middle;
-  
-  text-transform: uppercase;
-  
-  font-family: "Helvetica", "Arial", sans-serif;
-  font-size: 1.125em;
-  font-weight: 500;
-  color: rgb(255,255,255);
-  
-  
-}
 
 .bkml-campaign-container {
  /* height: 40px;*/
@@ -264,9 +277,6 @@
   margin: 26px auto 30px auto;
   text-align: center;
   
-/*  border: 1px solid rgba(110,110,110,1);*/
-/*  border-radius: 2px;*/
-  
   font-size: 0em;
   
 }
@@ -366,16 +376,13 @@
   background-color: white;
   border-radius: 5px;
   height: 46px;
-  
-  /*line-height: 26px;
-  vertical-align: middle;
-*/  
   width: 175px;
   
   overflow: hidden;
   white-space: nowrap;
   
   margin-top: 25px;
+  margin-bottom: 25px;
   
   position: relative;
   
@@ -429,31 +436,11 @@
   vertical-align: middle;
 }
 .bkml-redirect-link:active {
-  transform: translate(0, 5px);
+/*  transform: translate(0, 5px);*/
 }
 .bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
     color: #707070;
     text-decoration: none;
-}
-
-
-
-.bkml-redirect-done {
-    padding: 0;
-    display: block;
-    margin: 10px auto 30px auto;
-    
-    width: 275px;
-    height: 38px;
-    line-height: 38px;
-    vertical-align: middle;
-    
-    border-radius: 20px;
-    background-color: #196bac;
-
-    color: white;
-    font-size: 0.8em;
-    text-transform: uppercase;
 }
 
 /* Login end */ 
@@ -482,44 +469,27 @@
     width: 230px;
     margin: 20px auto;
     color:  black;
+    font-size: 1.2em;
+    
+    color: #444444;
 }
 
 .bkml-notaff-message-top {
     display: inline-block;
+    width: 215px;
     font-size: 1.1em;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin: 15px auto 20px auto;
 }
 
 .bkml-notaff-message-bottom {
-    margin-top: 20px;
-    font-size: 0.95em;
+    width: 230px;
+    margin: 20px auto;
+    font-size: 0.70em;
     font-style: italic;
 }
 
-.bkml-notaff-close {
-    padding: 0;
-    
-    display: block;
-    margin: 50px auto 30px auto;
-    
-    width: 160px;
-    height: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    
-    border: 1px solid black;
-    border-radius: 10px;
-    background-color: rgba(70,120,180,1);
-
-    color: white;
-    font-size: 0.8em;
-}
 
 /* Not affiliatable end */ 
 
 
-/*a:link, a:visited, a:hover, a:active {
-  color: inherit;
-  text-decoration: none;
-}*/

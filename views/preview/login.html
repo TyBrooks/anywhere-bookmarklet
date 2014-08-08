@@ -2,23 +2,25 @@
     <div class="bkml-title">
         <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>ANYWHERE<i class="fa fa-lg fa-times-circle bkml-title-dismiss bkml-dismiss"></i>
     </div>
-    <div class='bkml-login-container'>
-        <div class='bkml-login-header'>
-            Please Sign In
-        </div>
-        <div class='bkml-redirect-container'>
-            <i class='fa fa-minus-circle fa-5x'></i>
+    <div class='bkml-login-page'>
+        <div class='bkml-login-container'>
+            <div class='bkml-login-header'>
+                Please Sign In
+            </div>
+            <div class='bkml-redirect-container'>
+                <i class='fa fa-minus-circle fa-5x'></i>
             
-            <div class='bkml-redirect-text'>
-                Sign in to share this link and earn!<br> 
-                <div class='bkml-redirect-link-container'>
-                    <div class='bkml-redirect-link-image'></div>
-                    <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
+                <div class='bkml-redirect-text'>
+                    Sign in to share this link and earn!<br> 
+                    <div class='bkml-redirect-link-container'>
+                        <div class='bkml-redirect-link-image'></div>
+                        <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
+                    </div>
                 </div>
             </div>
         </div>
+        <a class='bkml-redirect-done bkml-bottom-button'>Reload Bookmarklet</a>
     </div>
-    <a class='bkml-redirect-done'>Reload Bookmarklet</a>
 </div>
 
 <style>
@@ -59,16 +61,13 @@
   background-color: white;
   border-radius: 5px;
   height: 46px;
-  
-  /*line-height: 26px;
-  vertical-align: middle;
-*/  
   width: 175px;
   
   overflow: hidden;
   white-space: nowrap;
   
   margin-top: 25px;
+  margin-bottom: 25px;
   
   position: relative;
   
@@ -122,37 +121,58 @@
   vertical-align: middle;
 }
 .bkml-redirect-link:active {
-  transform: translate(0, 5px);
+/*  transform: translate(0, 5px);*/
 }
 .bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
     color: #707070;
     text-decoration: none;
 }
 
+/* Login end */ 
 
 
-.bkml-redirect-done {
-    padding: 0;
-    display: block;
-    margin: 10px auto 30px auto;
-    
-    width: 275px;
-    height: 38px;
-    line-height: 38px;
-    vertical-align: middle;
-    
-    border-radius: 20px;
-    background-color: #196bac;
+/* 
+  Styling for Not affiliatable page 
+*/
 
-    color: white;
-    font-size: 0.8em;
-    text-transform: uppercase;
+.bkml-notaff-container {
+  display: inline-block;
+  width: 275px;
+  margin: 12.5px;
+  border: 1px solid rgba(150,150,150,1);
 }
 
+.bkml-notaff-header {
+  background-color: rgba(250, 130, 50, 1);
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  font-size: 1.1em;
+}
 
+.bkml-notaff-message {
+    width: 230px;
+    margin: 20px auto;
+    color:  black;
+    font-size: 1.2em;
+    
+    color: #444444;
+}
 
+.bkml-notaff-message-top {
+    display: inline-block;
+    width: 215px;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin: 15px auto 20px auto;
+}
 
-
+.bkml-notaff-message-bottom {
+    width: 230px;
+    margin: 20px auto;
+    font-size: 0.70em;
+    font-style: italic;
+}
 
 
 
@@ -161,7 +181,6 @@
 /* 
   General Styling
 */
-
 
 .bkml-container {
   width: 305px;
@@ -204,10 +223,6 @@
 
 }
 
-.bkml-title-text {
-  
-}
-
 .bkml-title-img {
   display: inline-block;
   height: 26px;
@@ -223,6 +238,43 @@
   color: rgba(120,120,120,1);
   cursor: pointer;
 }
+
+
+.bkml-section-header {
+  background-color: #ff9344;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  
+  text-transform: uppercase;
+  
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 1.125em;
+  font-weight: 500;
+  color: rgb(255,255,255);
+  
+  
+}
+
+.bkml-bottom-button {
+    padding: 0;
+    display: block;
+    margin: 10px auto 30px auto;
+    
+    width: 275px;
+    height: 38px;
+    line-height: 38px;
+    vertical-align: middle;
+    
+    border-radius: 20px;
+    background-color: #196bac;
+
+    color: white;
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
+
+
 /* General end */
 
 
