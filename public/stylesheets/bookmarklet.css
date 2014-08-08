@@ -93,6 +93,8 @@
     text-transform: uppercase;
     
     box-shadow: 0 3px 1px #0c3b60;
+    
+    position: relative;
 }
 .bkml-bottom-button:active {
     transform: translate(0, 2px);

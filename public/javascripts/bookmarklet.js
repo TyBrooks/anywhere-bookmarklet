@@ -565,17 +565,16 @@
   AnywhereBkml.prototype.initializeLoginEvents = function($bkmlSnippet, linkDataPromise) {
     var bkml = this;
     
-    $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
-      var $reload = jq$(this);
-      $reload.off('click');
+    $bkmlSnippet.find('#bkml-reload-button').on('click', function() {
+      var $reload = jq$(this),
+          oldHTML = $reload.html(),
+          spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin" style="position: absolute; right: 21px; top: 13px;"></i>';
       
-      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
-      var oldVal = $reload.html();
-      $reload.html(spinnerHTML);
+      $reload.off('click').html($reload.html() + spinnerHTML);
       
       var userDataPromise = bkml.grabUserData();  
       userDataPromise.done(function(userData) {
-        $reload.html(oldVal);
+        $reload.html(oldHTML);
         bkml.loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
       })
     });
@@ -587,7 +586,7 @@
   AnywhereBkml.prototype.initializeNotAffiliatableEvents = function($bkmlSnippet) {
     var bkml = this;
     
-    $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
+    $bkmlSnippet.find('#bkml-close-button').on('click', function() {
       bkml.remove();
     });
   }
