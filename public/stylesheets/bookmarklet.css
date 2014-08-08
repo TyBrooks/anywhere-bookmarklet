@@ -70,7 +70,7 @@
 
 
 .bkml-section-header {
-  background-color: #ff9344;
+  background-color: #FF9344;
   height: 50px;
   line-height: 50px;
   vertical-align: middle;
@@ -131,14 +131,10 @@
   margin-bottom: 0;
 }
 
-
-.bkml-campaign-container {
- /* height: 40px;*/
-  margin: 20px auto;
-  color: rgb(50, 50, 50);
-}
-
-.bkml-campaign-container label {
+.bkml-campaign-label {
+  margin-top: 20px;
+  color: #444444;
+  
   font-size: 0.8em;
   display: block;
   margin-bottom: 5px;
@@ -165,6 +161,8 @@
   text-indent: 0.01px;
   text-overflow: '';
   
+  color: #444;
+  
   text-indent: 20px;
   
   display: block;
@@ -175,6 +173,11 @@
   background-color: white;
   border-radius: 2px;
 }
+
+#bkml-campaign-select > option {
+  color: #444444;
+}
+
 
 .bkml-campaign-filter-label {
   font-size: 0.9em;
@@ -204,13 +207,12 @@
   width: 231px;
   margin: 18px auto 32px auto;
   
-/* TODO: refactor this out of the following code*/
-  color: rgba(255, 147, 68, 1); 
-  
-  font-weight: 200px;
+  color: #FF9344; 
+  font-weight: 300px;
   
   border: thin solid rgba(150,150,150,1);
-/*  border-radius: 2px;*/
+  
+  white-space: nowrap;
 }
 
 .bkml-link-header {
@@ -226,6 +228,8 @@
 }
 
 .bkml-link-text {
+  white-space: normal;
+  
   height: 125px;
   text-align: left;
   padding: 12px 17px;
@@ -233,28 +237,24 @@
   word-wrap: break-word;
   word-break: break-all;
   
-  color: rgb(80,80,80);
+  color: #444;
   font-size: 0.9em;
   line-height: 1.3em;  
   
   overflow-y: auto;
 }
 
-.bkml-link-copy-button-container {
-  display: inline-block;
-  margin: 0;
-  width: 230px;
-  
-  text-align: center;
-  font-size: 0em;
-  
-  border-top: thin solid rgba(150,150,150,1);
+.bkml-link-buffer {
+  height: 10px;
 }
 
 .bkml-link-button {
   display: inline-block;
+  color: #FF9344;
   
-  color: rgba(255, 147, 68, 1); 
+  border-top: thin solid rgba(150,150,150,1);
+  
+  text-align: center;
   
   height: 34px;
   line-height: 34px;
@@ -264,35 +264,26 @@
   cursor: pointer;
   
   font-size: 12px; 
-  
   text-decoration: none;
 }
-.bkml-link-button.zeroclipboard-is-active, .bkml-link-button:active, .bkml-link-button:link, .bkml-link-button:visited, .bkml-link-button:hover {
-  color: rgba(255, 147, 68, 1) !important;
+.bkml-link-button.zeroclipboard-is-active, .bkml-link-button:active {
+  color: white !important;
+  background-color: #FF9344;
+}
+.bkml-link-button:link, .bkml-link-button:visited, .bkml-link-button:hover {
+  color: #FF9344;
   text-decoration: none;   
 }
 
 #clipboard-target.bkml-link-copy {
-  width: 150px;
+  width: 66%;
   border-right: thin solid rgba(150,150,150,1);
 }
 
 .bkml-link-shorten {
-  width: 70px;
+  width: 34%;
 }
-/*
-#clipboard-target.bkml-link-copy:active {
-  color: rgb(250,130,50);
-}
-#clipboard-target.bkml-link-copy.zeroclipboard-is-active {
-  color: rgb(250,130,50);
-}
-*/
 
-/*.bkml-link-shorten:active {
-  background-color: rgba(250, 130, 50, 1);
-}
-*/
 .bkml-social-container {
   display: inline-block;
   margin: 26px auto 30px auto;
@@ -334,24 +325,24 @@
 .bkml-social-fb:active {
   background-color: rgba(4, 61, 162, 1);
 }
-.fa-facebook {
-/*  color: rgba(50,90,160,1);*/
-}
+
 
 
 .bkml-social-tweet {
-  background-color: #51c9F0;
+  background-color: #51C9F0;
 }
 .bkml-social-tweet:active {
-  background-color: rgb(80,200,240);
-}
-.fa-twitter {
-/*  color: rgba(85,150,200,1);*/
+  background-color: #89E2FF;
 }
 
+
 .fa-stack {
+  position: relative;
+  right: 5px;
   margin-right: 5px;
   color: white;
+  
+  font-size: 0.9em;
 }
 
 /* Share end */

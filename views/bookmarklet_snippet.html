@@ -47,35 +47,31 @@
     
     <div class='bkml-share-page'>
         <div class='bkml-share-container'>
-            <div class='bkml-share-header bkml-section-header'>
+            <div class='bkml-section-header'>
                 Share this Page
             </div>
-            <div class='bkml-campaign-container'>
-                <form>
-                    <label for='bkml-campaign-select'>Current Campaign:</label>
-                    <div class='bkml-select-parent'>
-                        <i class='fa fa-arrows-v'></i>
-                        <select id='bkml-campaign-select'>
-                            <option val='test'>Test</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
+            
+            <form>
+                <label class='bkml-campaign-label' for='bkml-campaign-select'>Current Campaign:</label>
+                <div class='bkml-select-parent'>
+                    <i class='fa fa-arrows-v'></i>
+                    <select id='bkml-campaign-select'>
+                        <!-- <option val='test'>Test</option> -->
+                    </select>
+                </div>
+            </form>
+            
             <div class="bkml-link-container">
                 <div class="bkml-link-header">
                     Share This Link To Earn
                 </div>
-<!--TODO: Change this -->
-                <div class="bkml-link-text"> http://redirect.viglink.com?key=c71457e61268c998d4f4af9465946177&u=http%3A%2F%2Fshop.nordstrom.com%2Fs%2Fhalogen-marlie-calf-hair-pointy-toe-pump-women%2F3672251%3Forigin%345345F302% 
-                </div>
-                <div class='bkml-link-copy-button-container'>
-                    <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
-                        Copy To Clipboard
-                    </a>
-                    <a class='bkml-link-shorten bkml-link-button'>
-                        Shorten
-                    </a>
-                </div>
+                <div class="bkml-link-text"></div>
+                <div class='bkml-link-buffer'></div>
+                <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
+                    Copy To Clipboard
+                </a><a class='bkml-link-shorten bkml-link-button'>
+                    Shorten
+                </a>
             </div>
         </div>
     
