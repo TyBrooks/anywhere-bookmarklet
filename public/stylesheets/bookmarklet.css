@@ -20,7 +20,14 @@
   box-shadow: -5px -5px 5px #999, -5px 5px 5px #999;
   
   z-index: 999998; /* Must be less than our clipboard flash element, which is z-index: 999999999*/
+  
+  transition: top 1s;
 }
+
+.bkml-container-hide {
+  top: -600;
+}
+
 
 .bkml-title {
   height: 52px;
