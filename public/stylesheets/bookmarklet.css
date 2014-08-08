@@ -29,15 +29,13 @@
 
 .bkml-title {
   height: 52px;
-  line-height: 52px;
+  line-height: 56px;
   vertical-align: middle;
   
   text-align: left;
   
-  border-bottom: 2px solid rgba(150,150,150,1);
-  border-top: 2px solid rgba(150,150,150,1);
-  
-  margin-top: 1px;
+  border-bottom: 1px solid rgba(150,150,150,1);
+  border-top: 1px solid rgba(150,150,150,1);
   
   text-transform: uppercase;
   font-size: 0.85em;
@@ -57,7 +55,7 @@
   display: inline-block;
   height: 26px;
   width: 100px;
-  margin: 13px 15px;
+  margin: 13px 5px 13px 15px;
 }
 
 .bkml-title-dismiss {
@@ -130,6 +128,8 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
   
   text-indent: 20px;
   
@@ -199,7 +199,7 @@
   word-wrap: break-word;
   word-break: break-all;
   
-  color: rgb(32,32,32);
+  color: rgb(80,80,80);
   font-size: 0.9em;
   line-height: 1.3em;  
   
@@ -233,8 +233,9 @@
   
   text-decoration: none;
 }
-.bkml-link-button.zeroclipboard-is-active, .bkml-link-button:active {
-  color: rgba(255, 147, 68, 1) !important;   
+.bkml-link-button.zeroclipboard-is-active, .bkml-link-button:active, .bkml-link-button:link, .bkml-link-button:visited, .bkml-link-button:hover {
+  color: rgba(255, 147, 68, 1) !important;
+  text-decoration: none;   
 }
 
 #clipboard-target.bkml-link-copy {
@@ -276,7 +277,7 @@
   width: 137.5px;
     
   height: 28px;
-  line-height: 28px;
+  line-height: 26px;
   vertical-align: middle;
   
   margin: 0;
@@ -291,7 +292,7 @@
   border: thin solid white;
   
 }
-.bkml-social-button:active, .bkml-social-button:visited {
+.bkml-social-button:active, .bkml-social-button:visited, .bkml-social-button:link, .bkml-social-button:hover {
   text-decoration: none;
   color: white;
 }
@@ -346,42 +347,113 @@
 
 .bkml-redirect-container {
     width: 230px;
-    margin: 20px auto;
-    color:  black;
+    margin: 20px auto 10px auto;
+    color:  #444444;
+    font-size: 1.2em;
 }
 
+.bkml-redirect-text {
+  margin-top: 20px;
+}
+
+.bkml-redirect-link-container {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  display: inline-block;
+  text-align: center;
+  background-color: white;
+  border-radius: 5px;
+  height: 46px;
+  
+  /*line-height: 26px;
+  vertical-align: middle;
+*/  
+  width: 175px;
+  
+  overflow: hidden;
+  white-space: nowrap;
+  
+  margin-top: 25px;
+  
+  position: relative;
+  
+  border-left: 1px solid #d2d2d2;
+  border-right: 1px solid #d2d2d2;
+  box-shadow: 0 3px 1px #d2d2d2;
+  
+}
+
+.bkml-redirect-link-container > * {
+  display: inline-block;
+  height: 46px;
+  padding: 0;
+  margin: 0;
+}
+
+.bkml-redirect-link-image {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  width: 50px;
+  height: 46px;
+  border-right: thin solid #d2d2d2;
+  background: url('/images/logo.png') no-repeat center;
+  background-size: 30px 25px;
+  
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+
+
 .bkml-redirect-link {
-    display: block;
-    margin: 20px auto;
-    
-    font-size: 0.8em;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  width: 125px;
+  
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #707070;
+  
+  position: absolute;
+  left: 51px;
+  top: 0;
+  
+  line-height: 46px;
+  vertical-align: middle;
 }
-.bkml-redirect-link:link { 
-    color: #0000EE; 
-    text-decoration: underline;
+.bkml-redirect-link:active {
+  transform: translate(0, 5px);
 }
-.bkml-redirect-link:visited { 
-    color: #551A8B; 
-    text-decoration: underline;
+.bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
+    color: #707070;
+    text-decoration: none;
 }
+
+
 
 .bkml-redirect-done {
     padding: 0;
-    
     display: block;
-    margin: 50px auto 30px auto;
+    margin: 10px auto 30px auto;
     
-    width: 160px;
-    height: 30px;
-    line-height: 30px;
+    width: 275px;
+    height: 38px;
+    line-height: 38px;
     vertical-align: middle;
     
-    border: 1px solid black;
-    border-radius: 10px;
-    background-color: rgba(70,120,180,1);
+    border-radius: 20px;
+    background-color: #196bac;
 
     color: white;
     font-size: 0.8em;
+    text-transform: uppercase;
 }
 
 /* Login end */ 

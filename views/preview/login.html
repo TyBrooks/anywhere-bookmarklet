@@ -1,27 +1,31 @@
 <div class="bkml-container">
     <div class="bkml-title">
-        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>
+        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>ANYWHERE<i class="fa fa-lg fa-times-circle bkml-title-dismiss bkml-dismiss"></i>
     </div>
     <div class='bkml-login-container'>
         <div class='bkml-login-header'>
-            Please Log In
+            Please Sign In
         </div>
         <div class='bkml-redirect-container'>
-            <div class='bkmk-redirect-text'>
-                Sign in to share this link and earn! 
-                <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">VigLink Sign In Page</a>
+            <i class='fa fa-minus-circle fa-5x'></i>
+            
+            <div class='bkml-redirect-text'>
+                Sign in to share this link and earn!<br> 
+                <div class='bkml-redirect-link-container'>
+                    <div class='bkml-redirect-link-image'></div>
+                    <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
+                </div>
             </div>
-            <button class='bkml-redirect-done'>Reload Bookmarklet</button>
         </div>
     </div>
+    <a class='bkml-redirect-done'>Reload Bookmarklet</a>
 </div>
-        
+
 <style>
-/* Styling for Login 'Page' */
 
 .bkml-login-container {
   display: inline-block;
-  width: 250px;
+  width: 275px;
   margin: 12.5px;
   border: 1px solid rgba(150,150,150,1);
 }
@@ -35,45 +39,191 @@
 }
 
 .bkml-redirect-container {
-    width: 200px;
-    margin: 20px auto;
-    color:  black;
+    width: 230px;
+    margin: 20px auto 10px auto;
+    color:  #444444;
+    font-size: 1.2em;
 }
 
+.bkml-redirect-text {
+  margin-top: 20px;
+}
+
+.bkml-redirect-link-container {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  display: inline-block;
+  text-align: center;
+  background-color: white;
+  border-radius: 5px;
+  height: 46px;
+  
+  /*line-height: 26px;
+  vertical-align: middle;
+*/  
+  width: 175px;
+  
+  overflow: hidden;
+  white-space: nowrap;
+  
+  margin-top: 25px;
+  
+  position: relative;
+  
+  border-left: 1px solid #d2d2d2;
+  border-right: 1px solid #d2d2d2;
+  box-shadow: 0 3px 1px #d2d2d2;
+  
+}
+
+.bkml-redirect-link-container > * {
+  display: inline-block;
+  height: 46px;
+  padding: 0;
+  margin: 0;
+}
+
+.bkml-redirect-link-image {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  width: 50px;
+  height: 46px;
+  border-right: thin solid #d2d2d2;
+  background: url('/images/logo.png') no-repeat center;
+  background-size: 30px 25px;
+  
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+
+
 .bkml-redirect-link {
-    display: block;
-    margin: 20px auto;
-    
-    font-size: 0.8em;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  width: 125px;
+  
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #707070;
+  
+  position: absolute;
+  left: 51px;
+  top: 0;
+  
+  line-height: 46px;
+  vertical-align: middle;
 }
-.bkml-redirect-link:link { 
-    color: #0000EE; 
-    text-decoration: underline;
+.bkml-redirect-link:active {
+  transform: translate(0, 5px);
 }
-.bkml-redirect-link:visited { 
-    color: #551A8B; 
-    text-decoration: underline;
+.bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
+    color: #707070;
+    text-decoration: none;
 }
+
+
 
 .bkml-redirect-done {
     padding: 0;
-    
     display: block;
-    margin: 50px auto 30px auto;
+    margin: 10px auto 30px auto;
     
-    width: 160px;
-    height: 30px;
-    line-height: 30px;
+    width: 275px;
+    height: 38px;
+    line-height: 38px;
     vertical-align: middle;
     
-    border: 1px solid black;
-    border-radius: 10px;
-    background-color: rgba(70,120,180,1);
+    border-radius: 20px;
+    background-color: #196bac;
 
     color: white;
     font-size: 0.8em;
+    text-transform: uppercase;
 }
 
-/* Login end */ 
+
+
+
+
+
+
+
+
+
+/* 
+  General Styling
+*/
+
+
+.bkml-container {
+  width: 305px;
+  background-color: rgb(245,245,245);
+  color: #F8F8F8;
+  text-align: center;
+  
+  position: fixed;
+  top: 0;
+  right: 0;
+  
+  font-family: "Helvetica","Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 16px;
+  
+  font-weight: 400;
+
+  box-shadow: -5px -5px 5px #999, -5px 5px 5px #999;
+  
+/* Must be less than #global-zerclipboard-html-bridge which is z-index: 999999999*/
+  z-index: 999998;
+}
+
+.bkml-title {
+  height: 52px;
+  line-height: 56px;
+  vertical-align: middle;
+  
+  text-align: left;
+  
+  border-bottom: 1px solid rgba(150,150,150,1);
+  border-top: 1px solid rgba(150,150,150,1);
+  
+  text-transform: uppercase;
+  font-size: 0.85em;
+  font-weight: 100;
+  letter-spacing: 1px;
+  color: rgb(80,80,100);
+  
+  background-image: linear-gradient(to top, rgb(205,205,205), rgb(255,255,255));
+
+}
+
+.bkml-title-text {
+  
+}
+
+.bkml-title-img {
+  display: inline-block;
+  height: 26px;
+  width: 100px;
+  margin: 13px 5px 13px 15px;
+}
+
+.bkml-title-dismiss {
+  position: absolute;
+  top: 23px;
+  right: 15px;
+  
+  color: rgba(120,120,120,1);
+  cursor: pointer;
+}
+/* General end */
+
+
 </style>
-        
