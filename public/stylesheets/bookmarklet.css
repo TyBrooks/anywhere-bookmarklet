@@ -114,11 +114,32 @@
   margin-left: 19px;
 }
 
+.bkml-select-parent {
+  overflow: hidden;
+  position: relative;
+}
+
+.bkml-select-parent .fa-arrows-v {
+  position: absolute;
+  top: 10px;
+  left: 32px;
+  font-size: 14px;
+}
+
 #bkml-campaign-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  text-indent: 20px;
+  
   display: block;
   font-size: 0.8em;
   width: 230px;
+  height: 25px;
   margin: 5px auto 10px auto;
+  background-color: white;
+  border-radius: 2px;
 }
 
 .bkml-campaign-filter-label {
@@ -147,7 +168,7 @@
 
 .bkml-link-container {
   width: 231px;
-  margin: 32px auto;
+  margin: 18px auto 32px auto;
   
 /* TODO: refactor this out of the following code*/
   color: rgba(255, 147, 68, 1); 
