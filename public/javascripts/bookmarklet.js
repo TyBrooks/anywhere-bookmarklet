@@ -221,11 +221,22 @@
   }
 
   Bookmarklet.prototype.remove = function() {
-    jq$('.bkml-container').remove();
-    jq$('.bkml-resource').remove();
-    jq$('.global-zeroclipboard-container').remove();
-    delete window.viglink_bkml;
+    this.slideUp();
+    setTimeout(function() {
+      jq$('.bkml-container').remove();
+      jq$('.bkml-resource').remove();
+      jq$('.global-zeroclipboard-container').remove();
+      delete window.viglink_bkml;
+    }, 1000);
   } 
+  
+  Bookmarklet.prototype.slideDown = function() {
+    jq$('.bkml-container').removeClass("bkml-container-hidden");
+  }
+  
+  Bookmarklet.prototype.slideUp = function() {
+    jq$('.bkml-container').addClass("bkml-container-hidden");
+  }
   
   Bookmarklet.prototype.logEvent = function(data) {
     console.log(data);
@@ -335,6 +346,10 @@
     }
     
     bkml.initializeGeneralEvents($bkmlSnippet);
+    setTimeout(function() {
+      bkml.slideDown();  
+    }, 10)
+    
   }
 //end  
   

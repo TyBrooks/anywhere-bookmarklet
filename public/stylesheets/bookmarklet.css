@@ -21,11 +21,14 @@
   
   z-index: 999998; /* Must be less than our clipboard flash element, which is z-index: 999999999*/
   
-  transition: top 1s;
+  -webkit-transition: top 1s linear;
+  -moz-transition: top 1s linear;
+  -o-transition: top 1s linear;
+  transition: top 1s linear;
 }
 
-.bkml-container-hide {
-  top: -600;
+.bkml-container-hidden {
+  top: -600px !important;
 }
 
 
@@ -110,6 +113,7 @@
 .bkml-bottom-button:link, .bkml-bottom-button:visited, .bkml-bottom-button:hover {
   text-decoration: none;
   color: white;
+  background-color: #196bac;
 }
 /* General end */
 
@@ -383,8 +387,6 @@
   vertical-align: middle;
   padding: 0;
   margin: 0 0 20px 0;
-  
-  background-color: white;
 }
 
 .bkml-redirect-image {
@@ -420,14 +422,18 @@
   
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  
+  background-color: white;
 }
 .bkml-redirect-link:active {
   transform: translate(0, 2px);
   box-shadow: 0 1px 1px #d2d2d2;
+  background-color: white;
 }
 .bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
     color: #707070;
     text-decoration: none;
+    background-color: white;
 }
 
 /* Login end */ 
