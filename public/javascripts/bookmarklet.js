@@ -576,17 +576,16 @@
   AnywhereBkml.prototype.initializeLoginEvents = function($bkmlSnippet, linkDataPromise) {
     var bkml = this;
     
-    $bkmlSnippet.find('.bkml-redirect-done').on('click', function() {
-      var $reload = jq$(this);
-      $reload.off('click');
+    $bkmlSnippet.find('#bkml-reload-button').on('click', function() {
+      var $reload = jq$(this),
+          oldHTML = $reload.html(),
+          spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin" style="position: absolute; right: 21px; top: 13px;"></i>';
       
-      spinnerHTML = '<i class="fa fa-circle-o-notch fa-spin"></i>';
-      var oldVal = $reload.html();
-      $reload.html(spinnerHTML);
+      $reload.off('click').html($reload.html() + spinnerHTML);
       
       var userDataPromise = bkml.grabUserData();  
       userDataPromise.done(function(userData) {
-        $reload.html(oldVal);
+        $reload.html(oldHTML);
         bkml.loadHTML(linkDataPromise, userData, $bkmlSnippet); //Re-insert ourselves into event flow with new user data
       })
     });
@@ -598,7 +597,7 @@
   AnywhereBkml.prototype.initializeNotAffiliatableEvents = function($bkmlSnippet) {
     var bkml = this;
     
-    $bkmlSnippet.find('.bkml-notaff-close').on('click', function() {
+    $bkmlSnippet.find('#bkml-close-button').on('click', function() {
       bkml.remove();
     });
   }
@@ -617,21 +616,21 @@
   
 /* Page load helpers */
   AnywhereBkml.prototype.showSharePage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'none');
   }
   
   AnywhereBkml.prototype.showLoginPage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'none');
   }
   
   AnywhereBkml.prototype.showNotAffiliatablePage = function($bkmlSnippet) {
-    $bkmlSnippet.find('.bkml-notaff-container').css('display', 'inline-block');
-    $bkmlSnippet.find('.bkml-login-container').css('display', 'none');
-    $bkmlSnippet.find('.bkml-share-container').css('display', 'none');
+    $bkmlSnippet.find('.bkml-notaff-page').css('display', 'inline-block');
+    $bkmlSnippet.find('.bkml-login-page').css('display', 'none');
+    $bkmlSnippet.find('.bkml-share-page').css('display', 'none');
   }
 //End
   
@@ -697,7 +696,8 @@
     [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
     [serverDomain + '/stylesheets/bookmarklet.css', "css"],
     // Have to host Font Awesome from the CDN for firefox for some reason
-    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
+    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css'],
+    ['//fonts.googleapis.com/css?family=Lato:400,700', 'css']
   ];
   
   var bkmlOptions = {

@@ -1,7 +1,6 @@
 <div class="bkml-container">
     <div class="bkml-title">
-        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>
-        <i class="fa fa-lg fa-times-circle-o bkml-title-dismiss bkml-dismiss"></i>
+        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>ANYWHERE<i class="fa fa-lg fa-times-circle bkml-title-dismiss bkml-dismiss"></i>
     </div>
     
     <!-- Login Page -->
@@ -20,45 +19,51 @@
     <!-- Login end -->
     
     <!-- Share page -->
-    <div class='bkml-share-container'>
-        <div class='bkml-share-header'>
-            Share this Page
-        </div>
-        <div class='bkml-campaign-container'>
-            <form>
-                <label for='bkml-campaign-select'>Current Campaign:</label>
-                <select id='bkml-campaign-select'>
-                </select>
-            </form>
-        </div>
-        <div class="bkml-link-container">
-            <div class="bkml-link-header">
-                Share This Link To Earn
+    <div class='bkml-share-page'>
+        <div class='bkml-share-container'>
+            <div class='bkml-share-header bkml-section-header'>
+                Share this Page
             </div>
-            <div class="bkml-link-text">
-                Link Text....
+            <div class='bkml-campaign-container'>
+                <form>
+                    <label for='bkml-campaign-select'>Current Campaign:</label>
+                    <div class='bkml-select-parent'>
+                        <i class='fa fa-arrows-v'></i>
+                        <select id='bkml-campaign-select'>
+                            <option val='test'>Test</option>
+                        </select>
+                    </div>
+                </form>
             </div>
-            <div class='bkml-link-copy-button-container'>
-                <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
-                    Copy To Clipboard
-                </a>
-                <a class='bkml-link-shorten bkml-link-button'>
-                    Shorten
-                </a>
+            <div class="bkml-link-container">
+                <div class="bkml-link-header">
+                    Share This Link To Earn
+                </div>
+                <div class="bkml-link-text"> http://redirect.viglink.com?key=c71457e61268c998d4f4af9465946177&u=http%3A%2F%2Fshop.nordstrom.com%2Fs%2Fhalogen-marlie-calf-hair-pointy-toe-pump-women%2F3672251%3Forigin%345345F302%
+                </div>
+                <div class='bkml-link-copy-button-container'>
+                    <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
+                        Copy To Clipboard
+                    </a>
+                    <a class='bkml-link-shorten bkml-link-button'>
+                        Shorten
+                    </a>
+                </div>
             </div>
         </div>
+    
         <div class="bkml-social-container">
             <a class="bkml-social-button bkml-social-tweet" href="https://twitter.com/share" target="_blank">
                 <span class="fa-stack">
-                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-circle-thin fa-stack-2x"></i>
                   <i class="fa fa-twitter fa-stack-1x"></i>
-                </span>Tweet
+                </span>Tweet Link
             </a>
             <a href="http://www.facebook.com" class="bkml-social-button bkml-social-fb">
                 <span class="fa-stack">
-                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-circle-thin fa-stack-2x"></i>
                   <i class="fa fa-facebook fa-stack-1x"></i>
-                </span>Share
+                </span>Share Link
             </a>
         </div>
     </div>

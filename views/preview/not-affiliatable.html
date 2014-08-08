@@ -1,89 +1,30 @@
 <div class="bkml-container">
     <div class="bkml-title">
-        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>
-        <i class="fa fa-lg fa-times-circle-o bkml-title-dismiss bkml-dismiss"></i>
+        <img src='http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png' class='bkml-title-img'>ANYWHERE<i class="fa fa-lg fa-times-circle bkml-title-dismiss bkml-dismiss"></i>
     </div>
     
     <!-- Not Affiliatable Page -->
-    
-    <div class='bkml-notaff-container'>
-        <div class='bkml-notaff-header'>
-            Not Affiliatable
-        </div>
-        <div class='bkml-notaff-message'>
-            <div class='bkml-notaff-message-text'>
-                <span class='bkml-notaff-message-top'>Sorry, this page is not currently affiliatable.</span>
-                <span class='bkml-notaff-message-bottom'>We're constantly adding merchants to our network, so check back again later!</span>
+    <div class='bkml-notaff-page'>
+        <div class='bkml-notaff-container'>
+            <div class='bkml-section-header'>
+                Not Affiliatable
             </div>
-            <button class='bkml-notaff-close'>Close Bookmarklet</button>
+            <i class='fa fa-exclamation-circle bkml-exclamation'></i>
+            <span class='bkml-notaff-message-top'>
+                Sorry, this page is not currently affiliatable.
+            </span>
+            <span class='bkml-notaff-message-bottom'>
+                We're constantly adding merchants to our network, so check back again later!
+            </span>
         </div>
+        <a class='bkml-bottom-button'>Close Bookmarklet</a>
     </div>
-            
-    
-    <!-- Login Page -->
-    <div class='bkml-login-container' style='display: none;'>
-        <div class='bkml-login-header'>
-            Please Log In
-        </div>
-        <div class='bkml-redirect-container'>
-            <div class='bkmk-redirect-text'>
-                Sign in to share this link and earn! 
-                <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">VigLink Sign In Page</a>
-            </div>
-            <button class='bkml-redirect-done'>Reload Bookmarklet</button>
-        </div>
-    </div>
-    <!-- Login end -->
-    
-    <!-- Share page -->
-    <div class='bkml-share-container' style='display: none'>
-        <div class='bkml-share-header'>
-            Share this Page
-        </div>
-        <div class='bkml-campaign-container'>
-            <form>
-                <label for='bkml-campaign-select'>Current Campaign:</label>
-                <select id='bkml-campaign-select'>
-                </select>
-            </form>
-        </div>
-        <div class="bkml-link-container">
-            <div class="bkml-link-header">
-                Share This Link To Earn
-            </div>
-            <div class="bkml-link-text">
-                Link Text....
-            </div>
-            <div class='bkml-link-copy-button-container'>
-                <a id="clipboard-target" href="#" class="bkml-link-copy bkml-link-button">
-                    Copy To Clipboard
-                </a>
-                <a class='bkml-link-shorten bkml-link-button'>
-                    Shorten
-                </a>
-            </div>
-        </div>
-        <div class="bkml-social-container">
-            <a class="bkml-social-button bkml-social-tweet" href="https://twitter.com/share" target="_blank">
-                <span class="fa-stack">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-twitter fa-stack-1x"></i>
-                </span>Tweet
-            </a>
-            <a href="http://www.facebook.com" class="bkml-social-button bkml-social-fb">
-                <span class="fa-stack">
-                  <i class="fa fa-circle fa-stack-2x"></i>
-                  <i class="fa fa-facebook fa-stack-1x"></i>
-                </span>Share
-            </a>
-        </div>
-    </div>
-    <!-- Share end -->
     
 </div>
 
 
 <style>
+
 
 /* 
   Styling for Not affiliatable page 
@@ -91,57 +32,155 @@
 
 .bkml-notaff-container {
   display: inline-block;
-  width: 250px;
+  width: 275px;
   margin: 12.5px;
   border: 1px solid rgba(150,150,150,1);
+  
+  color: #444444;
+/*  font-size: 1.2em;*/
 }
 
-.bkml-notaff-header {
-  background-color: rgba(250, 130, 50, 1);
-  height: 50px;
-  line-height: 50px;
-  vertical-align: middle;
-  font-size: 1.1em;
-}
-
-.bkml-notaff-message {
-    width: 200px;
-    margin: 20px auto;
-    color:  black;
+.bkml-exclamation {
+    margin-top: 20px;
+    font-size: 6em;
 }
 
 .bkml-notaff-message-top {
-    display: inline-block;
-    font-size: 1.1em;
+    display: block;
+    width: 215px;
+    font-size: 1.2em;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin: 15px auto 20px auto;
 }
 
 .bkml-notaff-message-bottom {
-    margin-top: 20px;
-    font-size: 0.95em;
+    display: block;
+    width: 245px;
+    margin: 20px auto;
+    font-size: 0.84em;
+    line-height: 1.3em;
     font-style: italic;
 }
 
-.bkml-notaff-close {
+/* Not affiliatable end */ 
+
+
+
+
+
+
+/* 
+  General Styling
+*/
+
+
+.bkml-container {
+  width: 305px;
+  background-color: rgb(245,245,245);
+  color: #F8F8F8;
+  text-align: center;
+  
+  position: fixed;
+  top: 0;
+  right: 0;
+  
+  font-family: "Helvetica","Helvetica Neue", "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 16px;
+  
+  font-weight: 400;
+
+  box-shadow: -5px -5px 5px #999, -5px 5px 5px #999;
+  
+/* Must be less than #global-zerclipboard-html-bridge which is z-index: 999999999*/
+  z-index: 999998;
+}
+
+.bkml-title {
+  height: 52px;
+  line-height: 56px;
+  vertical-align: middle;
+  
+  text-align: left;
+  
+  border-bottom: 1px solid rgba(150,150,150,1);
+  border-top: 1px solid rgba(150,150,150,1);
+  
+  text-transform: uppercase;
+  font-size: 0.85em;
+  font-weight: 100;
+  letter-spacing: 1px;
+  color: rgb(80,80,100);
+  
+  background-image: linear-gradient(to top, rgb(205,205,205), rgb(255,255,255));
+
+}
+
+.bkml-title-text {
+  
+}
+
+.bkml-title-img {
+  display: inline-block;
+  height: 26px;
+  width: 100px;
+  margin: 13px 5px 13px 15px;
+}
+
+.bkml-title-dismiss {
+  position: absolute;
+  top: 23px;
+  right: 15px;
+  
+  color: rgba(120,120,120,1);
+  cursor: pointer;
+}
+
+
+.bkml-section-header {
+  background-color: #ff9344;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  
+  text-transform: uppercase;
+  
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-size: 1.125em;
+  font-weight: 500;
+  color: rgb(255,255,255);
+  
+  
+}
+
+.bkml-bottom-button {
     padding: 0;
-    
     display: block;
-    margin: 50px auto 30px auto;
+    margin: 10px auto 30px auto;
     
-    width: 160px;
-    height: 30px;
-    line-height: 30px;
+    width: 275px;
+    height: 38px;
+    line-height: 38px;
     vertical-align: middle;
     
-    border: 1px solid black;
-    border-radius: 10px;
-    background-color: rgba(70,120,180,1);
+    border-radius: 20px;
+    background-color: #196bac;
 
     color: white;
     font-size: 0.8em;
+    text-transform: uppercase;
+    
+    box-shadow: 0 3px 1px #0c3b60;
 }
+.bkml-bottom-button:active {
+    transform: translate(0, 2px);
+    box-shadow: 0 1px 1px #0c3b60;
+}
+.bkml-bottom-button:link, .bkml-bottom-button:visited, .bkml-bottom-button:hover {
+  text-decoration: none;
+  color: white;
+}
+/* General end */
 
-/* Not affiliatable end */ 
+
 
 </style>
