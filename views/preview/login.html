@@ -12,11 +12,9 @@
             
                 <div class='bkml-redirect-text'>
                     Sign in to share this link and earn!<br> 
-                    <div class='bkml-redirect-link-container'>
-                        <div class='bkml-redirect-link-image'></div>
-                        <a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
-                    </div>
                 </div>
+                <div class='bkml-redirect-image'>    
+                </div><a class='bkml-redirect-link' href='http://publishers.viglink.com/sign-in' target="_">Sign In Page</a>
             </div>
         </div>
         <a class='bkml-redirect-done bkml-bottom-button'>Reload Bookmarklet</a>
@@ -49,79 +47,56 @@
 
 .bkml-redirect-text {
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
-.bkml-redirect-link-container {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  
-  display: inline-block;
-  text-align: center;
-  background-color: white;
-  border-radius: 5px;
-  height: 46px;
-  width: 175px;
-  
-  overflow: hidden;
-  white-space: nowrap;
-  
-  margin-top: 25px;
-  margin-bottom: 25px;
-  
-  position: relative;
-  
-  border-left: 1px solid #d2d2d2;
-  border-right: 1px solid #d2d2d2;
-  box-shadow: 0 3px 1px #d2d2d2;
-  
-}
-
-.bkml-redirect-link-container > * {
+.bkml-redirect-link, .bkml-redirect-image {
   display: inline-block;
   height: 46px;
+  vertical-align: middle;
   padding: 0;
-  margin: 0;
+  margin: 0 0 20px 0;
+  
+  background-color: white;
 }
 
-.bkml-redirect-link-image {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  
+.bkml-redirect-image {
   width: 50px;
-  height: 46px;
-  border-right: thin solid #d2d2d2;
+    
   background: url('/images/logo.png') no-repeat center;
   background-size: 30px 25px;
+  background-color: white;
   
-  position: absolute;
-  left: 0;
-  top: 0;
+  border-left: 1px solid #d2d2d2;
+  border-right: thin solid #d2d2d2;
+  box-shadow: 0 3px 1px #d2d2d2;
+  
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  
 }
 
-
-
 .bkml-redirect-link {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  
   width: 125px;
+  height: 46px;
   
   font-size: 0.85em;
   font-weight: bold;
   color: #707070;
   
-  position: absolute;
-  left: 51px;
-  top: 0;
-  
   line-height: 46px;
   vertical-align: middle;
+  
+  box-shadow: 0 3px 1px #d2d2d2;
+  
+  border-right: 1px solid #d2d2d2;
+  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 .bkml-redirect-link:active {
-/*  transform: translate(0, 5px);*/
+  transform: translate(0, 2px);
+  box-shadow: 0 1px 1px #d2d2d2;
 }
 .bkml-redirect-link:visited, .bkml-redirect-link:link, .bkml-redirect-link:hover {
     color: #707070;
@@ -272,10 +247,45 @@
     color: white;
     font-size: 0.8em;
     text-transform: uppercase;
+    
+    box-shadow: 0 3px 1px #0c3b60;
+}
+.bkml-bottom-button:active {
+    transform: translate(0, 2px);
+    box-shadow: 0 1px 1px #0c3b60;
 }
 
 
 /* General end */
 
 
+
+
+
+
+.bkml-redirect-link-container {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  
+  display: inline-block;
+  text-align: center;
+  background-color: white;
+  border-radius: 5px;
+  height: 46px;
+  width: 175px;
+  
+  overflow: hidden;
+  white-space: nowrap;
+  
+  margin-top: 25px;
+  margin-bottom: 25px;
+  
+  position: relative;
+  
+  border-left: 1px solid #d2d2d2;
+  border-right: 1px solid #d2d2d2;
+  box-shadow: 0 3px 1px #d2d2d2;
+  
+}
 </style>
