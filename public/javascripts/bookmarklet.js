@@ -333,7 +333,7 @@
         
         alert("Bookmarklet Error: There was a problem accessing our servers. Try again later!")
       })
-    } else {
+    } else { 
       bkml.logEvent({
         type: "Load NotLogged",
         user: window.viglink_user
@@ -408,7 +408,7 @@
   }
 
   AnywhereBkml.prototype.anywhereizeURL = function(key) {
-    return "http://redirect.viglink.com?key=" + key + "&u=" + encodeURIComponent(window.location.href);
+    return "http://redirect.viglink.com?key=" + key + "&type=bk&u=" + encodeURIComponent(window.location.href);
   }
 
   AnywhereBkml.prototype.setNewLink = function($bkmlSnippet, anywhereizedURL) {
