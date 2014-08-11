@@ -34,7 +34,7 @@
 
 .bkml-title {
   height: 52px;
-  line-height: 56px;
+  line-height: 52px;
   vertical-align: middle;
   
   text-align: left;
@@ -54,9 +54,22 @@
 
 .bkml-title-img {
   display: inline-block;
-  height: 26px;
+  height: 52px;
   width: 100px;
-  margin: 13px 5px 13px 15px;
+  background: url('http://anywhere-bookmarklet.herokuapp.com/images/logo_small.png') no-repeat center;
+  vertical-align: middle;
+  margin: 0 5px 0 15px;
+/*  margin: 13px 5px 13px 15px;*/
+}
+
+.bkml-title-text {
+  display: inline-block;
+  height: 52px;
+  line-height: 52px;
+  vertical-align: middle;
+  position: relative;
+  top: 2px;
+  
 }
 
 .bkml-title-dismiss {
