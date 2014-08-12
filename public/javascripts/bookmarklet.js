@@ -262,16 +262,16 @@
     jq$.ajax(serverRoot + path, {
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
       method: "POST",
-      data: { "events": data },
+      data: { events: JSON.stringify(data) },
       success: function() {
         console.log("EVENT LOGGED");
       },
       error: function(xhr, textStatus, errorThrown) {
-        console.log( { "events" : data })
-        console.log("LOGGING FAILED");
-        console.log(xhr);
-        console.log(textStatus);
-        console.log(errorThrown);
+        // console.log( { "events" : data })
+//         console.log("LOGGING FAILED");
+//         console.log(xhr);
+//         console.log(textStatus);
+//         console.log(errorThrown);
       }
     });
   }

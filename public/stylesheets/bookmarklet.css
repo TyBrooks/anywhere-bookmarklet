@@ -168,15 +168,15 @@
 }
 
 #bkml-campaign-select {
-  -webkit-appearance: none;
+/*  -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   text-indent: 0.01px;
-  text-overflow: '';
+  text-overflow: '';*/
   
   color: #444;
   
-  text-indent: 20px;
+  text-indent: 5px;
   
   display: block;
   font-size: 0.8em;
