@@ -259,7 +259,7 @@
     var serverRoot = "http://qa-api-va-1.ec2.viglink.com:8080",
         path = "/api/pixel.gif";
         
-    $.ajax(serverRoot + path, {
+    jq$.ajax(serverRoot + path, {
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
       method: "POST",
       data: { "events": data },
