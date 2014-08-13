@@ -1,28 +1,20 @@
-//TODO 1. Is CSS timeout an issue?
-//TODO: 2. Figure out what the hell is wrong with the variable scoping line 140 
-//TODO 5. Fix order load importance in html? (maybe)
-
-
-
 (function() {
   
-  viglink_dev = true;
-  viglinkServeLocal = false;
-  viglink_localhost = (true) ? '//localhost:3000' : '//10.0.2.2:3000'
-  var serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
+  var serverDomain = "";
   
   function Bookmarklet(options) {
   
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignInfo = {};// IE compatibility issue
-    this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
+    //TODO this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
   /*
-    NOTE: Apparently we can't actually trust that our site has already loaded a useable version of jQuery
-    Amazon has some sort of customized jQuery library that uses window.jQuery but doesn't provide the functionality we need.
+    Loads jQuery but plays nice with already loaded versions and already-defined $ variables
+    @param {function} callback : this callback is run once jQuery is loaded
+    @return none
   */
   Bookmarklet.prototype.loadJQuery = function(callback) {
     var scriptElem = document.createElement("script"),
@@ -47,6 +39,10 @@
     document.getElementsByTagName("head")[0].appendChild(scriptElem);
   }
   
+  /*
+    Enables IE 9 support for loading resources that aren't JSONP enabled
+    @param {jQuery} jQuery : pass in the global jQuery object (the one the bookmarklet is using)
+  */
   Bookmarklet.prototype.shimAjaxIE = function(jQuery) {
     // Code courtesy of https://gist.github.com/michaelcox/2655118  
   	jQuery.ajaxTransport(function( s ) {
@@ -99,6 +95,12 @@
   	});
   }
   
+  /*
+    The base ajax method that all resource loading uses
+    @param {String} url : url to load
+    @param {String} dataType : the dataType we're expecting from the server
+    @param {String} jsonP : an overrride of the name of the callback parameter of the request
+  */
   Bookmarklet.prototype.ajax =function(url, dataType, jsonp) {
     var promise = jq$.Deferred();
     
@@ -131,7 +133,10 @@
    return promise; 
   }
   
-  // Returns a promise that resolves when all resources are loaded
+  /*
+    Loads all resources in the bookmarklet's resources property
+    @return {Promise} : promise resolves once all resources load or fails if any individual resource fails
+  */
   Bookmarklet.prototype.loadResources = function() {
     var overallPromise = jq$.Deferred();
     var that = this;
@@ -168,13 +173,19 @@
     return overallPromise;
   }
 
-  //Returns a promise when the resource is loaded
+  /*
+    Loads an HTML resource
+    @return {Promise} : resolves or fails based on resource load
+  */
   Bookmarklet.prototype.loadHTMLResource = function(url) {
     var htmlPromise = this.ajax(url, 'html');
     return htmlPromise;
   }
 
-  // Returns a promise when the resource is loaded
+  /*
+    Loads a CSS resource
+    @return {Promise} : resolves or fails based on resource load
+  */
   Bookmarklet.prototype.loadCSSResource = function(url) {
     var cssPromise = jq$.Deferred();
     
@@ -196,30 +207,45 @@
     return cssPromise;
   }
 
-  // Returns a promise when the resource is loaded
+  /*
+    Loads a JavaScript resource
+    @return {Promise} : resolves or fails based on resource load
+  */
   Bookmarklet.prototype.loadJSResource = function(url) {
     var scriptPromise = this.ajax(url, 'script');
     return scriptPromise;
   }
   
+  /*
+    Loads JSON data via an Ajax request
+    @return {Promise} : a promise that resolves or fails based on whether the resource loads
+  */
   Bookmarklet.prototype.callJsonAPI = function(url) {
     var jsonPromise = this.ajax(url, 'json');
     return jsonPromise;
   }
   
+  /*
+    Loads JSONP data via an Ajax request
+    @return {Promise} : a promise that resolves or fails based on whether the resource loads
+  */
   Bookmarklet.prototype.callJsonpAPI = function(url, callbackParam) {
     var jsonpPromise = this.ajax(url, 'jsonp', callbackParam);
     return jsonpPromise;
   }
   
-  Bookmarklet.prototype.sendLogData = function(bookmarkletData) {
-    
-  }
-
+  /*
+    Attaches the Bookmarklet HTML to the document
+    @param {jQuery Object} : the Bookmarklet HTML Snippet wrapped in jQuery
+  */
   Bookmarklet.prototype.attach = function($bkml) {
     jq$('body').append($bkml);
   }
 
+  /*
+    Removes the Bookmarklet from the document and performs all necessary cleanup
+    Waits until the slide up animation completes to remove everything.
+  */
   Bookmarklet.prototype.remove = function() {
     this.slideUp();
     setTimeout(function() {
@@ -230,14 +256,20 @@
     }, 1000);
   } 
   
+  // Triggers SlideDown Animation by removing the hidden class
   Bookmarklet.prototype.slideDown = function() {
     jq$('.bkml-container').removeClass("bkml-container-hidden");
   }
   
+  // Triggers slide up Animation by removing the hidden class
   Bookmarklet.prototype.slideUp = function() {
     jq$('.bkml-container').addClass("bkml-container-hidden");
   }
   
+  /* 
+    Packages log data for sending to the API Pixel Controller
+    @param {Object} data : an object with properties corresponding to relevant data
+  */
   Bookmarklet.prototype.logEvent = function(data) {
     console.log(data);
     
@@ -255,6 +287,10 @@
     this.sendLogData(returnData);
   }
   
+  /*
+    Sends data to the API Pixel Controller
+    @param {Object} data : data that's not in sendable form
+  */
   Bookmarklet.prototype.sendLogData = function(data) {
     var serverRoot = "http://qa-api-va-1.ec2.viglink.com:8080",
         path = "/api/pixel.gif";
@@ -272,21 +308,26 @@
     });
   }
 
-/* 
-    AnywhereBkml Methods 
-*/
   
+  /*
+    Constructor for an AnywhereBkml object. Calls the Bookmarklet constructor
+    @param {object} options : an object with data to pass to the Bookmarklet constructor
+  */
   function AnywhereBkml(options) {
     this.constructor(options);
   }
   
+  // Handles inheritance of Bookmarklet properties by the AnywhereBkml
   function Surrogate() {};
   Surrogate.prototype = Bookmarklet.prototype;
   AnywhereBkml.prototype = new Surrogate();
 
 
-/* Load VLA specific resources */
-    
+  /*
+    Grab all initially-required resources once jQuery has been loaded
+    Attempts to 1) Load Resources, 2) Grab data for the current user from API, 3) Grab current link data
+    1 & 2 must complete before the loadHTML is called. 3 is required to have completed in the next step but not this one.
+  */
   AnywhereBkml.prototype.grabResources = function() {
     var bkml = this;
     
@@ -305,11 +346,18 @@
       bkml.remove();
     })
   }
-//end  
+
   
   
 /* General Event Flow function */
   
+  /* 
+    The main event loop for the Bookmarklet
+    Takes the data we've loaded and determines which page to display
+    @param {Promise} linkDataPromise : the promise from the call to grab data about the current url
+    @param {object} userData : the data returned from the API call to get user data
+    @param {DOM Partial Object} : the html snippet returned from the html resource load
+  */
   AnywhereBkml.prototype.loadHTML = function(linkDataPromise, userData, htmlSnippet) {
     var $bkmlSnippet = jq$(htmlSnippet),
         bkml = this;
@@ -362,6 +410,8 @@
     }
     
     bkml.initializeGeneralEvents($bkmlSnippet);
+    
+    // Wait until the bkml is actually loaded by the document to call Slide Down. 
     setTimeout(function() {
       bkml.slideDown();  
     }, 10)
@@ -372,6 +422,12 @@
   
 /* Helpers for building up the Share Page */  
   
+  
+  /*
+    Handles the logic of building up and storing data about the user's campaigns
+    @param {jQuery Object} $bkmlSnippet : the Bookmarklet $-wrapped HTML snippet
+    @param {object} data : userData from API call
+  */
   AnywhereBkml.prototype.createCampaignHash = function($bkmlSnippet, data) {
     var userData = data.users;
     var that = this;
