@@ -7,7 +7,7 @@
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignInfo = {};// IE compatibility issue
-    //TODO this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
+    this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
