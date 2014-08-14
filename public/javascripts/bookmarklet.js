@@ -1,13 +1,13 @@
 (function() {
   
-  var serverDomain = "";
+  var serverDomain = ""; //TODO Prod
   
   function Bookmarklet(options) {
   
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignInfo = {};// IE compatibility issue
-    //TODO this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com';
+    this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com'; //TODO PROD
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
@@ -18,21 +18,25 @@
   */
   Bookmarklet.prototype.loadJQuery = function(callback) {
     var scriptElem = document.createElement("script"),
-        loaded = false, //Later IEs have both readyState and onload, need to make sure we only trigger once
+        loaded = false,
         bkml = this;
+        
     scriptElem.className = 'bkml-resource';
-    
     scriptElem.src = this.serverDomain + "/javascripts/vendor/jquery-1.11.1.js";
+    
     scriptElem.onload = scriptElem.onreadystatechange = function() {
       if (!loaded && (!this.readyState || this.readyState === "loaded" )) {
+        loaded = true;  
+        
         // Ensure we're not stepping on anyone's feet. Return the $ to it's past owner once the library has loaded and
-        // return window.jQuery to it's past value. We'll use the window.js$
-        loaded = true;      
+        // return window.jQuery to it's past value. We'll use the window.js    
         jq$ = window.jq$ = window.jQuery.noConflict(true);
+        
          // IE compat - doesn't support cross origin html ajax calls. Everything else we can grab from jsonp
         if ( window.XDomainRequest && !jq$.support.cors) {
           bkml.shimAjaxIE(window.jq$);            
         } 
+        
         callback(); 
       }
     }
@@ -138,36 +142,34 @@
     @return {Promise} : promise resolves once all resources load or fails if any individual resource fails
   */
   Bookmarklet.prototype.loadResources = function() {
-    var overallPromise = jq$.Deferred();
-    var that = this;
-  
-    //TODO: Fix scoping here
+    var overallPromise = jq$.Deferred(),
+    bkml = this,
     promises = [];
 
     // resource is an array of [url, type]
-    this.resources.forEach(function(resource) {
+    this.resources.forEach(function(resource) { 
       var type = resource[1];
       var url = resource[0];
     
       if (type === "js") {
-        var promise = that.loadJSResource(url);
+        var promise = bkml.loadJSResource(url);
         promises.push(promise);
       } else if (type === 'css') {
-        var promise = that.loadCSSResource(url);
+        var promise = bkml.loadCSSResource(url);
         promises.push(promise);
       } else if (type === 'html') {
-        var promise = that.loadHTMLResource(url);
+        var promise = bkml.loadHTMLResource(url);
         promises.push(promise);
-      }
+      }      
     });
   
-    jq$.when.apply(jq$, promises).then(function(snippet) {
+    jq$.when.apply(jq$, promises).then(function(snippet) {      
       overallPromise.resolve(snippet);
     }).fail(function(xhr, textStatus, errorThrown) {
       alert('Bookmarklet Error: There was an error loading the required resources');
       console.log("Bookmarklet Error: " + textStatus);
       console.log(xhr); //Include this?
-      that.remove();
+      bkml.remove();
     })
   
     return overallPromise;
@@ -187,10 +189,8 @@
     @return {Promise} : resolves or fails based on resource load
   */
   Bookmarklet.prototype.loadCSSResource = function(url) {
-    var cssPromise = jq$.Deferred();
-    
-    $bkml_style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
-    jq$('head').append($bkml_style);
+    var cssPromise = jq$.Deferred(),
+        $bkml_style = jq$('<link></link>').addClass('bkml-resource').attr('rel', 'stylesheet').attr('type', 'text/css').attr('href', url);
     
     var cssTimeout = setInterval(function() {
       cssPromise.reject({ "reason": "cssTimeout" }, "Error: CSS Load timeout", url);
@@ -203,6 +203,8 @@
       clearInterval(cssTimeout);
       cssPromise.reject();
     });
+    
+    jq$('head').append($bkml_style);
   
     return cssPromise;
   }
@@ -266,33 +268,13 @@
     jq$('.bkml-container').addClass("bkml-container-hidden");
   }
   
-  /* 
-    Packages log data for sending to the API Pixel Controller
-    @param {Object} data : an object with properties corresponding to relevant data
-  */
-  Bookmarklet.prototype.logEvent = function(data) {
-    console.log(data);
-    
-    var bkml = this,
-        currentUser = jq$('#bkml-campaign-select').val() || window.viglink_default_campaign || null; // null? "unknown" ? ;
-    
-    var returnData = {
-      "bookmarklet" : {
-        et: data.type,
-        uid: data.user, // || window.viglink_default_userId, make this work
-        url: window.location.href
-      }  
-    };
-    
-    this.sendLogData(returnData);
-  }
   
   /*
     Sends data to the API Pixel Controller
-    @param {Object} data : data that's not in sendable form
+    @param {Object} data : data that's not in sendable form but not wrapped by events
   */
   Bookmarklet.prototype.sendLogData = function(data) {
-    var serverRoot = "http://qa-api-va-1.ec2.viglink.com:8080",
+    var serverRoot = "http://qa-api-va-1.ec2.viglink.com:8080", //TODO Prod
         path = "/api/pixel.gif";
         
     jq$.ajax(serverRoot + path, {
@@ -317,11 +299,29 @@
     this.constructor(options);
   }
   
-  // Handles inheritance of Bookmarklet properties by the AnywhereBkml
+  // Surrogate Inheritance design pattern to manage classical inheritance of Bookmarklet methods by AnywhereBkml
   function Surrogate() {};
   Surrogate.prototype = Bookmarklet.prototype;
   AnywhereBkml.prototype = new Surrogate();
-
+  
+  /* 
+    Packages AnywhereBookmarklet log data and then calls the Bookmarklet method for logging it
+    @param {Object} data : an object with properties corresponding to relevant data
+  */
+  AnywhereBkml.prototype.logEvent = function(data) {
+    var bkml = this,
+        currentUser = jq$('#bkml-campaign-select').val() || window.viglink_default_campaign || null; // null? "unknown" ? ;
+    
+    var returnData = {
+      "bookmarklet" : {
+        et: data.type,
+        uid: data.user, // || window.viglink_default_userId, make this work
+        url: window.location.href
+      }  
+    };
+    
+    this.sendLogData(returnData);
+  }
 
   /*
     Grab all initially-required resources once jQuery has been loaded
@@ -329,13 +329,13 @@
     1 & 2 must complete before the loadHTML is called. 3 is required to have completed in the next step but not this one.
   */
   AnywhereBkml.prototype.grabResources = function() {
-    var bkml = this;
-    
-    var userDataPromise = this.grabUserData();
-    var resourcesLoadPromise = this.loadResources();
+    var userDataPromise = this.grabUserData(),
+        resourcesLoadPromise = this.loadResources();
+        
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = this.grabLinkData();
     
+    var bmkl = this;
     jq$.when(userDataPromise, resourcesLoadPromise).then(this.loadHTML.bind(bkml, linkDataPromise)).fail(function() {
       bkml.logEvent({
         type: "Load Failure",
@@ -365,8 +365,7 @@
     if (bkml.isSignedIn(userData)) {
       this.createCampaignHash($bkmlSnippet, userData);
       
-      //This call is made at the same time as resources load and user data grab
-      linkDataPromise.done(function(linkData) {
+      linkDataPromise.done(function(linkData) { // The link data that was grabbed in the last step
         if (bkml.isAffiliatable(linkData)) {
           bkml.logEvent({
             type: "Load Success",
@@ -410,12 +409,6 @@
     }
     
     bkml.initializeGeneralEvents($bkmlSnippet);
-    
-    // Wait until the bkml is actually loaded by the document to call Slide Down. 
-    setTimeout(function() {
-      bkml.slideDown();  
-    }, 10)
-    
   }
 //end  
   
@@ -429,21 +422,18 @@
     @param {object} data : userData from API call
   */
   AnywhereBkml.prototype.createCampaignHash = function($bkmlSnippet, data) {
-    var userData = data.users;
-    var that = this;
+    var userData = data.users,
+        bkml = this;
+    
     this.campaigns = [];
     
     userData.forEach(function(campaignData) {
       var campaignName = campaignData.name;
-      that.campaigns.push(campaignName);
-      that.campaignInfo[campaignName] = that.campaignInfo[campaignName] || {};
-      that.campaignInfo[campaignName]["key"] = campaignData.key;
-      that.campaignInfo[campaignName]["userId"] = campaignData.id;
+      bkml.campaigns.push(campaignName);
+      bkml.campaignInfo[campaignName] = bkml.campaignInfo[campaignName] || {};
+      bkml.campaignInfo[campaignName]["key"] = campaignData.key;
+      bkml.campaignInfo[campaignName]["userId"] = campaignData.id;
     });
-    
-    if (this.campaigns.length > 10) {
-      $bkmlSnippet.find('.bkml-campaign-filter-container').css({ "display": "block" });
-    }
   }
 
   AnywhereBkml.prototype.buildSharePageHTML = function($bkmlSnippet, campaignArr) {
@@ -454,8 +444,9 @@
   }
 
   AnywhereBkml.prototype.buildCampaignOptions = function($bkmlSnippet, campaignArr) {
-    $bkmlSnippet.find('#bkml-campaign-select').empty();
     var bkml = this;
+    
+    $bkmlSnippet.find('#bkml-campaign-select').empty();
     
     campaignArr.forEach(function(campaign) {
       $option = jq$('<option val="' + bkml.campaignInfo[campaign]["key"] + '">' + campaign + '</option>');
@@ -470,29 +461,47 @@
 
 /* Link Helpers for Share page */
 
+  /*
+    A Helper method for grabbing the current version of the Anywhereized Url for the current page
+    @params {jQuery Object} $bkmlSnippet : required to determine the currently selected campaign API key
+  */
   AnywhereBkml.prototype.getAnywhereizedURL = function($bkmlSnippet) {
-    // Build anywhereized URL
     var currentCampaign = this.selectedCampaignKey($bkmlSnippet);
     var currentKey = this.campaignInfo[currentCampaign]["key"];
-    var anywhereizedURL = this.anywhereizeURL(currentKey)
+    var anywhereizedURL = this.anywhereizeURL(currentKey);
 
     return anywhereizedURL;
   }
-
+  
+  /*
+    Returns an anywhereized URL
+    @param {String} key : an api key
+  */
   AnywhereBkml.prototype.anywhereizeURL = function(key) {
     return "http://redirect.viglink.com?key=" + key + "&type=bk&u=" + encodeURIComponent(window.location.href);
   }
-
+  
+  /*
+    Whenever the selected campaign (and thus API key) changes, this method handles setting the new redirect URL
+    @param {String} anywhereizedURL : the new anywhereized URL to insert
+  */
   AnywhereBkml.prototype.setNewLink = function($bkmlSnippet, anywhereizedURL) {
     var $shortenButton = $bkmlSnippet.find('.bkml-link-shorten');
     
+    //Remove any data- attributes for old shortened URL data
     $shortenButton.removeData('short');
+    
+    //Attach the new Long-form URL into the data-long attribute
     this.setShortenButtonAttrs($shortenButton, 'long', anywhereizedURL);
     
     this.insertLinkIntoHTML($bkmlSnippet, anywhereizedURL);
     
   }
 
+  /*
+    This handles all HTML specific changes that need to be made when the redirect link changes
+    Handles setting the link text box, the clipboard target, twitter and FB link changes
+  */
   AnywhereBkml.prototype.insertLinkIntoHTML = function($bkmlSnippet, url) {
     $bkmlSnippet.find('.bkml-link-text').text(url)
     $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
@@ -500,11 +509,17 @@
     this.formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), url);
     this.formatFbLink($bkmlSnippet.find('.bkml-social-fb'), url);
   }
-
+  
+  /* 
+    Wraps the twitter link changing logic
+  */
   AnywhereBkml.prototype.formatTwitterLink = function($el, url) {
     $el.attr('href', 'https://twitter.com/share?url=' + encodeURIComponent(url))
   }  
 
+  /* 
+    Wraps the FB link changing logic 
+  */
   AnywhereBkml.prototype.formatFbLink = function($el, url) {
     var shareURL = 'https://www.facebook.com/sharer.php?src=bm&v=4&i=1406665647&u=' + encodeURIComponent(url) + '&t=' + encodeURIComponent(document.title);
     $el.attr('href', shareURL); 
@@ -515,21 +530,27 @@
 /* Share Event Helpers */
 
   AnywhereBkml.prototype.initializeShareEvents = function($bkmlSnippet) {
+    var bkml = this;
+    
+    // Initializes the Clipboard events
     this.initializeClipboard($bkmlSnippet);
 
+    //TODO TEST THESE. NECESSARY?
     $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
       event.preventDefault();
     });
-
+    
+    $bkmlSnippet.find('.bkml-campaign-form').on('submit', function(event) {
+      event.preventDefault();
+    });
+    
+    // Event for the shorten button
     $bkmlSnippet.find('.bkml-link-shorten').on('click', this.handleShortenClick.bind(this, $bkmlSnippet));
     
-    // Handling when the user changes the campaign selection
-    
-    var bkml = this;
+    // Event handling for when the user changes the selected campaign
     $bkmlSnippet.find('#bkml-campaign-select').on('change', function(event) {
       var anywhereizedURL = bkml.getAnywhereizedURL(jq$('.bkml-container'));
       bkml.setNewLink($bkmlSnippet, anywhereizedURL);
-      
       
       //This is a workaround to avoid having to rewrite the shorten url checking logic. 
       var campaignName = jq$(this).val(),
@@ -540,21 +561,7 @@
       }
     });
     
-    $bkmlSnippet.find('#bkml-campaign-filter').on('change', function(event) {
-      var input = $(this).val();
-      
-      var matchingCampaigns = bkml.campaigns.filter(function(campaign) {
-        return (campaign.indexOf(input) !== -1);
-      });
-      
-      bkml.buildCampaignOptions($bkmlSnippet, matchingCampaigns);
-      $bkmlSnippet.find('#bkml-campaign-select').trigger('change');
-    });
-    
-    $bkmlSnippet.find('.bkml-campaign-form').on('submit', function(event) {
-      event.preventDefault();
-    });
-    
+    // Logs event when user clicks on a social button link
     $bkmlSnippet.find('.bkml-social-button').on('click', function(event) {
       var type = $(this).data('social');
       bkml.logEvent({
@@ -564,6 +571,10 @@
     });
   }
 
+  /*
+    Handles when the user clicks on the shorten button.
+    Sets text of button, stores the new and old urls in data- attributes, sets spinner, and sets relevant html for the new url
+  */
   AnywhereBkml.prototype.handleShortenClick = function($bkmlSnippet, event) {
     var $linkText = $bkmlSnippet.find('.bkml-link-text'),
         $shortenButton = $bkmlSnippet.find('.bkml-link-shorten'),
@@ -601,6 +612,9 @@
   
   }
   
+  /* 
+    A helper for setting the text and data- attributes for the shorten button
+  */
   AnywhereBkml.prototype.setShortenButtonAttrs = function($shortenButton, active, url) {
     $shortenButton.data('active', active);
     
@@ -612,7 +626,10 @@
       $shortenButton.text('Not a valid campaign');
     }
   }
-
+  
+  /*
+    Initializes the keyboard, binds it to the keyboard copy button, and has handlers for flash load error
+  */
   AnywhereBkml.prototype.initializeClipboard = function($bkmlSnippet) {    
     var bkml = this,
         $copyButton = $bkmlSnippet.find('.bkml-link-copy');
@@ -624,10 +641,10 @@
       containerId: "global-zeroclipboard-html-bridge-VL",
       swfObjectId: "global-zeroclipboard-flash-bridge-VL"
     });
+    
     var clipboard = new window.ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
     
-    clipboard.on('ready', function(client, args) {
-      
+    clipboard.on('ready', function(client, args) {  
       clipboard.on('aftercopy', function(client, args) {
         bkml.logEvent({
           type: "Copy Auto",
@@ -635,7 +652,6 @@
         });
         alert("Formatted URL has been copied!"); // Keep this? 
       });
-      
     });
     
     // Dealing with flash problems
@@ -697,6 +713,10 @@
     $bkmlSnippet.find('.bkml-dismiss').on('click', function() {
       bkml.remove();
     })
+    
+    setTimeout(function() {
+      bkml.slideDown();  
+    }, 10)
   }
 /* General End */
   
@@ -732,7 +752,7 @@
         callbackParam = 'jsonp';
   
     var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
-    var linkDataPromise = viglinkServeLocal ? this.callJsonAPI(linkURL, callbackParam) : this.callJsonpAPI(linkURL, callbackParam); 
+    var linkDataPromise = this.callJsonpAPI(linkURL, callbackParam); 
 
     return linkDataPromise;
   }
@@ -742,7 +762,7 @@
         callbackParam = "callback";
       
     var userURL = rootUrl;
-    var userDataPromise = viglinkServeLocal ? this.callJsonAPI(userURL, callbackParam) : this.callJsonpAPI(userURL, callbackParam);
+    var userDataPromise = this.callJsonpAPI(userURL, callbackParam);
   
     return userDataPromise;
   }
@@ -752,7 +772,7 @@
         bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + apiKey + '&longUrl=' + encodeURIComponent(url),
         callback = 'callback';
       
-    var bitlyPromise = window.viglink_bkml.callJsonpAPI(bitlyAPI, callback);
+    var bitlyPromise = this.callJsonpAPI(bitlyAPI, callback);
     return bitlyPromise;
   }
 // End  
