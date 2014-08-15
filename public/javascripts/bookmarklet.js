@@ -1,13 +1,13 @@
 (function() {
   
-  var serverDomain = ""; //TODO Prod
+  var serverDomain = "http://cdn.viglink.com";
   
   function Bookmarklet(options) {
   
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignInfo = {};// IE compatibility issue
-    this.serverDomain = viglink_dev ? viglink_localhost : 'http://anywhere-bookmarklet.herokuapp.com'; //TODO PROD
+    this.serverDomain = "http://cdn.viglink.com";
     this.defaultCampaign = options.defaultCampaign || null;
   }
 
