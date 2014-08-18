@@ -338,7 +338,7 @@
     var returnData = {
       "bookmarklet" : {
         et: data.type,
-        uid: data.user, // || window.viglink_default_userId, make this work
+        uid: data.user || window.viglink_user,
         url: window.location.href
       }  
     };
