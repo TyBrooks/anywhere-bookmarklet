@@ -1,5 +1,7 @@
 (function() {
   
+  serverDomain = "//localhost:3000";    
+  
   function Bookmarklet(options) {
     this.resources = options.resources || [];
     this.campaigns = [];
@@ -346,7 +348,7 @@
     //This doesn't need to resolve until after the first two have
     var linkDataPromise = this.grabLinkData();
     
-    var bmkl = this;
+    var bkml = this;
     jq$.when(userDataPromise, resourcesLoadPromise).then(this.loadHTML.bind(bkml, linkDataPromise)).fail(function() {
       bkml.logEvent({
         type: "Load Failure",
@@ -762,7 +764,7 @@
         callbackParam = 'jsonp';
   
     var linkURL = this.routes.linkData + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
-    var linkDataPromise = this.callJsonAPI(linkURL, callbackParam);
+    var linkDataPromise = this.callJsonpAPI(linkURL, callbackParam);
 
     return linkDataPromise;
   }
@@ -770,7 +772,7 @@
   AnywhereBkml.prototype.grabUserData = function() {
     var callbackParam = "callback";
       
-    var userDataPromise = this.callJsonAPI(this.routes.userData, callbackParam);
+    var userDataPromise = this.callJsonpAPI(this.routes.userData, callbackParam);
   
     return userDataPromise;
   }
