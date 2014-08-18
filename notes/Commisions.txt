@@ -1,0 +1,3 @@
+API ENDPOINT FOR MERCHANT INFO:
+
+publishers.viglink.com/rest/merchantgroups/<ID#>

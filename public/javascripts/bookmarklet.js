@@ -1,14 +1,25 @@
 (function() {
   
-  var serverDomain = "http://cdn.viglink.com";
-  
   function Bookmarklet(options) {
-  
     this.resources = options.resources || [];
     this.campaigns = [];
     this.campaignInfo = {};// IE compatibility issue
-    this.serverDomain = "http://cdn.viglink.com";
     this.defaultCampaign = options.defaultCampaign || null;
+    
+
+    this.serverDomain = "//localhost:3000";      
+    // this.serverDomain = "http://cdn.viglink.com";
+    // this.serverDomain = "http://anywhere-bookmarklet.herokuapp.com";
+    // this.serverDomain = "//10.0.2.2:3000";
+    
+    var bkml = this;
+    this.routes = {
+      html: bkml.serverDomain + "/bookmarklet",
+      flashSwf: bkml.serverDomain + "/bookmarklet/api/ZeroClipboard.swf",
+      userData: "http://publishers.viglink.com/account/users",
+      linkData: "http://api.viglink.com/api/link",
+      bitly: 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=a2dde94fc7b3fc05e7a1dfc24d8d68840f013793'
+    }
   }
 
   /*
@@ -636,7 +647,7 @@
     
     
     window.ZeroClipboard.config({
-      swfPath: this.serverDomain + '/swf/ZeroClipboard.swf',
+      swfPath: this.routes.flashSwf,
       trustedDomains: [window.location.protocol + "//" + window.location.host],
       containerId: "global-zeroclipboard-html-bridge-VL",
       swfObjectId: "global-zeroclipboard-flash-bridge-VL"
@@ -746,30 +757,26 @@
   AnywhereBkml.prototype.grabLinkData = function() {
     //TODO: Figure out how to implement a test key?
     var testKey = '9cb01deed662e8c71059a9ee9a024d30',
-        rootUrl = viglinkServeLocal ? viglink_localhost + '/api/link' : 'http://api.viglink.com/api/link',
         out = encodeURIComponent(window.location.href),
         format = "jsonp",
         callbackParam = 'jsonp';
   
-    var linkURL = rootUrl + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
-    var linkDataPromise = this.callJsonpAPI(linkURL, callbackParam); 
+    var linkURL = this.routes.linkData + "?out=" + out + "&format=" + format + "&key=" + testKey + "&optimize=false";
+    var linkDataPromise = this.callJsonAPI(linkURL, callbackParam);
 
     return linkDataPromise;
   }
 
   AnywhereBkml.prototype.grabUserData = function() {
-    var rootUrl = viglinkServeLocal ? viglink_localhost + "/account/users" : "http://publishers.viglink.com/account/users",
-        callbackParam = "callback";
+    var callbackParam = "callback";
       
-    var userURL = rootUrl;
-    var userDataPromise = this.callJsonpAPI(userURL, callbackParam);
+    var userDataPromise = this.callJsonAPI(this.routes.userData, callbackParam);
   
     return userDataPromise;
   }
 
   AnywhereBkml.prototype.grabBitlyData = function(url) {
-    var apiKey = 'a2dde94fc7b3fc05e7a1dfc24d8d68840f013793', //TODO: Change this?
-        bitlyAPI = 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=' + apiKey + '&longUrl=' + encodeURIComponent(url),
+        bitlyAPI = this.routes.bitly + '&longUrl=' + encodeURIComponent(url),
         callback = 'callback';
       
     var bitlyPromise = this.callJsonpAPI(bitlyAPI, callback);
