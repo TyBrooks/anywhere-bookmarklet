@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/bookmarklet', function(req, res) {
+router.get('/bookmarklet/', function(req, res) {
   res.render('html_bookmarklet');
 });
 

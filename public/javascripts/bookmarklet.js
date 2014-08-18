@@ -16,12 +16,21 @@
     
     var bkml = this;
     this.routes = {
-      html: bkml.serverDomain + "/bookmarklet",
+      html: bkml.serverDomain + "/bookmarklet/",
       flashSwf: bkml.serverDomain + "/bookmarklet/api/ZeroClipboard.swf",
       userData: "http://publishers.viglink.com/account/users",
       linkData: "http://api.viglink.com/api/link",
       bitly: 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=a2dde94fc7b3fc05e7a1dfc24d8d68840f013793'
     }
+    
+    //ORDER MATTERS : The HTML snippet has to be first
+    this.resources = [
+      [this.routes.html, 'html'],
+      [this.serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
+      [this.serverDomain + '/stylesheets/bookmarklet.css', "css"],
+      // Have to host Font Awesome from the CDN for firefox for some reason
+      ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
+    ];
   }
 
   /*
@@ -806,18 +815,9 @@
 */
 
 
-  //ORDER MATTERS : The HTML snippet has to be first
-  var resources = [
-    [serverDomain + '/bookmarklet', 'html'],
-    [serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
-    [serverDomain + '/stylesheets/bookmarklet.css', "css"],
-    // Have to host Font Awesome from the CDN for firefox for some reason
-    ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
-  ];
   
-  var bkmlOptions = {
-    resources: resources
-  }
+  
+  var bkmlOptions = {};
   
   if (window.viglink_default_campaign) {
     bkmlOptions.defaultCampaign = unescape(window.viglink_default_campaign);
