@@ -5,7 +5,7 @@
   function Bookmarklet(options) {
     this.resources = options.resources || [];
     this.campaigns = [];
-    this.campaignInfo = {};// IE compatibility issue
+    this.campaignInfo = {};
     this.defaultCampaign = options.defaultCampaign || null;
     
 
@@ -20,13 +20,15 @@
       flashSwf: bkml.serverDomain + "/bookmarklet/api/ZeroClipboard.swf",
       userData: "http://publishers.viglink.com/account/users",
       linkData: "http://api.viglink.com/api/link",
-      bitly: 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=a2dde94fc7b3fc05e7a1dfc24d8d68840f013793'
+      bitly: 'https://api-ssl.bitly.com/v3/shorten?ACCESS_TOKEN=a2dde94fc7b3fc05e7a1dfc24d8d68840f013793',
+      log: "http://qa-api-va-1.ec2.viglink.com:8080/api/pixel.gif" //TODO prod
     }
     
     //ORDER MATTERS : The HTML snippet has to be first
     this.resources = [
       [this.routes.html, 'html'],
       [this.serverDomain + '/javascripts/vendor/ZeroClipboard-VL.js', "js"],
+      //Remove for production
       [this.serverDomain + '/stylesheets/bookmarklet.css', "css"],
       // Have to host Font Awesome from the CDN for firefox for some reason
       ['//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', 'css']
@@ -296,15 +298,14 @@
     @param {Object} data : data that's not in sendable form but not wrapped by events
   */
   Bookmarklet.prototype.sendLogData = function(data) {
-    var serverRoot = "http://qa-api-va-1.ec2.viglink.com:8080", //TODO Prod
-        path = "/api/pixel.gif";
+    var logPath = this.routes.log;
         
-    jq$.ajax(serverRoot + path, {
+    jq$.ajax(logPath, {
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
       method: "POST",
       data: { events: JSON.stringify(data) },
       success: function() {
-        console.log("EVENT LOGGED");
+
       },
       error: function(xhr, textStatus, errorThrown) {
 
@@ -526,7 +527,7 @@
   */
   AnywhereBkml.prototype.insertLinkIntoHTML = function($bkmlSnippet, url) {
     $bkmlSnippet.find('.bkml-link-text').text(url)
-    $bkmlSnippet.find('.bkml-link-copy').data('clipboard-text', url);
+    $bkmlSnippet.find('#bkml-clipboard-target').data('clipboard-text', url);
   
     this.formatTwitterLink($bkmlSnippet.find('.bkml-social-tweet'), url);
     this.formatFbLink($bkmlSnippet.find('.bkml-social-fb'), url);
@@ -656,7 +657,6 @@
     var bkml = this,
         $copyButton = $bkmlSnippet.find('.bkml-link-copy');
     
-    
     window.ZeroClipboard.config({
       swfPath: this.routes.flashSwf,
       trustedDomains: [window.location.protocol + "//" + window.location.host],
@@ -664,10 +664,15 @@
       swfObjectId: "global-zeroclipboard-flash-bridge-VL"
     });
     
-    var clipboard = new window.ZeroClipboard($bkmlSnippet.find('#clipboard-target'));
+    var clipboard = new window.ZeroClipboard($bkmlSnippet.find('#bkml-clipboard-target'));
     
-    clipboard.on('ready', function(client, args) {  
-      clipboard.on('aftercopy', function(client, args) {
+    clipboard.on('ready', function(readyEvent) {
+      clipboard.on( "copy", function (event) {
+        var clipboard = event.clipboardData;
+        clipboard.setData( "text/plain", jq$('#bkml-clipboard-target').data('clipboard-text'));
+      });
+        
+      clipboard.on('aftercopy', function(event) {
         bkml.logEvent({
           type: "Copy Auto",
           user: bkml.campaignInfo[bkml.selectedCampaignKey($bkmlSnippet)]["userId"]

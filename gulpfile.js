@@ -27,7 +27,7 @@ gulp.task('min-servejs', function() {
 gulp.task('watch', function() {
   var serveWatch = gulp.watch('paths.servejs', ['min-servejs']);
   var scriptWatch = gulp.watch([paths.bookmarklet, paths.vendorScripts], ['min-js']);
-  var cssWatch = gulp.watch(paths.css, ['css-watch']);
+  var cssWatch = gulp.watch(paths.css, ['move-css']);
 })
 
 gulp.task('move-css', function() {

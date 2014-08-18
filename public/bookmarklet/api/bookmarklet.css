@@ -288,7 +288,7 @@
   text-decoration: none;   
 }
 
-#clipboard-target.bkml-link-copy {
+#bkml-clipboard-target.bkml-link-copy {
   width: 66%;
   border-right: thin solid rgba(150,150,150,1);
 }
