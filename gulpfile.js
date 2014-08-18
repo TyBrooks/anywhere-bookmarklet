@@ -1,39 +1,36 @@
 var gulp = require('gulp');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglifyjs');
 
 var paths = {
-  vendorScripts: ["!public/javascripts/vendor/jquery*", "public/javascript/vendor/*.js"],
+  vendorScripts: "public/javascripts/vendor/*.js",
   bookmarklet: "public/javascripts/bookmarklet.js",
-  jquery: "public/javascripts/jquery-1.11.1.js",
+  servejs: "public/javascripts/serve_bookmarklet.js",
   css: ["public/stylesheets/bookmarklet.css"]
 }
 
-gulp.task('default', function() {
-  
+gulp.task('default', ['minify', 'watch', 'move-css'])
+
+gulp.task('minify', ['min-js', 'min-servejs']);
+
+gulp.task('min-js', function() {
+  gulp.src([paths.vendorScripts, paths.bookmarklet])
+    .pipe(uglify("bookmarklet.js"))
+    .pipe(gulp.dest('public/bookmarklet/api'))
 })
 
-gulp.task('minify', ['min-vendorjs', 'min-jquery', 'min-bookmarklet']);
-
-gulp.task('min-vendorjs', function() {
-  gulp.src(paths.vendorScripts)
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'))
+gulp.task('min-servejs', function() {
+  gulp.src(paths.servejs)
+    .pipe(uglify("serve_bookmarklet.js"))
+    .pipe(gulp.dest('public/bookmarklet/api'))
 })
 
-gulp.task('min-jquery', function() {
-  gulp.src("public/javascripts/jquery-1.11.1.js")
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'))
+gulp.task('watch', function() {
+  var serveWatch = gulp.watch('paths.servejs', ['min-servejs']);
+  var scriptWatch = gulp.watch([paths.bookmarklet, paths.vendorScripts], ['min-js']);
+  var cssWatch = gulp.watch(paths.css, ['css-watch']);
 })
 
-gulp.task('min-bookmarklet', function() {
-  gulp.src(paths.bookmarklet)
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'))
-})
-
-gulp.task('min-css', function() {
-  gulp.src(paths.jquery)
-    .pipe(minifier())
-    .pipe(gulp.dest('dist'))
+gulp.task('move-css', function() {
+  gulp.src(paths.css)
+    .pipe(gulp.dest('public/bookmarklet/api'))
 })
