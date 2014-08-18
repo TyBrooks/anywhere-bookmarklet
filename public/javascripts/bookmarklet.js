@@ -557,15 +557,6 @@
     
     // Initializes the Clipboard events
     this.initializeClipboard($bkmlSnippet);
-
-    //TODO TEST THESE. NECESSARY?
-    $bkmlSnippet.find('.bkml-link-copy').on('click', function(event) {
-      event.preventDefault();
-    });
-    
-    $bkmlSnippet.find('.bkml-campaign-form').on('submit', function(event) {
-      event.preventDefault();
-    });
     
     // Event for the shorten button
     $bkmlSnippet.find('.bkml-link-shorten').on('click', this.handleShortenClick.bind(this, $bkmlSnippet));
@@ -771,8 +762,7 @@
 /* Begin Data Grabbing functions */
 
   AnywhereBkml.prototype.grabLinkData = function() {
-    //TODO: Figure out how to implement a test key?
-    var testKey = '9cb01deed662e8c71059a9ee9a024d30',
+    var testKey = '9cb01deed662e8c71059a9ee9a024d30', //TODO: Use default key?
         out = encodeURIComponent(window.location.href),
         format = "jsonp",
         callbackParam = 'jsonp';
